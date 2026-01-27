@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { FaStar,FaCamera, FaTimes,FaUser } from "react-icons/fa";
-import { Menu, X } from "lucide-react";
+import { FaStar,FaCamera, FaTimes} from "react-icons/fa";
 
 function StarRating({ rating, setRating }) {
   return (
@@ -79,44 +78,6 @@ export default function RateExperience() {
 
   return (
     <div>
-      <header className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5 bg-white border-b border-[#e8e8e8]">
-        <div className="flex items-center gap-2">
-          <span className="text-[#22c55e] text-xl sm:text-2xl font-bold">✦</span>
-          <span className="font-bold text-[18px] sm:text-[20px] text-[#1a1a1a]">AgriRent</span>
-        </div>
-
-        <div className="flex items-center gap-3 sm:gap-4">
-          <nav className="hidden lg:flex gap-6 xl:gap-8 text-[14px] lg:text-[16px] text-[#1a1a1a] font-medium">
-            <a className="hover:text-[#22c55e] cursor-pointer">Dashboard</a>
-            <a className="hover:text-[#22c55e] cursor-pointer">My Rentals</a>
-            <a className="hover:text-[#22c55e] cursor-pointer">Support</a>
-          </nav>
-
-          <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-[#e8b89f] hover:bg-[#d9a086] flex items-center justify-center cursor-pointer transition-all hover:shadow-md active:scale-95">
-            <FaUser className="w-4 h-4 text-white" />
-          </div>
-          <button 
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden flex items-center"
-          >
-            {menuOpen ? (
-              <X className="w-6 h-6 text-[#1a1a1a]" />
-            ) : (
-              <Menu className="w-6 h-6 text-[#1a1a1a]" />
-            )}
-          </button>
-        </div>
-      </header>
-
-      {/* MOBILE MENU */}
-      {menuOpen && (
-        <nav className="lg:hidden bg-white border-b border-[#e8e8e8] px-4 sm:px-6 py-4 flex flex-col gap-4">
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">Dashboard</a>
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">My Rentals</a>
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">Support</a>
-        </nav>
-      )}
-
       <div className="w-full min-h-screen bg-white text-[#1a1a1a] overflow-x-hidden pb-64 sm:pb-72 lg:pb-8">
         <div className="text-center py-3 sm:py-4 lg:py-5 pt-6 sm:pt-8 lg:pt-10 px-4 bg-[#f7f7f7] sm:bg-white">
           <h1 className="text-[22px] sm:text-[28px] lg:text-[32px] font-bold text-[#1f3d2b] px-2">

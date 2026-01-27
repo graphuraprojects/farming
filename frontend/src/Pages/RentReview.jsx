@@ -1,62 +1,10 @@
 import React from "react";
-import { Bell, Settings, Search, Share2, Check, Menu, X } from "lucide-react";
-import { FaUser } from "react-icons/fa";
+import {Share2, Check} from "lucide-react";
 
 export default function ReviewSuccessPage() {
-  const [menuOpen, setMenuOpen] = React.useState(false);
 
   return (
     <div className="w-full min-h-screen bg-white text-[#1a1a1a] overflow-x-hidden">
-      {/* HEADER */}
-      <header className="flex items-center justify-between px-4 sm:px-6 lg:px-8 py-3.5 bg-white border-b border-[#e8e8e8]">
-        <div className="flex items-center gap-2">
-          <span className="text-[#22c55e] text-xl sm:text-2xl font-bold">✦</span>
-          <span className="font-bold text-[18px] sm:text-[20px] text-[#1a1a1a]">AgriRent</span>
-        </div>
-
-        <div className="hidden lg:flex items-center gap-2 bg-[#f5f5f5] px-4 py-2 rounded-lg w-[360px]">
-          <Search className="w-5 h-5 text-[#999]" />
-          <input
-            placeholder="Search equipment..."
-            className="bg-transparent outline-none text-[15px] w-full text-[#1a1a1a] placeholder:text-[#999]"
-          />
-        </div>
-
-        <nav className="hidden lg:flex gap-6 xl:gap-8 text-[14px] lg:text-[16px] text-[#1a1a1a] font-medium">
-          <a className="hover:text-[#22c55e] cursor-pointer transition-colors active:scale-95">Marketplace</a>
-          <a className="hover:text-[#22c55e] cursor-pointer transition-colors active:scale-95">My Rentals</a>
-          <a className="hover:text-[#22c55e] cursor-pointer transition-colors active:scale-95">Financing</a>
-          <a className="hover:text-[#22c55e] cursor-pointer transition-colors active:scale-95">Support</a>
-        </nav>
-
-        <div className="flex items-center gap-3 sm:gap-4">
-          <Bell className="w-5 h-5 text-[#1a1a1a] cursor-pointer hover:text-[#22c55e] transition-colors" />
-          <Settings className="w-5 h-5 text-[#1a1a1a] cursor-pointer hover:text-[#22c55e] transition-colors" />
-          <div className="w-8 sm:w-9 h-8 sm:h-9 rounded-full bg-[#e8b89f] hover:bg-[#d9a086] flex items-center justify-center cursor-pointer transition-all hover:shadow-md active:scale-95">
-            <FaUser className="w-4 h-4 text-white" />
-          </div>
-          <button 
-            onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden flex items-center"
-          >
-            {menuOpen ? (
-              <X className="w-6 h-6 text-[#1a1a1a]" />
-            ) : (
-              <Menu className="w-6 h-6 text-[#1a1a1a]" />
-            )}
-          </button>
-        </div>
-      </header>
-
-      {/* MOBILE MENU */}
-      {menuOpen && (
-        <nav className="lg:hidden bg-white border-b border-[#e8e8e8] px-4 sm:px-6 py-4 flex flex-col gap-4">
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">Marketplace</a>
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">My Rentals</a>
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">Financing</a>
-          <a className="text-[14px] text-[#1a1a1a] font-medium hover:text-[#22c55e] cursor-pointer">Support</a>
-        </nav>
-      )}
 
       {/* SUCCESS */}
       <section className="text-center py-8 sm:py-12 lg:py-16 px-4 bg-[#f7f7f7] sm:bg-white">

@@ -1,11 +1,16 @@
 import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import RateExperience from './Pages/RateExperience';
+import RentReview from './Pages/RentReview.jsx';
 
 function App() {
-
   return (
-    <>
-      <h1 className='text-green-600 font-bold text-5xl'>Hello World</h1>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/rate-experience" element={<RateExperience />} />
+        <Route path="/rent-review" element={<RentReview />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
