@@ -1,0 +1,162 @@
+import { useEffect, useState } from "react";
+import machines from "./Listing.js";
+import MachineCard from "./MachineCard";
+import Filters from "./Filters";
+
+import { ChevronLeft, ChevronRight} from 'lucide-react';
+
+const ITEMS_PER_PAGE = 6;
+
+const Listing = () => {
+  const [filters, setFilters] = useState({
+    search: "",
+    price: 2000,
+    distance: 100,
+    type: [],
+  });
+
+  const [sort, setSort] = useState("recommended");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Count machines by type (for Tractors (3))
+  const typeCounts = machines.reduce((acc, item) => {
+    acc[item.type] = (acc[item.type] || 0) + 1;
+    return acc;
+  }, {});
+
+  //  FILTER
+  let filteredData = machines.filter((item) => {
+    return (
+      item.name.toLowerCase().includes(filters.search.toLowerCase()) &&
+      item.price <= filters.price &&
+      item.distance <= filters.distance &&
+      (filters.type.length === 0 || filters.type.includes(item.type))
+    );
+  });
+
+  // SORT
+  if (sort === "low-high") {
+    filteredData.sort((a, b) => a.price - b.price);
+  }
+
+  if (sort === "high-low") {
+    filteredData.sort((a, b) => b.price - a.price);
+  }
+
+  // PAGINATION
+  const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedData = filteredData.slice(
+    startIndex,
+    startIndex + ITEMS_PER_PAGE,
+  );
+
+  // Reset page when filters/sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sort]);
+
+
+  return (
+    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#8080801a]">
+      {/* TOP BAR */}
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-[#131614] text-4xl font-black tracking-tight">Available Machines 
+            <span className="text-2xl pl-1">
+              ({filteredData.length})
+            </span>
+          </h1>
+          <p className="text-[#6d7e74] text-lg">Browse premium agricultural machinery verified for enterprise use.</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-medium text-[#6d7e74]">Sort by:</span>
+          <select value={sort}
+          onChange={(e) => setSort(e.target.value)} className="form-select border border-[#e6e8e6] bg-white rounded-lg text-sm font-medium py-2 pl-3 pr-10 focus:ring-[#1f3d2b] focus:border-[#1f3d2b]">
+            <option value="recommended">Recommended</option>
+            <option value="low-high">Price: Low to High</option>
+            <option value="high-low">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+        {/* STICKY FILTER */}
+        <div className="lg:sticky lg:top-6">
+          <Filters
+            filters={filters}
+            setFilters={setFilters}
+            typeCounts={typeCounts}
+            resetFilters={() =>
+              setFilters({
+                search: "",
+                price: 2000,
+                distance: 100,
+                type: [],
+              })
+            }
+          />
+        </div>
+        {/* CARDS GRID */}
+        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {paginatedData.length ? (
+            paginatedData.map((item) => (
+              <MachineCard key={item.id} item={item} />
+            ))
+          ) : (
+            <p>No machines found.</p>
+          )}
+        </div>
+      </div>
+
+      {/* PAGINATION BUTTONS */}
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center mt-10 gap-2">
+          {/* LEFT ARROW */}
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className={`cursor-pointer px-3 py-2 ${
+              currentPage === 1
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <ChevronLeft size={20}/>
+          </button>
+
+          {/* PAGE NUMBERS */}
+          {Array.from({ length: totalPages }).map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrentPage(i + 1)}
+              className={`cursor-pointer px-4 py-2 rounded-lg ${
+                currentPage === i + 1
+                  ? "bg-[#1f3d2b] text-white font-bold"
+                  : "hover:bg-gray-100 text-gray-500 font-medium"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          {/* RIGHT ARROW */}
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className={`cursor-pointer px-3 py-2 rounded ${
+              currentPage === totalPages
+                ? "text-gray-400 cursor-not-allowed"
+                : "hover:bg-gray-100"
+            }`}
+          >
+            <ChevronRight size={20}/>
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Listing;
