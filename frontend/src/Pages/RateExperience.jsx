@@ -71,7 +71,7 @@ export default function RateExperience() {
   const [review, setReview] = useState("");
   const [image, setImage] = useState(null);
   const [tags, setTags] = useState(["Timely Delivery", "Machine Condition"]);
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);  
 
   const toggleTag = (tag) =>
     setTags((prev) => (prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]));

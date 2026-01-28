@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import machines from "./Listing.js";
-import MachineCard from "./MachineCard";
-import Filters from "./Filters";
+import MachineCard from "./MachingCard.jsx";
+import Filters from "./Filters.jsx";
 
 import { ChevronLeft, ChevronRight} from 'lucide-react';
 
