@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import MachineDetailsCard from './MachineDetailsCard'; 
+import React, { useState, useEffect } from "react";
+import MachineDetailsCard from "./MachineDetailsCard";
+import { NavLink, Link } from "react-router-dom";
 
 const BookingConfirmation = () => {
   const [bookingData, setBookingData] = useState(null);
@@ -11,7 +12,7 @@ const BookingConfirmation = () => {
     const fetchBookingDetails = async () => {
       try {
         setLoading(true);
-        const rawData = await simulateBackendResponse(); 
+        const rawData = await simulateBackendResponse();
         setBookingData(rawData);
       } catch (err) {
         setError("Unable to load booking details.");
@@ -23,10 +24,20 @@ const BookingConfirmation = () => {
   }, [bookingId]);
 
   const handleDownload = () => alert("Downloading...");
-  const handleNavigate = () => alert("Navigating...");
+  // const handleNavigate = () => alert("Navigating...");
 
-  if (loading) return <div className="min-h-[100dvh] flex items-center justify-center">Loading...</div>;
-  if (error) return <div className="min-h-[100dvh] flex items-center justify-center text-red-500 px-4 text-center">{error}</div>;
+  if (loading)
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center">
+        Loading...
+      </div>
+    );
+  if (error)
+    return (
+      <div className="min-h-[100dvh] flex items-center justify-center text-red-500 px-4 text-center">
+        {error}
+      </div>
+    );
 
   const machineProps = {
     machineName: bookingData.machine?.name,
@@ -34,7 +45,7 @@ const BookingConfirmation = () => {
     rentalDates: `${bookingData.start_date} - ${bookingData.end_date}`,
     totalUsage: `${bookingData.usage_hours} Hours`,
     pickupLocation: bookingData.location,
-    imageUrl: bookingData.machine?.image_url
+    imageUrl: bookingData.machine?.image_url,
   };
 
   return (
@@ -56,20 +67,20 @@ const BookingConfirmation = () => {
 
       {/* Replaced bg-bg-light, text-charcoal, font-display */}
       <div className="min-h-[100dvh] w-full bg-[#fafaf7] text-[#2b2b2b] font-['Inter',sans-serif] overflow-y-auto overflow-x-hidden">
-        
         <div className="flex flex-col items-center pt-6 pb-20 px-4 md:pt-10 md:pb-32 md:px-8 lg:pt-12">
-          
           <div className="w-full max-w-[800px] space-y-6 md:space-y-8">
-            
             {/* HEADER */}
             <div className="text-center space-y-3 md:space-y-4">
-              
-              <div className="mx-auto flex items-center justify-center rounded-full bg-[#03a74f] text-white shadow-xl shadow-[#03a74f]/20 
+              <div
+                className="mx-auto flex items-center justify-center rounded-full bg-[#03a74f] text-white shadow-xl shadow-[#03a74f]/20 
                               h-14 w-14 md:h-20 md:w-20 
-                              animate-pop">
-                <span className="material-symbols-outlined font-bold text-2xl md:text-[48px]">check</span>
+                              animate-pop"
+              >
+                <span className="material-symbols-outlined font-bold text-2xl md:text-[48px]">
+                  check
+                </span>
               </div>
-              
+
               <div className="space-y-0.5 md:space-y-1 opacity-0 animate-slide-up delay-100">
                 {/* Replaced text-charcoal */}
                 <h1 className="font-bold tracking-tight text-[#2b2b2b] text-xl sm:text-2xl md:text-3xl">
@@ -87,19 +98,28 @@ const BookingConfirmation = () => {
 
             {/* NEXT STEPS */}
             <div className="space-y-3 md:space-y-5 text-left">
-              <h2 className="font-bold tracking-tight px-1 text-base md:text-[22px]">What's Next?</h2>
-              
+              <h2 className="font-bold tracking-tight px-1 text-base md:text-[22px]">
+                What's Next?
+              </h2>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4">
                 {bookingData.next_steps.map((item, index) => (
-                  <div key={index} className="bg-white rounded-xl border border-[#03a74f]/10 shadow-sm p-3 md:p-5 flex items-center gap-3 md:flex-col md:items-start md:gap-4 md:text-left hover:shadow-md transition-shadow">
+                  <div
+                    key={index}
+                    className="bg-white rounded-xl border border-[#03a74f]/10 shadow-sm p-3 md:p-5 flex items-center gap-3 md:flex-col md:items-start md:gap-4 md:text-left hover:shadow-md transition-shadow"
+                  >
                     <div className="rounded-full bg-[#03a74f]/10 text-[#03a74f] flex items-center justify-center font-bold shrink-0 h-8 w-8 text-xs md:h-10 md:w-10 md:text-base">
                       {index + 1}
                     </div>
                     <div>
                       {/* Replaced text-charcoal */}
-                      <h4 className="font-bold text-[#2b2b2b] text-sm md:text-base">{item.title}</h4>
+                      <h4 className="font-bold text-[#2b2b2b] text-sm md:text-base">
+                        {item.title}
+                      </h4>
                       {/* Replaced text-muted-olive */}
-                      <p className="text-[#5b6e58] mt-0.5 md:mt-1 leading-snug text-xs md:text-[13px]">{item.desc}</p>
+                      <p className="text-[#5b6e58] mt-0.5 md:mt-1 leading-snug text-xs md:text-[13px]">
+                        {item.desc}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -108,27 +128,36 @@ const BookingConfirmation = () => {
 
             {/* BUTTONS */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
-              <button 
-                onClick={handleDownload} 
+              <button
+                onClick={handleDownload}
                 className="w-full bg-[#03a74f] text-white rounded-xl font-bold 
                            hover:bg-[#38864b] transition-all duration-300 shadow-lg hover:-translate-y-0.5 
                            flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
               >
-                <span className="material-symbols-outlined text-lg md:text-xl">download</span>
+                <span className="material-symbols-outlined text-lg md:text-xl">
+                  download
+                </span>
                 Download Invoice
               </button>
-
-              <button 
-                onClick={handleNavigate} 
+              <Link
+                to="/farmer/booking-history"
                 className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl font-bold border-2 border-transparent 
                            hover:bg-[#03a74f]/20 hover:border-[#03a74f]/20 transition-all duration-300 
                            flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
               >
-                <span className="material-symbols-outlined text-lg md:text-xl">dashboard_customize</span>
-                My Bookings
-              </button>
+                <button
+                  // onClick={handleNavigate}
+                  className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl font-bold border-2 border-transparent 
+                           hover:bg-[#03a74f]/20 hover:border-[#03a74f]/20 transition-all duration-300 
+                           flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
+                >
+                  <span className="material-symbols-outlined text-lg md:text-xl">
+                    dashboard_customize
+                  </span>
+                  My Bookings
+                </button>
+              </Link>
             </div>
-
           </div>
         </div>
       </div>
@@ -150,13 +179,14 @@ const simulateBackendResponse = () => {
         machine: {
           name: "John Deere 8R 410 Tractor",
           description: "High-performance row crop tractor",
-          image_url: "https://www.deere.com/assets/images/region-4/products/tractors/row-crop-tractors/8r-8rt-row-crop-tractors/8r-410/8r_410_r4f063847_large_660c917945cea0af3aeb242ddf4c52b9540ef7cc.jpg"
+          image_url:
+            "https://www.deere.com/assets/images/region-4/products/tractors/row-crop-tractors/8r-8rt-row-crop-tractors/8r-410/8r_410_r4f063847_large_660c917945cea0af3aeb242ddf4c52b9540ef7cc.jpg",
         },
         next_steps: [
           { title: "Contact Owner", desc: "Check inbox for details." },
           { title: "Inspection", desc: "Log condition via App." },
-          { title: "Start Rental", desc: "Unlock with digital key." }
-        ]
+          { title: "Start Rental", desc: "Unlock with digital key." },
+        ],
       });
     }, 500);
   });

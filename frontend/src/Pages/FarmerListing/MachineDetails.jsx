@@ -265,7 +265,7 @@ const MachineDetails = () => {
                 </div>
               </label>
             </div>
-            <button class="w-full bg-[#162e20e3] hover:bg-[#162e20] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group">
+            <button class="w-full bg-[#03a74f] hover:bg-[#38864b] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group">
               <span class="material-symbols-outlined text-lg group-hover:animate-pulse">
                 <Calendar size={16} />
               </span>

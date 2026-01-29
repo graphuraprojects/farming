@@ -199,7 +199,7 @@ export default function RateExperience() {
             <ImageUpload image={image} setImage={setImage} />
           </div>
 
-          <button type="submit" className="w-full mt-6 bg-[#1f3d2b] hover:bg-[#2e5b3f] transition-all duration-300 text-white py-3 rounded-lg font-semibold text-base sm:text-lg cursor-pointer active:scale-95 hover:shadow-lg shadow-md transform hover:scale-105">
+          <button type="submit" className="w-full mt-6 bg-[#03a74f] hover:bg-[#38864b] transition-all duration-300 text-white py-3 rounded-lg font-semibold text-base sm:text-lg cursor-pointer active:scale-95 hover:shadow-lg shadow-md transform hover:scale-105">
             Submit Review
           </button>
         </form>
