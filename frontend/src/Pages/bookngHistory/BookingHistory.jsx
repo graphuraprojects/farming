@@ -370,33 +370,6 @@ export default function BookingHistory() {
           </div>
         </div>
       </div>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-200 mt-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-600">
-            <div className="flex items-center gap-2">
-              <span className="font-semibold text-gray-900">
-                🌾 AgriRent Enterprise
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <span>
-                © 2024 AgriRent SaaS. All rights reserved. Precision in Every
-                Acre.
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <a href="#" className="hover:text-gray-900 transition-colors">
-                Privacy Policy
-              </a>
-              <a href="#" className="hover:text-gray-900 transition-colors">
-                Terms of Service
-              </a>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
