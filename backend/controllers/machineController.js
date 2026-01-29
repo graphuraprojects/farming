@@ -191,3 +191,60 @@ export const setPricePerHour = async (req, res) => {
     });
   }
 };
+
+
+/**
+ * GET ALL MACHINES
+ * - Admin: all machines
+ * - Owner: only their machines
+ * - Public/Farmer: approved + available machines only
+ */
+export const getAllMachines = async (req, res) => {
+  try {
+    let filter = {};
+
+    // Admin → no filter
+    if (req.user?.role === "admin") {
+      filter = {};
+    }
+
+    // Owner → only own machines
+    else if (req.user?.role === "owner") {
+      filter.owner_id = req.user.userId;
+    }
+
+    // Farmer / Public
+    else {
+      filter = {
+        isApproved: true,
+        availability_status: true
+      };
+    }
+
+    // Optional query filters
+    if (req.query.machine_type) {
+      filter.machine_type = req.query.machine_type;
+    }
+
+    if (req.query.availability_status !== undefined) {
+      filter.availability_status =
+        req.query.availability_status === "true";
+    }
+
+    const machines = await Machine.find(filter)
+      .populate("owner_id", "name phone")
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: machines.length,
+      data: machines
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch machines",
+      error: error.message
+    });
+  }
+};
