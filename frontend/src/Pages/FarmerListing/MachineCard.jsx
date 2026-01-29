@@ -1,4 +1,10 @@
-import { CircleGauge, Calendar, MapPin, MoveRight, BadgeCheck } from "lucide-react";
+import {
+  CircleGauge,
+  Calendar,
+  MapPin,
+  MoveRight,
+  BadgeCheck,
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MachineCard = ({ item }) => {
@@ -10,15 +16,14 @@ const MachineCard = ({ item }) => {
           src={item.image}
           alt={item.name}
         />
-          {item.verified && (
-            <span className="bg-[#1f3d2b] absolute top-3 right-3 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-              <BadgeCheck size={15} />
-              VERIFIED
-            </span>
-          )}
-        
+        {item.verified && (
+          <span className="bg-[#1f3d2b] absolute top-3 right-3 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
+            <BadgeCheck size={15} />
+            VERIFIED
+          </span>
+        )}
       </div>
-  
+
       <div className="p-4 space-y-2">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold text-[#131614] leading-tight">
@@ -67,12 +72,12 @@ const MachineCard = ({ item }) => {
           </p>
           <button className="flex items-center gap-1 text-sm text-[#1f3d2b] font-medium cursor-pointer">
             <Link
-              to={`/machine/${item.id}`}
+              to={`/farmer/machine-details/${item.id}`}
               className="text-sm font-medium"
             >
-              View Details 
+              View Details
             </Link>
-            <MoveRight size={15}/>
+            <MoveRight size={15} />
             {/* View Details <MoveRight size={15} /> */}
           </button>
         </div>
