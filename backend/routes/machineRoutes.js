@@ -3,7 +3,8 @@ import {
   addMachine,
   updateMachine,
   deleteMachine,
-  setPricePerHour
+  setPricePerHour,
+  getAllMachines
 } from "../controllers/machineController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -40,5 +41,9 @@ router.patch(
   setPricePerHour
 );
 
+
+// Get all machines
+// Public (farmers) + Owner + Admin
+router.get("/", protect, getAllMachines);
 
 export default router;
