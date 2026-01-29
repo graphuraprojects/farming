@@ -7,6 +7,12 @@ import {
   Compass,
   BadgeIndianRupee,
   MoveRight,
+  CircleCheckBig,
+  Users,
+  Shield,
+  Zap,
+  Trophy,
+  Search,
 } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -16,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CountUp from "react-countup";
 import { motion } from "framer-motion";
-const Home = () => {
+const FarmerHome = () => {
   const Categories = [
     {
       name: "Tractors",
@@ -54,54 +60,65 @@ const Home = () => {
           className="w-full h-full object-cover"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/50 to-black/70 flex flex-col px-5 items-start pt-10 md:gap-4">
-          <h1 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold fade-up">
-            Rent Top-Quality <br />{" "}
-            <span className="text-[#03a74f]">Farm Machinery</span> <br /> With
-            Ease
-          </h1>
-          <p className="text-gray-200 max-w-100 lg:text-lg fade-up">
-            Connect with local owners and get the equipment you need for your
-            next harvest. Affordable, vetted, and right in your neighborhood
-          </p>
-          <div className="mt-4 flex gap-4 fade-up">
-            <Link className="bg-[#03a74f] py-2 px-3 lg:py-3 rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95">
-              Rent a Machine
-            </Link>
-            <Link className="py-2 px-3 lg:py-3 rounded-lg font-medium border-2 bg-white/20 border-white  text-white hover:-translate-y-2 transition-transform duration-300 hover:bg-white hover:text-black active:scale-95">
-              List Your Equipment
-            </Link>
-          </div>
-        </div>
-        <div className="absolute top-15 right-5 lg:right-20 xl:right-35 hidden md:block fade-up">
-          <div className="w-[300px] flex flex-col items-center gap-5">
-            <div className="card-one flex flex-col items-center border-2 border-[#03a74f] bg-black/60 rounded-lg py-3 px-4">
-              <FontAwesomeIcon
-                icon={faBolt}
-                className="text-yellow-500 text-4xl"
-              />
-              <span className="text-white font-medium">Fast Delivery</span>
-              <span className="font-bold text-[#46ec13] text-lg">24h</span>
+        <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/50 to-black/70"></div>
+
+        <div className="absolute inset-0 flex justify-center">
+          <div className="max-w-[1280px] w-full px-5 flex flex-col items-start pt-10 md:gap-4 relative">
+            <h1 className="text-white text-2xl md:text-4xl lg:text-5xl font-bold fade-up">
+              Rent Top-Quality <br />{" "}
+              <span className="text-[#03a74f]">Farm Machinery</span> <br /> With
+              Ease
+            </h1>
+            <p className="text-gray-200 max-w-100 lg:text-lg fade-up">
+              Connect with local owners and get the equipment you need for your
+              next harvest. Affordable, vetted, and right in your neighborhood
+            </p>
+            <div className="mt-4 flex gap-4 fade-up">
+              <Link className="bg-[#03a74f] py-2 px-3 lg:py-3 rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95">
+                Rent a Machine
+              </Link>
+              <Link className="py-2 px-3 lg:py-3 rounded-lg font-medium border-2 bg-white/20 border-white text-white hover:-translate-y-2 transition-transform duration-300 hover:bg-white hover:text-black active:scale-95">
+                List Your Equipment
+              </Link>
             </div>
-            <div className="flex gap-5">
-              <div className="card-two flex flex-col items-center border-2 border-[#03a74f] bg-black/60 rounded-lg py-3 px-4 rotate-3">
-                <FontAwesomeIcon
-                  icon={faCheck}
-                  className="text-green-500 text-4xl"
-                />
-                <span className="text-white font-medium">Verified Owners</span>
-                <span className="text-[#46ec13] text-lg font-bold">100%</span>
-              </div>
-              <div className="card-three flex flex-col items-center border-2 border-[#03a74f] bg-black/60 rounded-lg py-3 px-4 -rotate-5">
-                <BadgeIndianRupee size={30} className="text-orange-500" />
-                <span className="text-white font-medium">Save Up To</span>
-                <span className="text-[#46ec13] font-bold text-lg">40%</span>
+
+            <div className="absolute top-15 right-5 lg:right-25 xl:right-35 hidden md:block fade-up">
+              <div className="w-[300px] flex flex-col items-center gap-5">
+                <div className="card-one flex flex-col items-center border-2 border-[#03a74f] bg-black/60 rounded-lg py-3 px-4">
+                  <FontAwesomeIcon
+                    icon={faBolt}
+                    className="text-yellow-500 text-4xl"
+                  />
+                  <span className="text-white font-medium">Fast Delivery</span>
+                  <span className="font-bold text-[#46ec13] text-lg">24h</span>
+                </div>
+                <div className="flex gap-5">
+                  <div className="card-two flex flex-col items-center border-2 border-[#03a74f] bg-black/60 rounded-lg py-3 px-4 rotate-3">
+                    <FontAwesomeIcon
+                      icon={faCheck}
+                      className="text-green-500 text-4xl"
+                    />
+                    <span className="text-white font-medium">
+                      Verified Owners
+                    </span>
+                    <span className="text-[#46ec13] text-lg font-bold">
+                      100%
+                    </span>
+                  </div>
+                  <div className="card-three flex flex-col items-center border-2 border-[#03a74f] bg-black/60 rounded-lg py-3 px-4 -rotate-5">
+                    <BadgeIndianRupee size={30} className="text-orange-500" />
+                    <span className="text-white font-medium">Save Up To</span>
+                    <span className="text-[#46ec13] font-bold text-lg">
+                      40%
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* center section */}
+        {/* center status  card */}
         <div className="absolute left-[50%] border-2 border-gray-100 bg-green-900 rounded-lg sm:px-4 py-4 xl:py-6 flex justify-center sm:gap-5 transform -translate-x-[50%] bottom-[-60px] shadow-lg fade-up">
           <div className="flex flex-col items-center py-2 px-5">
             <span className="text-[#46ec13] text-xl font-bold">
@@ -124,20 +141,133 @@ const Home = () => {
         </div>
       </section>
 
+      {/* About us section */}
+      <section className="flex justify-center overflow-hidden">
+        <div className="mx-5 md:mx-10 pt-30 pb-15 max-w-[1280px] w-full">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+            Empowering Farmers Through{" "}
+            <span className="text-[#03a74f]">Shared Resources</span>
+          </h1>
+          <p className="text-gray-500 font-medium text-sm w-full text-center">
+            We connect farmers with the equipment they need, when they need it.
+          </p>
+          <div className="flex flex-col lg:flex-row gap-10 mt-5 md:mt-10 justify-center lg:justify-between items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              viewport={{ once: true, amount: 0.3 }}
+              className="max-w-125"
+            >
+              <h2 className="text-xl lg:text-2xl font-bold">
+                Your Trusted Partner in Farm Equipment Rental
+              </h2>
+              <p className="text-gray-500 font-medium text-sm">
+                We understand the challenges farmers face in accessing expensive
+                machinery. That's why we created a peer-to-peer marketplace that
+                connects equipment owners with those who need it, making modern
+                farming more accessible and affordable for everyone.
+              </p>
+              <div className="mt-5">
+                <div className="flex gap-5 mb-3 group items-center">
+                  <span className="bg-[#d3f9e4] group-hover:bg-[#6ffbae] px-2 py-2 flex items-center rounded-lg">
+                    <CircleCheckBig size={30} className="text-[#03a74f]" />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">Verified Equipment</h3>
+                    <p className="text-gray-500 text-sm">
+                      Every machine is inspected and verified by our expert team
+                      before listing.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-5 mb-3 group items-center">
+                  <span className="bg-[#d3f9e4] group-hover:bg-[#6ffbae] px-2 py-2 flex items-center rounded-lg">
+                    <Users size={30} className="text-[#03a74f]" />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">Community Driven</h3>
+                    <p className="text-gray-500 text-sm">
+                      Built by farmers, for farmers. Join a growing community of
+                      agricultural innovators.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-5 mb-3 group items-center">
+                  <span className="bg-[#d3f9e4] group-hover:bg-[#6ffbae] px-2 py-2 flex items-center rounded-lg">
+                    <Shield size={30} className="text-[#03a74f]" />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">Secure Transactions</h3>
+                    <p className="text-gray-500 text-sm">
+                      Safe and secure payment processing with full insurance
+                      coverage on all rentals.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-5 group items-center">
+                  <span className="bg-[#d3f9e4] group-hover:bg-[#6ffbae] px-2 py-2 flex items-center rounded-lg">
+                    <Zap size={30} className="text-[#03a74f]" />
+                  </span>
+                  <div>
+                    <h3 className="font-semibold">Quick & Easy</h3>
+                    <p className="text-gray-500 text-sm">
+                      Book equipment in minutes and get it delivered to your
+                      farm within 24 hours.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              viewport={{ once: true, amount: 0.3 }}
+              className="relative max-w-[520px] lg:max-w-[480px]"
+            >
+              <div className="rounded-2xl overflow-hidden">
+                <img
+                  src="https://res.cloudinary.com/drq2a0262/image/upload/v1769673280/about-us_qadiyt.jpg"
+                  alt="about-us-image"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
+              {/* floating card experience */}
+              <div
+                className="absolute hidden xl:flex -bottom-10 -left-25 border-2 border-[#03a74f] 
+    bg-white rounded-xl p-5 shadow-xl
+     items-center gap-3"
+              >
+                <Trophy
+                  size={50}
+                  className="bg-[#d3f9e4] p-2 rounded-lg text-[#03a74f]"
+                />
+
+                <div>
+                  <span className="block text-lg font-bold text-gray-900">
+                    2+ Years
+                  </span>
+                  <span className="text-sm text-gray-600">Serving Farmers</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* popular category section */}
       <section className="flex justify-center">
-        <div className="mx-5 pt-25 pb-15 max-w-[1280px]">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold">
+        <div className="mx-5 py-15 max-w-[1280px]">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
             Popular Categories
           </h1>
-          <p className="text-gray-500 font-medium text-sm w-full flex justify-between">
-            <span>Find the right tools to you specific seasonal needs.</span>
-            <Link className="text-[#03a74f] hidden sm:flex gap-2 hover:scale-105 duration-200 transition-transform active:scale-95">
-              View all categories <MoveRight size={20} />
-            </Link>
+          <p className="text-gray-500 font-medium text-sm w-full text-center">
+            Find the right tools to you specific seasonal needs.
           </p>
           {/* category cards */}
-          <div className="mt-5 flex flex-wrap gap-5 justify-center">
+          <div className="mt-10 flex flex-wrap gap-5 justify-center">
             {Categories.map((machine, index) => (
               <div
                 className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
@@ -148,12 +278,14 @@ const Home = () => {
                   alt={machine.name}
                   className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
                 />
-                <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
                 <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg">
                   {machine.name}
                 </span>
-                <span className="line absolute bottom-4 left-5 rounded-md h-1 w-12 bg-[#03a74f]"></span>
+                <Link className="absolute view-link bottom-2 left-5 text-[#03a74f] hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
+                  View all categories <MoveRight size={20} className="pt-1" />
+                </Link>
               </div>
             ))}
           </div>
@@ -212,15 +344,15 @@ const Home = () => {
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
             Why It Benefits You
           </h1>
-          <p className="text-gray-500 font-medium text-sm w-full text-center">
+          <p className="text-gray-500 font-medium text-sm w-full text-center mt-2">
             Everything you need for affordable, reliable, and stress-free farm
             equipment rental.
           </p>
           <div className="py-15 flex flex-wrap justify-center gap-10">
-            <div className="group p-8 border border-gray-200 max-w-80 bg-[#d3f9e4] shadow-lg rounded-xl hover:-translate-y-2 duration-300 transition-transform">
+            <div className="group px-8 py-6 border border-gray-200 max-w-80 bg-[#d3f9e4] shadow-lg rounded-xl hover:-translate-y-2 duration-300 transition-transform">
               <Banknote
                 size={50}
-                className="text-[#03a74f] bg-white rounded-full p-2 mb-3"
+                className="text-[#03a74f] bg-white rounded-full p-2 mb-3 group-hover:-translate-y-1 group-hover:rotate-15 group-hover:scale-120 transition-transform duration-300"
               />
               <h2 className="font-bold text-lg">Lower Rental Costs</h2>
               <p className="text-gray-600">
@@ -228,10 +360,10 @@ const Home = () => {
                 dealership fees and save up to 40% on operational costs.
               </p>
             </div>
-            <div className="p-8 border border-gray-200 max-w-80 bg-[#d3f9e4] shadow-lg rounded-xl">
+            <div className="group px-8 py-6 border border-gray-200 max-w-80 bg-[#d3f9e4] shadow-lg rounded-xl hover:-translate-y-2 duration-300 transition-transform">
               <ShieldCheck
                 size={50}
-                className="text-[#03a74f] bg-white rounded-full p-2 mb-3"
+                className="text-[#03a74f] bg-white rounded-full p-2 mb-3 group-hover:-translate-y-1 group-hover:rotate-15 group-hover:scale-120 transition-transform duration-300"
               />
               <h2 className="font-bold text-lg">Vetted Equipments</h2>
               <p className="text-gray-600">
@@ -239,10 +371,10 @@ const Home = () => {
                 are verified by our expert field teams.
               </p>
             </div>
-            <div className="p-8 border border-gray-200 max-w-80 bg-[#d3f9e4] shadow-lg rounded-xl">
+            <div className="group px-8 py-6 border border-gray-200 max-w-80 bg-[#d3f9e4] shadow-lg rounded-xl hover:-translate-y-2 duration-300 transition-transform">
               <Handshake
                 size={50}
-                className="text-[#03a74f] bg-white rounded-full p-2 mb-3"
+                className="text-[#03a74f] bg-white rounded-full p-2 mb-3 group-hover:-translate-y-1 group-hover:rotate-15 group-hover:scale-120 transition-transform duration-300"
               />
               <h2 className="font-bold text-lg">Local Support</h2>
               <p className="text-gray-600">
@@ -255,8 +387,8 @@ const Home = () => {
       </section>
 
       {/* available machines section */}
-      <section className="bg-gray-100 flex justify-center">
-        <div className="overflow-hidden py-10 mx-5 flex flex-col lg:flex-row justify-center lg:justify-between max-w-[1280px] w-full items-center">
+      <section className="flex justify-center overflow-hidden">
+        <div className="mb-10 mx-5 md:mx-10 flex flex-col lg:flex-row justify-center lg:justify-between max-w-[1280px] w-full items-center">
           <motion.div
             initial={{ opacity: 0, x: -100 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -264,7 +396,7 @@ const Home = () => {
             viewport={{ once: true, amount: 0.3 }}
             className="max-w-110"
           >
-            <p className="text-[#46ec13] font-bold px-2">AROUND YOU</p>
+            <p className="text-[#03a74f] font-bold px-2">AROUND YOU</p>
             <h1 className="font-bold text-2xl md:text-3xl lg:text-4xl">
               Available Near You
             </h1>
@@ -273,10 +405,10 @@ const Home = () => {
               current location. Real-time availablity for the current planting
               season.
             </p>
-            <div className="group relative bg-white shadow-xl rounded-xl flex gap-2 items-center p-2 border-l-3 border-[#46ec13] mt-10 hover:-translate-y-2 cursor-pointer duration-300 transition-transform active:scale-95">
-              <Compass
+            <div className="group relative shadow-[0_6px_18px_rgba(0,0,0,0.12)] rounded-xl flex gap-2 items-center p-2 border-l-3 border-[#03a74f] mt-10 hover:-translate-y-2 cursor-pointer duration-300 transition-transform active:scale-95">
+              <Search
                 size={55}
-                className="text-[#46ec13] p-2 bg-[#dffed6] rounded-full group-hover:rotate-270 transition-transform duration-300"
+                className="text-[#03a74f] p-3 bg-[#d3f9e4] rounded-full group-hover:rotate-90 transition-transform duration-300"
               />
               <div>
                 <h5 className="font-semibold">Quick Search</h5>
@@ -347,4 +479,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default FarmerHome;

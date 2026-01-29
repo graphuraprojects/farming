@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import logo from "../../assets/logo.webp";
 
 const FarmerNavBar = () => {
@@ -16,7 +16,13 @@ const FarmerNavBar = () => {
         <div className="flex items-center justify-between h-16">
           {/* Left - Logo */}
           <div className="flex items-center">
-            <img src={logo} alt="Logo" className="h-8 w-auto cursor-pointer" />
+            <Link to="/farmer">
+              <img
+                src={logo}
+                alt="Logo"
+                className="h-8 w-auto cursor-pointer"
+              />
+            </Link>
           </div>
 
           {/* Center - Nav Links */}
@@ -49,13 +55,15 @@ const FarmerNavBar = () => {
               Login
             </button>
 
-            <button
-              className="px-5 py-2 text-sm font-medium text-white 
-              bg-[#03a74f] rounded-md transition-all duration-300
-              hover:bg-[#38864b] hover:scale-105 active:scale-95 cursor-pointer"
-            >
-              Sign Up
-            </button>
+            <Link to="/register">
+              <button
+                className="px-5 py-2 text-sm font-medium text-white 
+    bg-[#03a74f] rounded-md transition-all duration-300
+    hover:bg-[#38864b] hover:scale-105 active:scale-95 cursor-pointer"
+              >
+                Sign Up
+              </button>
+            </Link>
           </div>
         </div>
       </div>
