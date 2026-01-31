@@ -14,6 +14,7 @@ export const register = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
 
+    // 1️⃣ Validate input
     if (!name || !email || !password || !role) {
       return res.status(400).json({
         success: false,
@@ -21,6 +22,7 @@ export const register = async (req, res) => {
       });
     }
 
+    // 2️⃣ Check existing user
     const exists = await User.findOne({ email });
     if (exists) {
       return res.status(400).json({
@@ -29,28 +31,49 @@ export const register = async (req, res) => {
       });
     }
 
+    // 3️⃣ Hash password & generate OTP
     const hashedPassword = await bcrypt.hash(password, 10);
     const otp = generateOTP();
 
+    // 4️⃣ Create user
     const user = await User.create({
       name,
       email,
       role,
       password_hash: hashedPassword,
       otp,
-      otpExpiry: Date.now() + 10 * 60 * 1000
+      otpExpiry: Date.now() + 10 * 60 * 1000 // 10 minutes
     });
 
-    await sendEmail({
+    // 5️⃣ Send OTP email via Brevo
+    const emailSent = await sendEmail({
       to: email,
-      subject: "Verify your email",
-      html: `<h2>Your OTP: ${otp}</h2><p>Valid for 10 minutes</p>`
+      subject: "Verify your email - Farming App",
+      html: `
+        <h2>Email Verification</h2>
+        <p>Your OTP is:</p>
+        <h1>${otp}</h1>
+        <p>This OTP is valid for 10 minutes.</p>
+      `
     });
 
+    if (!emailSent) {
+      return res.status(500).json({
+        success: false,
+        message: "Failed to send OTP email"
+      });
+    }
+
+    // 6️⃣ Response
     res.status(201).json({
       success: true,
       message: "OTP sent to email",
-      data: { userId: user._id, name: user.name, email: user.email , role: user.role,otp: user.otp}
+      data: {
+        userId: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
     });
   } catch (error) {
     res.status(500).json({
@@ -78,7 +101,6 @@ export const verifyOtp = async (req, res) => {
 
     // 2️⃣ Find user
     const user = await User.findById(userId);
-
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -94,7 +116,7 @@ export const verifyOtp = async (req, res) => {
       });
     }
 
-    // 4️⃣ Match OTP (string comparison)
+    // 4️⃣ Verify OTP
     if (user.otp !== otp) {
       return res.status(400).json({
         success: false,
@@ -102,27 +124,25 @@ export const verifyOtp = async (req, res) => {
       });
     }
 
-    // 5️⃣ Mark user as verified
+    // 5️⃣ Activate user
     user.isVerified = true;
     user.otp = null;
     user.otpExpiry = null;
 
     await user.save();
 
-    return res.status(200).json({
+    res.status(200).json({
       success: true,
       message: "Email verified successfully"
     });
-
   } catch (error) {
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
       message: "OTP verification failed",
       error: error.message
     });
   }
 };
-
 
 /**
  * LOGIN
@@ -132,6 +152,7 @@ export const login = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await User.findOne({ email });
+
     if (!user || !user.isVerified) {
       return res.status(403).json({
         success: false,
@@ -153,7 +174,7 @@ export const login = async (req, res) => {
       { expiresIn: "7d" }
     );
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Login successful",
       data: {
@@ -174,7 +195,7 @@ export const login = async (req, res) => {
  * LOGOUT
  */
 export const logout = async (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     message: "Logout successful"
   });
