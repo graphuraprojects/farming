@@ -2,7 +2,7 @@ import logo1 from "../../assets/logo1.webp";
 
 const FarmerFooter = () => {
   return (
-    <footer className="w-full bg-[#131614] mt-10">
+    <footer className="w-full bg-[#131614]">
       <div className="max-w-7xl mx-auto px-6 py-12">
 
         {/* Top Section */}

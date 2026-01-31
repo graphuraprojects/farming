@@ -293,7 +293,7 @@ const FarmerHome = () => {
       </section>
 
       {/* Benefits section */}
-      {/* <section className="bg-green-900">
+      <section className="bg-green-900">
         <div className="py-15 flex flex-wrap justify-center gap-10">
           <div className="group relative overflow-hidden px-8 w-full max-w-80 flex flex-col items-center gap-2 border border-[#03a74f] rounded-lg py-10 bg-white/10 hover:-translate-y-4 duration-400 transition-transform">
             <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
@@ -338,7 +338,7 @@ const FarmerHome = () => {
             </p>
           </div>
         </div>
-      </section> */}
+      </section>
       <section className="flex  justify-center">
         <div className="max-w-[1280px] w-full py-10">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">

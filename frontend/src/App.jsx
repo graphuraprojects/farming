@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import FarmerLayout from "./layouts/FarmerLayout";
 import Register from "./pages/auth/Register";
+import NotFound from "./pages/NotFound";
 
 // Farmer Pages
 import FarmerHome from "./pages/FarmerHome";
@@ -11,13 +12,14 @@ import ReviewSuccessPage from "./pages/RentReview.jsx";
 import MachineDetails from "./pages/FarmerListing/MachineDetails.jsx";
 import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
 import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
+import Invoice from "./pages/bookngHistory/Invoice.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* ✅ Register (NO Navbar / Footer) */}
+        {/* Register (No Layout) */}
         <Route path="/register" element={<Register />} />
 
         {/* Redirect root */}
@@ -51,6 +53,12 @@ function App() {
         <Route path="/farmer/booking-conform" element={<FarmerLayout />}>
           <Route index element={<BookingConfirmation />} />
         </Route>
+        <Route path="/farmer/invoice" element={<FarmerLayout />}>
+          <Route index element={<Invoice />} />
+        </Route>
+
+        {/* ⭐ 404 Catch All (Must Be Last) */}
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </BrowserRouter>
