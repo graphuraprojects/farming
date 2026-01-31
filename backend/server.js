@@ -11,7 +11,7 @@ import  earningRoutes from "./routes/earningRoutes.js";
 import adminPaymentRoutes from "./routes/adminPaymentRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
-
+import cors from "cors";
 
 dotenv.config(); // Load .env file
 
@@ -25,6 +25,11 @@ await connectCloudinary();
 //  Middlewares
 app.use(express.json());
 app.use(cookieParser());
+
+app.use(cors({
+  origin: ["http://localhost:3000"], // frontend URL
+  credentials: true
+}));
 
 // Default Route
 app.get("/", (req, res) => res.send("API is Working "));

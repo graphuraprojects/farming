@@ -4,14 +4,14 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: true,
-      trim: true
+      required: true
     },
 
-    phone: {
+    email: {
       type: String,
       required: true,
-      unique: true
+      unique: true,
+      lowercase: true
     },
 
     role: {
@@ -30,13 +30,8 @@ const userSchema = new mongoose.Schema(
       default: false
     },
 
-    otp: {
-      type: String
-    },
-
-    otpExpiry: {
-      type: Date
-    }
+    otp: String,
+    otpExpiry: Date
   },
   { timestamps: true }
 );

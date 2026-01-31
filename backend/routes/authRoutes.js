@@ -6,22 +6,34 @@ import {
   logout
 } from "../controllers/authController.js";
 
-const router = express.Router();
 
-// Register a new user (farmer / owner / admin)
-// Sends OTP to the provided phone number
+const router = express.Router();
+/**
+ * @route   POST /api/auth/register
+ * @desc    Register a new user and send OTP to email
+ * @access  Public
+ */
 router.post("/register", register);
 
-// Verify OTP and activate the user account
-// Required before login
+/**
+ * @route   POST /api/auth/verify-otp
+ * @desc    Verify OTP and activate user account
+ * @access  Public
+ */
 router.post("/verify-otp", verifyOtp);
-
-// Login user and generate JWT token
-// Token is used to access protected APIs
+/**
+ * @route   POST /api/auth/login
+ * @desc    Login user and return JWT / session
+ * @access  Public
+ */
 router.post("/login", login);
-
-// Logout the user from the system
-// Client should remove stored JWT token
+/**
+ * @route   POST /api/auth/logout
+ * @desc    Logout user and clear auth session/token
+ * @access  Private
+ */
 router.post("/logout", logout);
+
+
 
 export default router;
