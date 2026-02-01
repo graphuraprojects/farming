@@ -15,25 +15,25 @@ const FarmerNavBar = () => {
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link to="/farmer">
+          <Link to="/">
             <img src={logo} alt="Logo" className="h-8 w-auto cursor-pointer" />
           </Link>
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <NavLink to="/farmer" end className={linkClass}>
+            <NavLink to="/r" end className={linkClass}>
               Home
             </NavLink>
 
-            <NavLink to="/farmer/machine-listing" className={linkClass}>
+            <NavLink to="/machine-listing" className={linkClass}>
               Machines
             </NavLink>
 
-            <NavLink to="/farmer/rate-experience" className={linkClass}>
+            <NavLink to="/rate-experience" className={linkClass}>
               About
             </NavLink>
 
-            <NavLink to="/farmer/contact" className={linkClass}>
+            <NavLink to="/contact" className={linkClass}>
               Contact
             </NavLink>
           </div>
@@ -117,10 +117,11 @@ const FarmerNavBar = () => {
             </NavLink>
 
             <hr className="my-2" />
-
-            <button className="text-left py-2 text-gray-700 hover:text-[#4e8d67]">
-              Login
-            </button>
+            <Link to="/login">
+              <button className="text-left py-2 text-gray-700 hover:text-[#4e8d67]">
+                Login
+              </button>
+            </Link>
 
             <Link to="/register" onClick={() => setMenuOpen(false)}>
               <button className="w-full mt-2 px-4 py-2 text-white bg-[#03a74f] rounded-md hover:bg-[#38864b] transition">
