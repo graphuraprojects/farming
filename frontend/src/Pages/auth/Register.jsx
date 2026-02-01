@@ -30,9 +30,9 @@ const Register = () => {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await axios.post("/api/auth/register", {
         name: form.name,
-        phone: form.phone,
+        email: form.email, // ✅ REQUIRED
         password: form.password,
         role: form.role,
       });
