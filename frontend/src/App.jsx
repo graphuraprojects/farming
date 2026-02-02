@@ -16,6 +16,7 @@ import Invoice from "./pages/bookngHistory/Invoice.jsx";
 import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Login from "./pages/auth/Login.jsx";
 import VerifyOtp from "./pages/auth/verifyOtp.jsx";
+import MachineApproval from "./Pages/machineApproval/MachineAppoval.jsx";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
+        <Route path="/machine-approval" element={<MachineApproval/>} />
 
         {/* Redirect root */}
         {/* <Route path="/" element={<Navigate to="/" replace />} /> */}
