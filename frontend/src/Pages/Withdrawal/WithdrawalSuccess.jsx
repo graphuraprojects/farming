@@ -151,7 +151,7 @@ export default function WithdrawalSuccess() {
         {/* Back */}
         <button
           type="button"
-          onClick={() => navigate("/farmer")}
+          onClick={() => navigate("/")}
           className="no-print mt-8 flex items-center gap-2 text-[#0f5132] font-medium hover:text-[#0b4027] transition-colors hover:translate-x-0.5"
         >
           <ArrowLeft size={18} />

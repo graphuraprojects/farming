@@ -110,7 +110,7 @@ export default function RateExperience() {
       timestamp: new Date().toLocaleString()
     };
 
-    navigate("/farmer/rent-review", { 
+    navigate("/rent-review", { 
       state: { reviewData, showSubmissionMessage: true } 
     });
   };
@@ -148,7 +148,7 @@ export default function RateExperience() {
         <form onSubmit={handleSubmitReview} className="bg-white rounded-lg shadow-sm border-2 border-[#e8e8e8] p-4 sm:p-6 hover:shadow-md transition-shadow duration-300 animate-slide-up">
           <div className="flex flex-col sm:flex-row gap-4">
             <img
-              src="/assets/image/John%20Deere%20S780.webp"
+              src="https://imgs.search.brave.com/G75byc_g2CX6nS-w4vs7giOsfvmOXLYVz-ymyMzvTak/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9waG90/b3MubWFjaGluZWZp/bmRlci5jb20vOTIv/MTA2NjE5OTIvNjk3/MzcwNTNfaHVnZV8x/MDI2LmpwZw"
               alt="John Deere 5E Series Tractor"
               loading="lazy"
               className="w-full sm:w-48 lg:w-56 h-56 sm:h-40 lg:h-48 rounded-lg object-cover shadow-md hover:shadow-lg transition-shadow"

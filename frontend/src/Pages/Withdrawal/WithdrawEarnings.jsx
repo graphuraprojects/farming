@@ -35,7 +35,7 @@ export default function WithdrawEarnings() {
 
   const handleConfirm = () => {
     if (isInvalidAmount) return;
-    navigate("/farmer/withdrawal-success", {
+    navigate("/withdrawal-success", {
       state: {
         amount,
         fee: processingFee,
