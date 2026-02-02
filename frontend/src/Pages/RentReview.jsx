@@ -257,7 +257,7 @@ export default function ReviewSuccessPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 sm:gap-6">
             <div className="bg-white rounded-xl overflow-hidden border-2 border-[#e8e8e8] shadow-sm transition-all duration-300 cursor-pointer">
               <div className="relative overflow-hidden">
-                    <img src="/assets/image/John Deere S780.webp" alt="John Deere S780 Combine" className="h-[180px] sm:h-[200px] w-full object-cover transition-transform duration-500" loading="lazy" />
+                    <img src="https://imgs.search.brave.com/G75byc_g2CX6nS-w4vs7giOsfvmOXLYVz-ymyMzvTak/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9waG90/b3MubWFjaGluZWZp/bmRlci5jb20vOTIv/MTA2NjE5OTIvNjk3/MzcwNTNfaHVnZV8x/MDI2LmpwZw" alt="John Deere S780 Combine" className="h-[180px] sm:h-[200px] w-full object-cover transition-transform duration-500" loading="lazy" />
                 <span className="absolute top-3 left-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white text-[11px] px-3 py-1.5 rounded-full font-bold tracking-wide uppercase shadow-lg">Book Again</span>
               </div>
               <div className="p-4 sm:p-5">
@@ -278,7 +278,7 @@ export default function ReviewSuccessPage() {
 
             <div className="bg-white rounded-xl overflow-hidden border-2 border-[#e8e8e8] shadow-sm transition-all duration-300 cursor-pointer">
               <div className="relative overflow-hidden">
-                  <img src="/assets/image/Magnum 315.webp" alt="Case IH Magnum 340" className="h-[180px] sm:h-[200px] w-full object-cover transition-transform duration-500" loading="lazy" />
+                  <img src="https://imgs.search.brave.com/RtUi_dgw1xq0T_xrQPW9K6f1bicrmcubtTUmmzqA-wI/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly9tZWRp/YS5zYW5kaGlsbHMu/Y29tL2ltZy5heGQ_/aWQ9MTAwMDM3MTU4/Mjcmd2lkPTQzMjYy/MDU5MzMmcndsPUZh/bHNlJnA9JmV4dD0m/dz0zNTAmaD0yMjAm/dD0mbHA9JmM9VHJ1/ZSZ3dD1GYWxzZSZz/ej1NYXgmcnQ9MCZj/aGVja3N1bT1wZVR0/VDJiRlFsNUdYaVhH/TVBsaFdvZGpnOUZl/TGhEd1ZPWHVuRUM0/aFVvPQ" alt="Case IH Magnum 340" className="h-[180px] sm:h-[200px] w-full object-cover transition-transform duration-500" loading="lazy" />
                 <span className="absolute top-3 left-3 bg-gradient-to-r from-gray-800 to-black text-white text-[11px] px-3 py-1.5 rounded-full font-bold tracking-wide uppercase shadow-lg">Recommended</span>
               </div>
               <div className="p-4 sm:p-5">
