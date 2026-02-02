@@ -9,7 +9,7 @@ import {
 
 import { protect } from "../middleware/authMiddleware.js";
 import { allowOwnerOrAdmin } from "../middleware/roleMiddleware.js";
-import { upload } from "../configs/multer.js";
+import upload from "../configs/multer.js";
 
 const router = express.Router();
 

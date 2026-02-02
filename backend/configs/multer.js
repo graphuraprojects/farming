@@ -1,3 +1,15 @@
-import multer from 'multer';
+import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
+import cloudinary from "./cloudinary.js";
 
-export const upload = multer({storage: multer.diskStorage({})})
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => ({
+    folder: "machines",
+    resource_type: "auto"
+  })
+});
+
+const upload = multer({ storage });
+
+export default upload; // ✅ DEFAULT EXPORT
