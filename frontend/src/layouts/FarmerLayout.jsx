@@ -6,7 +6,7 @@ const FarmerLayout = () => {
   return (
     <>
       <FarmerNavbar />
-      <main className="min-h-screen px-6">
+      <main className="min-h-screen">
         <Outlet />
       </main>
       <FarmerFooter />

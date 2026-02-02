@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [form, setForm] = useState({
@@ -10,7 +11,7 @@ const Register = () => {
     role: "farmer",
     terms: false,
   });
-
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -30,14 +31,16 @@ const Register = () => {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const res = await axios.post("/api/auth/register", {
         name: form.name,
-        phone: form.phone,
+        email: form.email, // ✅ REQUIRED
         password: form.password,
         role: form.role,
       });
 
-      setMessage(res.data.message);
+      navigate("/verify-otp", {
+        state: { userId: res.data.data.userId },
+      });
     } catch (err) {
       setMessage(err.response?.data?.message || "Registration failed");
     } finally {
