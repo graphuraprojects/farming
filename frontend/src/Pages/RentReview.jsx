@@ -25,6 +25,8 @@ export default function ReviewSuccessPage() {
   };
 
   useEffect(() => {
+
+     window.scrollTo(0, 0);
     // Animate check icon and confetti
     setTimeout(() => {
       setShowCheck(true);

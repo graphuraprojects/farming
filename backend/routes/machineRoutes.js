@@ -31,4 +31,8 @@ router.patch("/:id/price", protect, allowOwnerOrAdmin, setPricePerHour);
 // Public + Owner + Admin
 router.get("/", protect, getAllMachines);
 
+// Get all machines
+// Public (farmers) + Owner + Admin
+router.get("/", protect, getAllMachines);
+
 export default router;
