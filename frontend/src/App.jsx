@@ -12,20 +12,14 @@ import ReviewSuccessPage from "./pages/RentReview.jsx";
 import MachineDetails from "./pages/FarmerListing/MachineDetails.jsx";
 import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
 import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
-import WithdrawalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx";
-import WithdrawEarnings from "./Pages/Withdrawal/WithdrawEarnings.jsx";
-import Invoice from "./pages/bookngHistory/Invoice.jsx";
-import AddMachine from "./pages/addMachine/AddMachine.jsx";
-import Login from "./pages/auth/Login.jsx";
-import VerifyOtp from "./pages/auth/verifyOtp.jsx";
-import MachineApproval from "./Pages/machineApproval/MachineAppoval.jsx";
+import Invoice from "./Pages/bookngHistory/Invoice.jsx";
+import FarmingDashboard from "./Pages/farmingDashboard/FarmingDashboard.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* Register (No Layout) */}
+        {/* ✅ Register (NO Navbar / Footer) */}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/verify-otp" element={<VerifyOtp />} />
@@ -62,24 +56,6 @@ function App() {
         <Route path="/booking-conform" element={<FarmerLayout />}>
           <Route index element={<BookingConfirmation />} />
         </Route>
-        
-        <Route path="/withdrawal-success" element={<FarmerLayout />}>
-          <Route index element={<WithdrawalSuccess />} />
-        </Route>
-
-        <Route path="/withdrawal-earnings" element={<FarmerLayout />}>
-          <Route index element={<WithdrawEarnings />} />
-        </Route>
-        <Route path="/invoice" element={<FarmerLayout />}>
-          <Route index element={<Invoice />} />
-        </Route>
-        <Route path="/add-machine" element={<FarmerLayout />}>
-          <Route index element={<AddMachine />} />
-        </Route>
-
-        {/* ⭐ 404 Catch All (Must Be Last) */}
-        <Route path="*" element={<NotFound />} />
-
       </Routes>
     </BrowserRouter>
   );
