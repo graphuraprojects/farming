@@ -1,14 +1,25 @@
 import Machine from "../models/Machine.model.js";
-
+import cloudinary from "../configs/cloudinary.js";
 /**
  * ADD MACHINE
+ * 
  */
 export const addMachine = async (req, res) => {
   try {
     const data = JSON.parse(req.body.data);
 
-    const images = req.files?.images?.map(f => f.path) || [];
-    const document = req.files?.document?.[0]?.path || null;
+    const images =
+      req.files?.images?.map(file => ({
+        url: file.path,          // Cloudinary URL
+        public_id: file.filename // Cloudinary public_id
+      })) || [];
+
+    const document = req.files?.document?.[0]
+      ? {
+          url: req.files.document[0].path,
+          public_id: req.files.document[0].filename
+        }
+      : null;
 
     const machine = await Machine.create({
       owner_id: req.user.userId,
@@ -49,7 +60,6 @@ export const addMachine = async (req, res) => {
     });
   }
 };
-
 /**
  * UPDATE MACHINE
  */
@@ -80,6 +90,8 @@ export const updateMachine = async (req, res) => {
   });
 };
 
+
+
 /**
  * DELETE MACHINE
  */
@@ -97,6 +109,18 @@ export const deleteMachine = async (req, res) => {
     return res.status(403).json({ success: false, message: "Unauthorized" });
   }
 
+  // 🔥 delete images from cloudinary
+  for (const img of machine.images) {
+    await cloudinary.uploader.destroy(img.public_id);
+  }
+
+  // 🔥 delete document
+  if (machine.documents?.ownership_proof?.public_id) {
+    await cloudinary.uploader.destroy(
+      machine.documents.ownership_proof.public_id
+    );
+  }
+
   await machine.deleteOne();
 
   res.json({
@@ -104,6 +128,7 @@ export const deleteMachine = async (req, res) => {
     message: "Machine deleted successfully"
   });
 };
+
 
 /**
  * SET PRICE

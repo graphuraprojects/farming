@@ -63,17 +63,27 @@ const machineSchema = new mongoose.Schema(
       zip: String,
       country: String
     },
-
-    // MEDIA
-    images: {
-      type: [String],
-      validate: [arr => arr.length <= 5, "Max 5 images allowed"]
+  
+    images: [
+  {
+    url: {
+      type: String,
+      required: true
     },
+    public_id: {
+      type: String,
+      required: true
+    }
+  }
+],
 
-    documents: {
-      ownership_proof: String // PDF/Image URL
-    },
-
+documents: {
+  ownership_proof: {
+    url: String,
+    public_id: String
+  }
+},
+  
     availability_status: {
       type: Boolean,
       default: true
