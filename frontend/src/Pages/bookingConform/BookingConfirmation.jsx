@@ -23,8 +23,7 @@ const BookingConfirmation = () => {
     fetchBookingDetails();
   }, [bookingId]);
 
-  const handleDownload = () => alert("Downloading...");
-  // const handleNavigate = () => alert("Navigating...");
+
 
   if (loading)
     return (
@@ -128,8 +127,13 @@ const BookingConfirmation = () => {
 
             {/* BUTTONS */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 pt-2 md:pt-4">
+              <Link
+                to="/invoice"
+                className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl font-bold border-2 border-transparent 
+                           hover:bg-[#03a74f]/20 hover:border-[#03a74f]/20 transition-all duration-300 
+                           flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
+              >
               <button
-                onClick={handleDownload}
                 className="w-full bg-[#03a74f] text-white rounded-xl font-bold 
                            hover:bg-[#38864b] transition-all duration-300 shadow-lg hover:-translate-y-0.5 
                            flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
@@ -139,14 +143,16 @@ const BookingConfirmation = () => {
                 </span>
                 Download Invoice
               </button>
+              </Link>
+
               <Link
-                to="/farmer/booking-history"
+                to="/booking-history"
                 className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl font-bold border-2 border-transparent 
                            hover:bg-[#03a74f]/20 hover:border-[#03a74f]/20 transition-all duration-300 
                            flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
               >
                 <button
-                  // onClick={handleNavigate}
+                  
                   className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl font-bold border-2 border-transparent 
                            hover:bg-[#03a74f]/20 hover:border-[#03a74f]/20 transition-all duration-300 
                            flex items-center justify-center gap-2 h-12 text-sm md:h-14 md:text-base cursor-pointer"
