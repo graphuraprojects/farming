@@ -151,6 +151,7 @@ export const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
+    // Find user
     const user = await User.findOne({ email });
 
     if (!user || !user.isVerified) {
@@ -160,7 +161,9 @@ export const login = async (req, res) => {
       });
     }
 
+    // Compare password
     const isMatch = await bcrypt.compare(password, user.password_hash);
+
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -168,12 +171,22 @@ export const login = async (req, res) => {
       });
     }
 
+    // Create token
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" },
+      { expiresIn: "7d" }
     );
 
+    // Safe user (no password)
+    const safeUser = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
+
+    // Response
     res.status(200).json({
       success: true,
       message: "Login successful",
@@ -182,7 +195,10 @@ export const login = async (req, res) => {
         user: safeUser,
       },
     });
+
   } catch (error) {
+    console.error("Login Error:", error);
+
     res.status(500).json({
       success: false,
       message: "Login failed",

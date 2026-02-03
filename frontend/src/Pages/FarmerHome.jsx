@@ -22,7 +22,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import CountUp from "react-countup";
 import { motion } from "framer-motion";
-const FarmerHome = () => {
+const Home = () => {
   const Categories = [
     {
       name: "Tractors",
@@ -280,12 +280,16 @@ const FarmerHome = () => {
                 />
                 <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg">
-                  {machine.name}
-                </span>
-                <Link className="absolute view-link bottom-2 left-5 text-[#03a74f] hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
-                  View all categories <MoveRight size={20} className="pt-1" />
-                </Link>
+                {/* <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full justify-between">
+                  <span>{machine.name}</span>{" "}
+                  <Link className="view-link text-white hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
+                    <MoveRight size={20} className="pt-1" />
+                  </Link>
+                </span> */}
+                <p className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full items-center justify-between">
+                  <span>{machine.name}</span>
+                  <MoveRight size={35} className="mr-8 pt-1 view-link" />
+                </p>
               </div>
             ))}
           </div>
@@ -293,7 +297,7 @@ const FarmerHome = () => {
       </section>
 
       {/* Benefits section */}
-      <section className="bg-green-900">
+      {/* <section className="bg-green-900">
         <div className="py-15 flex flex-wrap justify-center gap-10">
           <div className="group relative overflow-hidden px-8 w-full max-w-80 flex flex-col items-center gap-2 border border-[#03a74f] rounded-lg py-10 bg-white/10 hover:-translate-y-4 duration-400 transition-transform">
             <div class="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
@@ -338,7 +342,7 @@ const FarmerHome = () => {
             </p>
           </div>
         </div>
-      </section>
+      </section> */}
       <section className="flex  justify-center">
         <div className="max-w-[1280px] w-full py-10">
           <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
@@ -457,7 +461,7 @@ const FarmerHome = () => {
       </section>
 
       {/* start monetizing section */}
-      <section className="bg-green-900">
+      <section className="bg-green-900 mb-15">
         <div className="py-10 flex flex-col items-center gap-3">
           <h1 className="text-white text-2xl md:text-3xl lg:text-5xl font-bold text-center">
             Ready to monetize <br /> your machinery?
@@ -479,4 +483,4 @@ const FarmerHome = () => {
   );
 };
 
-export default FarmerHome;
+export default Home;
