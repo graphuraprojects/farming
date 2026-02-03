@@ -12,6 +12,8 @@ import ReviewSuccessPage from "./pages/RentReview.jsx";
 import MachineDetails from "./pages/FarmerListing/MachineDetails.jsx";
 import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
 import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
+import WithdrawalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx";
+import WithdrawEarnings from "./Pages/Withdrawal/WithdrawEarnings.jsx";
 import Invoice from "./pages/bookngHistory/Invoice.jsx";
 import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Login from "./pages/auth/Login.jsx";
@@ -59,6 +61,14 @@ function App() {
 
         <Route path="/booking-conform" element={<FarmerLayout />}>
           <Route index element={<BookingConfirmation />} />
+        </Route>
+        
+        <Route path="/withdrawal-success" element={<FarmerLayout />}>
+          <Route index element={<WithdrawalSuccess />} />
+        </Route>
+
+        <Route path="/withdrawal-earnings" element={<FarmerLayout />}>
+          <Route index element={<WithdrawEarnings />} />
         </Route>
         <Route path="/invoice" element={<FarmerLayout />}>
           <Route index element={<Invoice />} />
