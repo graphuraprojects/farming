@@ -2,6 +2,7 @@ import "dotenv/config";   // ✅ this already loads env vars
 
 import express from "express";
 import "./configs/cloudinary.js";
+import dotenv from "dotenv";
 import connectDB from "./configs/db.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -28,10 +29,12 @@ await connectDB();
 app.use(express.json());
 app.use(cookieParser());
 
-app.use(cors({
-  origin: ["http://localhost:3000"],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: ["http://localhost:5173"], // frontend URL
+    credentials: true,
+  }),
+);
 
 app.get("/", (req, res) => res.send("API is Working"));
 
@@ -43,6 +46,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/earnings", earningRoutes);
 
 // Admin Routes
+//Admin Payment Routes
 app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
@@ -50,4 +54,3 @@ app.use("/api/admin/analytics", adminAnalyticsRoutes);
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });
-

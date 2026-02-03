@@ -18,7 +18,7 @@ export const register = async (req, res) => {
     if (!name || !email || !password || !role) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required"
+        message: "All fields are required",
       });
     }
 
@@ -27,7 +27,7 @@ export const register = async (req, res) => {
     if (exists) {
       return res.status(400).json({
         success: false,
-        message: "Email already registered"
+        message: "Email already registered",
       });
     }
 
@@ -42,7 +42,7 @@ export const register = async (req, res) => {
       role,
       password_hash: hashedPassword,
       otp,
-      otpExpiry: Date.now() + 10 * 60 * 1000 // 10 minutes
+      otpExpiry: Date.now() + 10 * 60 * 1000, // 10 minutes
     });
 
     // 5️⃣ Send OTP email via Brevo
@@ -54,13 +54,13 @@ export const register = async (req, res) => {
         <p>Your OTP is:</p>
         <h1>${otp}</h1>
         <p>This OTP is valid for 10 minutes.</p>
-      `
+      `,
     });
 
     if (!emailSent) {
       return res.status(500).json({
         success: false,
-        message: "Failed to send OTP email"
+        message: "Failed to send OTP email",
       });
     }
 
@@ -72,14 +72,14 @@ export const register = async (req, res) => {
         userId: user._id,
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Registration failed",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -95,7 +95,7 @@ export const verifyOtp = async (req, res) => {
     if (!userId || !otp) {
       return res.status(400).json({
         success: false,
-        message: "UserId and OTP are required"
+        message: "UserId and OTP are required",
       });
     }
 
@@ -104,7 +104,7 @@ export const verifyOtp = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -112,7 +112,7 @@ export const verifyOtp = async (req, res) => {
     if (!user.otpExpiry || user.otpExpiry < Date.now()) {
       return res.status(400).json({
         success: false,
-        message: "OTP expired"
+        message: "OTP expired",
       });
     }
 
@@ -120,7 +120,7 @@ export const verifyOtp = async (req, res) => {
     if (user.otp !== otp) {
       return res.status(400).json({
         success: false,
-        message: "Invalid OTP"
+        message: "Invalid OTP",
       });
     }
 
@@ -133,13 +133,13 @@ export const verifyOtp = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Email verified successfully"
+      message: "Email verified successfully",
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "OTP verification failed",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -156,7 +156,7 @@ export const login = async (req, res) => {
     if (!user || !user.isVerified) {
       return res.status(403).json({
         success: false,
-        message: "Email not verified"
+        message: "Email not verified",
       });
     }
 
@@ -164,14 +164,14 @@ export const login = async (req, res) => {
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials"
+        message: "Invalid credentials",
       });
     }
 
     const token = jwt.sign(
       { userId: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: "7d" }
+      { expiresIn: "7d" },
     );
 
     res.status(200).json({
@@ -179,14 +179,14 @@ export const login = async (req, res) => {
       message: "Login successful",
       data: {
         token,
-        user
-      }
+        user: safeUser,
+      },
     });
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Login failed",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -197,6 +197,6 @@ export const login = async (req, res) => {
 export const logout = async (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Logout successful"
+    message: "Logout successful",
   });
 };

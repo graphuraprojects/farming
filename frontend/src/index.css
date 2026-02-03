@@ -1,4 +1,5 @@
 @import "tailwindcss";
+
 @keyframes float {
   0%,
   100% {
@@ -8,18 +9,67 @@
     transform: translateY(-20px) rotate(2deg);
   }
 }
-.card-one,
-.card-two,
-.card-three {
+.card-one, .card-two, .card-three {
   animation: float 6s ease-in-out infinite;
 }
 
 .card-one {
-  animation-delay: 0s;
+    animation-delay: 0s;
 }
 .card-two {
-  animation-delay: 1s;
+    animation-delay: 1s;
 }
 .card-three {
-  animation-delay: 2s;
+    animation-delay: 2s;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease-out forwards;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.line {
+  transform: scaleX(0);
+  transform-origin: left;
+  opacity: 0;
+}
+
+.group:hover .line {
+  animation: lineExpand 0.4s ease-out forwards;
+}
+
+@keyframes lineExpand {
+  from {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+  to {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+}
+
+.view-link {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+  pointer-events: none; 
+}
+
+.group:hover .view-link {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
 }
