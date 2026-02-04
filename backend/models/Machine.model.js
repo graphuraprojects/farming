@@ -64,25 +64,18 @@ const machineSchema = new mongoose.Schema(
       country: String
     },
   
-    images: [
+   images: [
   {
-    url: {
-      type: String,
-      required: true
-    },
-    public_id: {
-      type: String,
-      required: true
-    }
+    url: { type: String, required: true },
+    public_id: { type: String, required: true }
   }
 ],
 
-documents: {
-  ownership_proof: {
-    url: String,
-    public_id: String
-  }
+ownership_proof: {
+  url: { type: String, required: true },
+  public_id: { type: String, required: true }
 },
+
   
     availability_status: {
       type: Boolean,
@@ -92,6 +85,10 @@ documents: {
     isApproved: {
       type: Boolean,
       default: false
+    },
+    rejection_reason: {
+    type: String,
+    default: ""
     }
   },
   { timestamps: true }
