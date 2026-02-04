@@ -39,7 +39,6 @@ const AddMachine = () => {
     try {
       const formData = new FormData();
 
-      // Create data object matching backend schema
       const data = {
         machine_name: machineData.machineName,
         model: machineData.model,
@@ -50,6 +49,8 @@ const AddMachine = () => {
         price_per_hour: machineData.pricePerHour,
         latitude: machineData.lat,
         longitude: machineData.lng,
+
+        // Fix address structure to match backend schema
         address: {
           street: machineData.address,
           city: machineData.city,
@@ -59,20 +60,17 @@ const AddMachine = () => {
         },
       };
 
-      // Append JSON data
       formData.append("data", JSON.stringify(data));
 
-      // Append images
       machineData.photos.forEach((photo) => {
         formData.append("images", photo.file);
       });
 
-      // Append document
       if (machineData.document) {
         formData.append("document", machineData.document);
       }
 
-      const token = localStorage.getItem("token"); // Adjust based on your auth setup
+      const token = localStorage.getItem("token");
 
       const res = await axios.post(
         "http://localhost:5000/api/machines",
@@ -80,9 +78,9 @@ const AddMachine = () => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`, // Add if your API requires auth
+            Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (res.data.success) {
@@ -109,12 +107,13 @@ const AddMachine = () => {
       }
     } catch (err) {
       console.error("Upload error:", err);
+      console.error("Error response:", err.response?.data); // More detailed error
       alert("Upload failed: " + (err.response?.data?.message || err.message));
     }
   };
 
   return (
-    <div className="bg-[#ddfaeb] pb-10 min-h-screen">
+    <div className="bg-[#e9fbf1cc] pb-10 min-h-screen">
       <div className="pt-6 w-full flex justify-center px-4">
         {/* Step Bar */}
         <div className="flex items-center justify-center gap-6">

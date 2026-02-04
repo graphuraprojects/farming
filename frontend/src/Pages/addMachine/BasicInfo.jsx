@@ -7,7 +7,6 @@ const BasicInfo = ({ data, setData, next }) => {
   const fileRef = useRef();
   const [dragActive, setDragActive] = useState(false);
 
-  // Handle Input Change
   const handleInputChange = (e) => {
     setData((prev) => ({
       ...prev,
@@ -15,7 +14,6 @@ const BasicInfo = ({ data, setData, next }) => {
     }));
   };
 
-  // Drag Handler
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -27,7 +25,6 @@ const BasicInfo = ({ data, setData, next }) => {
     }
   };
 
-  // Drop Handler
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -38,25 +35,21 @@ const BasicInfo = ({ data, setData, next }) => {
     }
   };
 
-  // File Picker Change
   const handleChange = (e) => {
     if (e.target.files) {
       handleFiles(e.target.files);
     }
   };
 
-  // Handle Files
   const handleFiles = (files) => {
     let validFiles = [];
 
     for (let file of files) {
-      // Type Check
       if (!file.type.startsWith("image/")) {
         alert("Only images allowed!");
         continue;
       }
 
-      // Size Check (10MB)
       if (file.size > 10 * 1024 * 1024) {
         alert("Image must be under 10MB");
         continue;
@@ -86,7 +79,6 @@ const BasicInfo = ({ data, setData, next }) => {
     }));
   };
 
-  // Remove Photo
   const removePhoto = (id) => {
     setData((prev) => ({
       ...prev,
@@ -94,11 +86,15 @@ const BasicInfo = ({ data, setData, next }) => {
     }));
   };
 
-  // Submit Form
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!data.machineName || !data.model || !data.modelYear || !data.registrationNumber) {
+    if (
+      !data.machineName ||
+      !data.model ||
+      !data.modelYear ||
+      !data.registrationNumber
+    ) {
       alert("Please fill all required fields");
       return;
     }
@@ -112,156 +108,180 @@ const BasicInfo = ({ data, setData, next }) => {
   };
 
   return (
-    <div className="mx-2 mt-5 flex flex-col items-center">
-      <div className="px-2 max-w-200">
-        <h1 className="text-3xl font-bold">Add New Machine - Basic Info</h1>
+    <div className="min-h-screen flex justify-center px-4 py-8">
+      <div className="w-full max-w-5xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Add New Machine
+          </h1>
+          <p className="text-gray-600">
+            Start by providing basic details for your machinery
+          </p>
+        </div>
 
-        <p className="text-gray-500">
-          Start by providing basic details for your machinery.
-        </p>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-5">
+              Basic Information
+            </h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="mt-5 w-full flex flex-wrap gap-5"
-        >
-          <div className="w-full flex flex-col gap-1 max-w-[380px]">
-            <label className="font-medium">Machine Name</label>
-
-            <input
-              name="machineName"
-              value={data.machineName}
-              onChange={handleInputChange}
-              className="p-2 border rounded-md border-gray-300 bg-white focus:border-[#03a74f] focus:outline-none"
-              placeholder="e.g. Eicher"
-            />
-          </div>
-
-          <div className="w-full flex flex-col gap-1 max-w-[380px]">
-            <label className="font-medium">Model</label>
-
-            <input
-              name="model"
-              value={data.model}
-              onChange={handleInputChange}
-              className="p-2 border rounded-md border-gray-300 bg-white focus:border-[#03a74f] focus:outline-none"
-              placeholder="e.g. 333 Super DI"
-            />
-          </div>
-
-          <div className="w-full flex flex-col gap-1 max-w-[380px]">
-            <label className="font-medium">Model Year</label>
-
-            <input
-              name="modelYear"
-              type="number"
-              value={data.modelYear}
-              onChange={handleInputChange}
-              className="p-2 border rounded-md border-gray-300 bg-white focus:border-[#03a74f] focus:outline-none"
-              placeholder="e.g. 2020"
-            />
-          </div>
-
-          <div className="w-full flex flex-col gap-1 max-w-[380px]">
-            <label className="font-medium">Registration No</label>
-
-            <input
-              name="registrationNumber"
-              value={data.registrationNumber}
-              onChange={handleInputChange}
-              className="p-2 border rounded-md border-gray-300 bg-white focus:border-[#03a74f] focus:outline-none"
-              placeholder="e.g. HR 51 AB 1234"
-            />
-          </div>
-
-          {/* Photos */}
-          <div className="w-full">
-            <label className="text-xl font-semibold block mb-4">
-              Machine Photos (Max 5)
-            </label>
-
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 bg-white">
-              {/* Upload Area */}
-              <div
-                className={`${dragActive ? "bg-blue-50" : ""}`}
-                onDragEnter={handleDrag}
-                onDragLeave={handleDrag}
-                onDragOver={handleDrag}
-                onDrop={handleDrop}
-              >
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="flex flex-col gap-2">
+                <label className="font-medium text-gray-700 text-sm">
+                  Machine Name
+                </label>
                 <input
-                  ref={fileRef}
-                  type="file"
-                  hidden
-                  multiple
-                  accept="image/*"
-                  onChange={handleChange}
+                  name="machineName"
+                  value={data.machineName}
+                  onChange={handleInputChange}
+                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  placeholder="Enter machine name"
                 />
-
-                <div
-                  onClick={() => fileRef.current.click()}
-                  className="flex flex-col items-center py-12 cursor-pointer"
-                >
-                  <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-4">
-                    <Upload className="w-8 h-8 text-gray-600" />
-                  </div>
-
-                  <p className="text-lg">Click or drag photos</p>
-                  <p className="text-sm text-gray-500">JPG, PNG, WebP (10MB)</p>
-                </div>
               </div>
 
-              <div className="grid grid-cols-5 gap-4 mt-6">
-                {data.photos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    className="relative aspect-square rounded overflow-hidden"
-                  >
-                    <img
-                      src={photo.preview}
-                      className="w-full h-full object-cover"
-                      alt="Machine preview"
-                    />
+              <div className="flex flex-col gap-2">
+                <label className="font-medium text-gray-700 text-sm">
+                  Model
+                </label>
+                <input
+                  name="model"
+                  value={data.model}
+                  onChange={handleInputChange}
+                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  placeholder="Enter model"
+                />
+              </div>
 
-                    <button
-                      type="button"
-                      onClick={() => removePhoto(photo.id)}
-                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1"
-                    >
-                      <X size={14} />
-                    </button>
-                  </div>
-                ))}
+              <div className="flex flex-col gap-2">
+                <label className="font-medium text-gray-700 text-sm">
+                  Model Year
+                </label>
+                <input
+                  name="modelYear"
+                  type="number"
+                  value={data.modelYear}
+                  onChange={handleInputChange}
+                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  placeholder="Enter year"
+                />
+              </div>
 
-                {[...Array(MAX_IMAGES - data.photos.length)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square bg-gray-100 rounded flex items-center justify-center"
-                  >
-                    <ImageIcon className="text-gray-300" />
-                  </div>
-                ))}
+              <div className="flex flex-col gap-2">
+                <label className="font-medium text-gray-700 text-sm">
+                  Registration Number
+                </label>
+                <input
+                  name="registrationNumber"
+                  value={data.registrationNumber}
+                  onChange={handleInputChange}
+                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  placeholder="Enter registration number"
+                />
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-4 flex gap-4">
-            <BadgeCheck size={40} className="text-[#03a74f]" />
-            <p className="text-gray-700">
-              <span className="font-bold text-black">
-                Quality Photos Matter
-              </span>{" "}
-              <br />
-              Machines with clear, high-resolution photos attract more renters.
-              Ensure your images showcase the machine from multiple angles and
-              highlight key features.
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-2">
+              Machine Photos
+            </h2>
+            <p className="text-sm text-gray-600 mb-5">
+              Upload up to 5 high-quality images
             </p>
+
+            <div
+              className={`border-2 border-dashed rounded-xl p-8 transition-all ${
+                dragActive
+                  ? "border-[#03a74f] bg-green-50"
+                  : "border-gray-300 bg-gray-50"
+              }`}
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+            >
+              <input
+                ref={fileRef}
+                type="file"
+                hidden
+                multiple
+                accept="image/*"
+                onChange={handleChange}
+              />
+
+              <div
+                onClick={() => fileRef.current.click()}
+                className="flex flex-col items-center py-8 cursor-pointer"
+              >
+                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-gray-200">
+                  <Upload className="w-7 h-7 text-[#03a74f]" />
+                </div>
+
+                <p className="text-base font-medium text-gray-800">
+                  Click to upload or drag and drop
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  JPG, PNG or WebP - Maximum 10MB per file
+                </p>
+              </div>
+
+              {data.photos.length > 0 && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 mt-6">
+                  {data.photos.map((photo) => (
+                    <div
+                      key={photo.id}
+                      className="relative aspect-square rounded-lg overflow-hidden group border-2 border-gray-200"
+                    >
+                      <img
+                        src={photo.preview}
+                        className="w-full h-full object-cover"
+                        alt="Machine preview"
+                      />
+
+                      <button
+                        type="button"
+                        onClick={() => removePhoto(photo.id)}
+                        className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                      >
+                        <X size={16} />
+                      </button>
+                    </div>
+                  ))}
+
+                  {[...Array(MAX_IMAGES - data.photos.length)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="aspect-square bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300"
+                    >
+                      <ImageIcon className="text-gray-400 w-8 h-8" />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 flex gap-4">
+              <BadgeCheck
+                size={24}
+                className="text-[#03a74f] flex-shrink-0 mt-0.5"
+              />
+              <div>
+                <p className="font-semibold text-gray-800 mb-1">
+                  Quality Photos Matter
+                </p>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Machines with clear, high-resolution photos attract more
+                  renters. Showcase your machine from multiple angles and
+                  highlight key features.
+                </p>
+              </div>
+            </div>
           </div>
 
-          {/* Submit */}
-          <div className="flex justify-end w-full">
+          <div className="flex justify-end">
             <button
               type="submit"
-              className="bg-green-600 text-white px-6 py-2 rounded mt-4 cursor-pointer hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95"
+              className="bg-[#03a74f] hover:bg-[#028a42] text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:-translate-y-1 active:scale-95 shadow-md hover:shadow-lg"
             >
               Save & Continue
             </button>

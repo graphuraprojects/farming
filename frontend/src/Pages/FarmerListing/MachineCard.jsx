@@ -1,10 +1,4 @@
-import {
-  CircleGauge,
-  Calendar,
-  MapPin,
-  MoveRight,
-  BadgeCheck,
-} from "lucide-react";
+import { CircleGauge, Calendar, MapPin, MoveRight, BadgeCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const MachineCard = ({ item }) => {
@@ -16,14 +10,15 @@ const MachineCard = ({ item }) => {
           src={item.image}
           alt={item.name}
         />
-        {item.verified && (
-          <span className="bg-[#1f3d2b] absolute top-3 right-3 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-            <BadgeCheck size={15} />
-            VERIFIED
-          </span>
-        )}
+          {item.verified && (
+            <span className="bg-[#1f3d2b] absolute top-3 right-3 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
+              <BadgeCheck size={15} />
+              VERIFIED
+            </span>
+          )}
+        
       </div>
-
+  
       <div className="p-4 space-y-2">
         <div className="flex justify-between items-center">
           <h3 className="text-lg font-bold text-[#131614] leading-tight">
@@ -46,7 +41,7 @@ const MachineCard = ({ item }) => {
           </span>
         </div>
 
-        <div className="mt-auto pt-4 border-t border-dashed border-gray-200 dark:border-gray-700">
+        <div className="mt-auto pt-4 border-t border-dashed border-gray-200">
           <div>
             <div className="flex justify-between">
               <p className="text-xs text-[#6d7e74] font-medium mb-0.5 flex items-center gap-1">
@@ -72,12 +67,12 @@ const MachineCard = ({ item }) => {
           </p>
           <button className="flex items-center gap-1 text-sm text-[#1f3d2b] font-medium cursor-pointer">
             <Link
-              to={`/farmer/machine-details/${item.id}`}
+              to={`/machine-details/${item.id}`}
               className="text-sm font-medium"
             >
-              View Details
+              View Details 
             </Link>
-            <MoveRight size={15} />
+            <MoveRight size={15}/>
             {/* View Details <MoveRight size={15} /> */}
           </button>
         </div>

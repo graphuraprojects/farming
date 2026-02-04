@@ -4,7 +4,6 @@ import { MapPin, Upload, FileText, Check, Trash2 } from "lucide-react";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Fix for default marker icon in react-leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl:
@@ -15,7 +14,6 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-// Custom green marker icon
 const greenIcon = new L.Icon({
   iconUrl:
     "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png",
@@ -52,7 +50,6 @@ const Location = ({ data, setData, prev, submit }) => {
     }
   }, []);
 
-  // Sync location state with parent data
   useEffect(() => {
     setData((prev) => ({
       ...prev,
@@ -66,7 +63,6 @@ const Location = ({ data, setData, prev, submit }) => {
     }));
   }, [location]);
 
-  // Sync document with parent data
   useEffect(() => {
     setData((prev) => ({
       ...prev,
@@ -74,7 +70,6 @@ const Location = ({ data, setData, prev, submit }) => {
     }));
   }, [uploadedFile]);
 
-  // Component to handle map clicks and marker dragging
   const LocationMarker = () => {
     const map = useMapEvents({
       click(e) {
@@ -220,287 +215,284 @@ const Location = ({ data, setData, prev, submit }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-        {/* Map Section */}
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-green-500" />
-              <h2 className="text-lg font-semibold text-gray-900">
+    <div className="min-h-screen flex justify-center px-4 py-8">
+      <div className="w-full max-w-5xl">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-800 mb-2">
+            Location & Documents
+          </h1>
+          <p className="text-gray-600">
+            Set your machine location and upload ownership documents
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-5">
+              <h2 className="text-lg font-semibold text-gray-800">
                 Base Location
               </h2>
-            </div>
-            <button
-              onClick={getCurrentLocation}
-              className="text-sm text-green-600 hover:text-green-700 font-medium"
-            >
-              Use current location
-            </button>
-          </div>
-
-          <div className="relative">
-            {isLoadingLocation ? (
-              <div className="w-full h-64 rounded-lg bg-gray-100 flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-12 h-12 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-2"></div>
-                  <p className="text-sm text-gray-600">
-                    Getting your location...
-                  </p>
-                </div>
-              </div>
-            ) : location.lat && location.lng ? (
-              <MapContainer
-                center={[location.lat, location.lng]}
-                zoom={13}
-                ref={mapRef}
-                style={{ height: "256px", width: "100%", borderRadius: "8px" }}
+              <button
+                onClick={getCurrentLocation}
+                className="text-sm text-[#03a74f] hover:text-[#028a42] font-semibold transition-colors"
               >
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                <LocationMarker />
-              </MapContainer>
-            ) : (
-              <div className="w-full h-64 rounded-lg bg-gray-100 flex items-center justify-center">
-                <div className="text-center">
-                  <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-                  <p className="text-sm text-gray-600">
-                    Location not available
-                  </p>
-                  <button
-                    onClick={getCurrentLocation}
-                    className="mt-2 text-sm text-green-600 hover:text-green-700 font-medium"
-                  >
-                    Retry
-                  </button>
+                Use current location
+              </button>
+            </div>
+
+            <div className="relative">
+              {isLoadingLocation ? (
+                <div className="w-full h-80 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-12 h-12 border-4 border-[#03a74f] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <p className="text-sm text-gray-600 font-medium">
+                      Getting your location...
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
-            <p className="text-xs text-gray-500 mt-2">
-              Drag the pin to adjust the exact pickup location.
-            </p>
-          </div>
-        </div>
-
-        {/* Address Details */}
-        <div className="p-6 border-b border-gray-200">
-          <h3 className="text-base font-semibold text-gray-900 mb-4">
-            Address Details
-          </h3>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                Street Address
-              </label>
-              <input
-                type="text"
-                value={location.address}
-                onChange={(e) =>
-                  setLocation({ ...location, address: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  City
-                </label>
-                <input
-                  type="text"
-                  value={location.city}
-                  onChange={(e) =>
-                    setLocation({ ...location, city: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  State / Province
-                </label>
-                <input
-                  type="text"
-                  value={location.state}
-                  onChange={(e) =>
-                    setLocation({ ...location, state: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Zip / Postal Code
-                </label>
-                <input
-                  type="text"
-                  value={location.zipCode}
-                  onChange={(e) =>
-                    setLocation({ ...location, zipCode: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                  Country
-                </label>
-                <select
-                  value={location.country}
-                  onChange={(e) =>
-                    setLocation({ ...location, country: e.target.value })
-                  }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none appearance-none bg-white"
+              ) : location.lat && location.lng ? (
+                <MapContainer
+                  center={[location.lat, location.lng]}
+                  zoom={13}
+                  ref={mapRef}
+                  style={{
+                    height: "320px",
+                    width: "100%",
+                    borderRadius: "12px",
+                  }}
                 >
-                  <option value="">Select Country</option>
-                  <option>United States</option>
-                  <option>Canada</option>
-                  <option>United Kingdom</option>
-                  <option>Australia</option>
-                  <option>India</option>
-                </select>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Ownership Verification */}
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                <Check className="w-3 h-3 text-white" />
-              </div>
-              <h3 className="text-base font-semibold text-gray-900">
-                Ownership Verification
-              </h3>
-            </div>
-            <button className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-700 font-medium">
-              <FileText className="w-4 h-4" />
-              Secure
-            </button>
-          </div>
-
-          <p className="text-sm text-gray-500 mb-6">
-            Upload documents to verify legal ownership. Required for insurance
-            coverage
-          </p>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* Upload Area */}
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-lg p-6 transition-colors ${
-                isDragging ? "border-green-500 bg-green-50" : "border-gray-300"
-              }`}
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf"
-                onChange={handleFileInput}
-                className="hidden"
-                id="file-upload"
-              />
-
-              <label
-                htmlFor="file-upload"
-                className="flex flex-col items-center cursor-pointer"
-              >
-                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mb-3">
-                  <Upload className="w-6 h-6 text-green-600" />
-                </div>
-                <p className="text-sm font-medium text-gray-900 mb-1">
-                  Proof of Purchase / Title
-                </p>
-                <p className="text-xs text-gray-500 text-center">
-                  PDF, JPG or PNG up to 10MB
-                </p>
-                <p className="text-xs text-green-600 font-medium mt-2">
-                  Click to upload
-                </p>
-              </label>
-            </div>
-
-            {/* Uploaded File Display */}
-            <div className="border-2 border-green-200 rounded-lg p-4 bg-green-50">
-              {uploadedFile ? (
-                <div>
-                  <div className="flex items-start justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-red-600" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium text-gray-900">
-                          {uploadedFile.name}
-                        </p>
-                        <p className="text-xs text-gray-500">
-                          {(uploadedFile.size / 1024).toFixed(2)} KB
-                        </p>
-                      </div>
-                    </div>
+                  <TileLayer
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  />
+                  <LocationMarker />
+                </MapContainer>
+              ) : (
+                <div className="w-full h-80 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <div className="text-center">
+                    <MapPin className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                    <p className="text-sm text-gray-600 mb-2">
+                      Location not available
+                    </p>
                     <button
-                      onClick={removeFile}
-                      className="text-gray-400 hover:text-gray-600"
+                      onClick={getCurrentLocation}
+                      className="text-sm text-[#03a74f] hover:text-[#028a42] font-semibold"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      Retry
                     </button>
                   </div>
-
-                  <div className="mt-3">
-                    <div className="flex items-center gap-2 text-xs text-green-600 mb-1">
-                      <Check className="w-3 h-3" />
-                      <span className="font-medium">Uploaded</span>
-                    </div>
-                    <div className="w-full bg-green-200 rounded-full h-1.5">
-                      <div className="bg-green-500 h-1.5 rounded-full w-full"></div>
-                    </div>
-                  </div>
-                </div>
-              ) : (
-                <div className="h-full flex items-center justify-center">
-                  <p className="text-sm text-gray-400">No file uploaded</p>
                 </div>
               )}
+              <p className="text-xs text-gray-500 mt-3">
+                Click on the map or drag the marker to set your exact location
+              </p>
             </div>
           </div>
-        </div>
-      </div>
-      <div className="flex justify-between mt-8">
-        <button
-          type="button"
-          className="
-            px-6 py-2 border-2 rounded-md cursor-pointer
-            text-gray-700 hover:bg-white hover:text-black hover:-translate-y-2 transition-transform duration-300 active:scale-95 hover:border-white
-          "
-          onClick={prev}
-        >
-          Back
-        </button>
 
-        <button
-          type="button"
-          className="
-            px-6 py-2 rounded-md
-            bg-[#03a74f] text-white cursor-pointer
-            hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95
-          "
-          onClick={handleSubmit}
-        >
-          Submit Machine
-        </button>
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-5">
+              Address Details
+            </h3>
+
+            <div className="space-y-4">
+              <div className="flex flex-col gap-2">
+                <label className="font-medium text-gray-700 text-sm">
+                  Street Address
+                </label>
+                <input
+                  type="text"
+                  value={location.address}
+                  onChange={(e) =>
+                    setLocation({ ...location, address: e.target.value })
+                  }
+                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  placeholder="Enter street address"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="font-medium text-gray-700 text-sm">
+                    City
+                  </label>
+                  <input
+                    type="text"
+                    value={location.city}
+                    onChange={(e) =>
+                      setLocation({ ...location, city: e.target.value })
+                    }
+                    className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                    placeholder="Enter city"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="font-medium text-gray-700 text-sm">
+                    State / Province
+                  </label>
+                  <input
+                    type="text"
+                    value={location.state}
+                    onChange={(e) =>
+                      setLocation({ ...location, state: e.target.value })
+                    }
+                    className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                    placeholder="Enter state"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-2">
+                  <label className="font-medium text-gray-700 text-sm">
+                    Zip / Postal Code
+                  </label>
+                  <input
+                    type="text"
+                    value={location.zipCode}
+                    onChange={(e) =>
+                      setLocation({ ...location, zipCode: e.target.value })
+                    }
+                    className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                    placeholder="Enter zip code"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="font-medium text-gray-700 text-sm">
+                    Country
+                  </label>
+                  <select
+                    value={location.country}
+                    onChange={(e) =>
+                      setLocation({ ...location, country: e.target.value })
+                    }
+                    className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  >
+                    <option value="">Select Country</option>
+                    <option>United States</option>
+                    <option>Canada</option>
+                    <option>United Kingdom</option>
+                    <option>Australia</option>
+                    <option>India</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+              Ownership Verification
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Upload documents to verify legal ownership. Required for insurance
+              coverage
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-xl p-8 transition-all ${
+                  isDragging
+                    ? "border-[#03a74f] bg-green-50"
+                    : "border-gray-300 bg-gray-50"
+                }`}
+              >
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf"
+                  onChange={handleFileInput}
+                  className="hidden"
+                  id="file-upload"
+                />
+
+                <label
+                  htmlFor="file-upload"
+                  className="flex flex-col items-center cursor-pointer"
+                >
+                  <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm border border-gray-200">
+                    <Upload className="w-7 h-7 text-[#03a74f]" />
+                  </div>
+                  <p className="text-sm font-semibold text-gray-800 mb-1">
+                    Proof of Purchase / Title
+                  </p>
+                  <p className="text-xs text-gray-500 text-center mb-3">
+                    PDF, JPG or PNG up to 10MB
+                  </p>
+                  <span className="text-sm text-[#03a74f] font-semibold">
+                    Click to upload
+                  </span>
+                </label>
+              </div>
+
+              <div
+                className={`border-2 rounded-xl p-6 ${uploadedFile ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50"}`}
+              >
+                {uploadedFile ? (
+                  <div>
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <FileText className="w-6 h-6 text-red-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold text-gray-900 truncate">
+                            {uploadedFile.name}
+                          </p>
+                          <p className="text-xs text-gray-500 mt-0.5">
+                            {(uploadedFile.size / 1024).toFixed(2)} KB
+                          </p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={removeFile}
+                        className="text-gray-400 hover:text-red-500 transition-colors ml-2"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+
+                    <div className="mt-4">
+                      <div className="flex items-center gap-2 text-xs text-green-600 mb-2">
+                        <Check className="w-4 h-4" />
+                        <span className="font-semibold">Upload Complete</span>
+                      </div>
+                      <div className="w-full bg-green-200 rounded-full h-2">
+                        <div className="bg-[#03a74f] h-2 rounded-full w-full"></div>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="h-full flex items-center justify-center py-8">
+                    <p className="text-sm text-gray-400">No file uploaded</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-between pt-4">
+            <button
+              type="button"
+              onClick={prev}
+              className="px-8 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 hover:-translate-y-1 active:scale-95"
+            >
+              Back
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSubmit}
+              className="bg-[#03a74f] hover:bg-[#028a42] text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:-translate-y-1 active:scale-95 shadow-md hover:shadow-lg"
+            >
+              Submit Machine
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

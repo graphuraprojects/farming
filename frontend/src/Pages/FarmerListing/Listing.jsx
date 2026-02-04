@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import machines from "./Listing.js";
+// import machines from "./Listing.js";
+import axios from "axios";
 import MachineCard from "./MachineCard";
 import Filters from "./Filters";
 
@@ -18,6 +19,41 @@ const Listing = () => {
   const [sort, setSort] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
 
+  const [machines, setMachines] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+ useEffect(() => {
+  const fetchMachines = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      const res = await axios.get(
+        "http://localhost:5000/api/machines",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        }
+      );
+
+      setMachines(res.data.data);
+    } catch (error) {
+      console.error("Error fetching machines:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchMachines();
+}, []);
+
+
+// Reset page when filters/sort change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sort]);
+  
   // Count machines by type (for Tractors (3))
   const typeCounts = machines.reduce((acc, item) => {
     acc[item.type] = (acc[item.type] || 0) + 1;
@@ -25,14 +61,23 @@ const Listing = () => {
   }, {});
 
   //  FILTER
-  let filteredData = machines.filter((item) => {
-    return (
-      item.name.toLowerCase().includes(filters.search.toLowerCase()) &&
-      item.price <= filters.price &&
-      item.distance <= filters.distance &&
-      (filters.type.length === 0 || filters.type.includes(item.type))
-    );
-  });
+  const filteredData = machines.map((m) => ({
+  id: m._id,
+  name: m.machine_name,
+  price: m.price_per_hour,
+  year: m.model_year,
+  image: m.images?.[0],
+  location: `${m.address?.street || ""}, ${m.address?.city || ""}, ${m.address?.state || ""}`,
+  type: m.category,
+  distance: 20, // dummy (backend not sending yet)
+  hp: 50,       // dummy
+  verified: true // or m.isApproved
+}));
+
+if (loading) {
+  return <p className="text-center py-20">Loading machines...</p>;
+}
+
 
   // SORT
   if (sort === "low-high") {
@@ -51,10 +96,7 @@ const Listing = () => {
     startIndex + ITEMS_PER_PAGE,
   );
 
-  // Reset page when filters/sort change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filters, sort]);
+  
 
 
   return (
@@ -69,7 +111,7 @@ const Listing = () => {
         </div>
       </div>
       
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#8080801a]">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* TOP BAR */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <div className="flex flex-col gap-2">
@@ -92,79 +134,85 @@ const Listing = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          {/* STICKY FILTER */}
-          <div className="lg:sticky lg:top-6">
-            <Filters
-              filters={filters}
-              setFilters={setFilters}
-              typeCounts={typeCounts}
-              resetFilters={() =>
-                setFilters({
-                  search: "",
-                  price: 2000,
-                  distance: 100,
-                  type: [],
-                })
-              }
-            />
-          </div>
-          {/* CARDS GRID */}
-          <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {paginatedData.length ? (
-              paginatedData.map((item) => (
-                <MachineCard key={item.id} item={item} />
-              ))
-            ) : (
-              <p>No machines found.</p>
+        {loading ? (
+          <p className="text-center py-20">Loading machines...</p>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+              {/* STICKY FILTER */}
+              <div className="lg:sticky lg:top-6">
+                <Filters
+                  filters={filters}
+                  setFilters={setFilters}
+                  typeCounts={typeCounts}
+                  resetFilters={() =>
+                    setFilters({
+                      search: "",
+                      price: 2000,
+                      distance: 100,
+                      type: [],
+                    })
+                  }
+                />
+              </div>
+              {/* CARDS GRID */}
+              <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {paginatedData.length ? (
+                  paginatedData.map((item) => (
+                    <MachineCard key={item.id} item={item} />
+                  ))
+                ) : (
+                  <p>No machines found.</p>
+                )}
+              </div>
+            </div>
+
+            {/* PAGINATION BUTTONS */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mt-10 gap-2">
+                {/* LEFT ARROW */}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                  disabled={currentPage === 1}
+                  className={`cursor-pointer px-3 py-2 ${
+                    currentPage === 1
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  <ChevronLeft size={20}/>
+                </button>
+
+                {/* PAGE NUMBERS */}
+                {Array.from({ length: totalPages }).map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`cursor-pointer px-4 py-2 rounded-lg ${
+                      currentPage === i + 1
+                        ? "bg-[#1f3d2b] text-white font-bold"
+                        : "hover:bg-gray-100 text-gray-500 font-medium"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                {/* RIGHT ARROW */}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className={`cursor-pointer px-3 py-2 rounded ${
+                    currentPage === totalPages
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "hover:bg-gray-100"
+                  }`}
+                >
+                  <ChevronRight size={20}/>
+                </button>
+              </div>
             )}
-          </div>
-        </div>
-
-        {/* PAGINATION BUTTONS */}
-        {totalPages > 1 && (
-          <div className="flex justify-center items-center mt-10 gap-2">
-            {/* LEFT ARROW */}
-            <button
-              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-              disabled={currentPage === 1}
-              className={`cursor-pointer px-3 py-2 ${
-                currentPage === 1
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <ChevronLeft size={20}/>
-            </button>
-
-            {/* PAGE NUMBERS */}
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setCurrentPage(i + 1)}
-                className={`cursor-pointer px-4 py-2 rounded-lg ${
-                  currentPage === i + 1
-                    ? "bg-[#1f3d2b] text-white font-bold"
-                    : "hover:bg-gray-100 text-gray-500 font-medium"
-                }`}
-              >
-                {i + 1}
-              </button>
-            ))}
-
-            {/* RIGHT ARROW */}
-            <button
-              onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
-              disabled={currentPage === totalPages}
-              className={`cursor-pointer px-3 py-2 rounded ${
-                currentPage === totalPages
-                  ? "text-gray-400 cursor-not-allowed"
-                  : "hover:bg-gray-100"
-              }`}
-            >
-              <ChevronRight size={20}/>
-            </button>
-          </div>
+          </>
         )}
       </div>
     </>

@@ -1,5 +1,8 @@
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import machines from "./machineDetails.js";
+// import machines from "./machineDetails.js";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Heart,
   Share2,
@@ -36,15 +39,85 @@ const specLabels = {
 
 const MachineDetails = () => {
   const { id } = useParams();
-  const machine = machines.find((m) => m.id === id);
+  // const machine = machines.find((m) => m.id === id);
 
-  if (!machine) return <p>Machine not found</p>;
+  const [machine, setMachine] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [startDate, setStartDate] = useState();
+  const [hours, setHours] = useState(0);
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
+  const [includeOperator, setIncludeOperator] = useState(false);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    const fetchMachine = async () => {
+      try {
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get("http://localhost:5000/api/machines", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        // find machine by id from URL
+        const found = res.data.data.find((m) => m._id === id);
+
+        setMachine(found);
+      } catch (err) {
+        console.error("Error fetching machine:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMachine();
+  }, [id]);
+
+  useEffect(() => {
+    if (!startTime || !endTime) return;
+
+    const [sh, sm] = startTime.split(":").map(Number);
+    const [eh, em] = endTime.split(":").map(Number);
+
+    const startMinutes = sh * 60 + sm;
+    const endMinutes = eh * 60 + em;
+
+    if (endMinutes > startMinutes) {
+      const diffMinutes = endMinutes - startMinutes;
+      setHours(diffMinutes / 60);
+    } else {
+      setHours(0); // invalid time range
+    }
+  }, [startTime, endTime]);
+
+  if (loading) {
+    return <p className="text-center py-20">Loading machine details...</p>;
+  }
+
+  if (!machine) {
+    return <p className="text-center py-20">Machine not found</p>;
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const duration = hours;
+
+  const operatorTotal = includeOperator
+    ? machine.operatorFeePerHour * duration
+    : 0;
+
+  const rentTotal = duration * machine.pricePerHour;
+
+  const grandTotal =
+    rentTotal + operatorTotal + machine.transportFee + machine.serviceFee;
 
   return (
-    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-[#8080801a]">
+    <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* BREADCRUMB */}
       <p className="text-sm text-gray-500 mb-4">
-        Machinery / Tractors /{" "}
+        <Link to="/machine-listing">Machinery / </Link>
         <span className="text-black">{machine.name}</span>
       </p>
 
@@ -58,7 +131,7 @@ const MachineDetails = () => {
           <img
             key={i}
             src={img}
-            className="w-full h-full bg-cover bg-center cursor-pointer hover:scale-105 transition-transform duration-500 rounded-lg object-cover"
+            className="w-full h-full bg-cover bg-center cursor-pointer hover:scale-105 transition-transform duration-500 rounded-lg object-cover hidden md:block "
           />
         ))}
       </div>
@@ -72,13 +145,13 @@ const MachineDetails = () => {
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#131614]">
                 {machine.name} - {machine.model} Model
               </h1>
-              <div className="flex gap-5 hover:bg-gray-100 transition-colors text-[#131614]">
+              <div className="flex gap-5 text-[#131614]">
                 <Share2 />
                 <Heart />
               </div>
             </div>
 
-            <div className="flex items-center gap-2 mt-2 text-sm text-[#131614]">
+            <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-[#131614]">
               <Star size={16} className="fill-[#1f3d2b]" />
               <span className="font-bold">{machine.rating}</span>
               <span className="underline decoration-1 underline-offset-2 cursor-pointer">
@@ -88,10 +161,16 @@ const MachineDetails = () => {
               <span className="text-[#6d7e74]">•</span>
 
               <div className="flex items-center gap-1 text-[#6d7e74]">
-                <span className="material-symbols-outlined text-lg">
-                  <MapPin size={16} />
+                <MapPin size={16} />
+                <span>
+                  {machine.address &&
+                  typeof machine.address === "object" &&
+                  machine.address.city
+                    ? `${machine.address.city}${machine.address.state ? ", " + machine.address.state : ""}`
+                    : typeof machine.address === "string"
+                      ? machine.address
+                      : "Location"}
                 </span>
-                <span>{machine.location}</span>
               </div>
 
               <span className="text-[#6d7e74]">•</span>
@@ -147,23 +226,29 @@ const MachineDetails = () => {
           </h2>
 
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {Object.entries(machine.specs).map(([key, value]) => (
-              <div
-                key={key}
-                className="bg-white p-4 rounded-xl border border-[#dee3e0] flex flex-col gap-2"
-              >
-                <div className="text-xl">{specIcons[key]}</div>
+            {machine.specs && Object.keys(machine.specs).length > 0 ? (
+              Object.entries(machine.specs).map(([key, value]) => (
+                <div
+                  key={key}
+                  className="bg-white p-4 rounded-xl border border-[#dee3e0] flex flex-col gap-2"
+                >
+                  <div className="text-xl">{specIcons[key]}</div>
 
-                <div className="flex flex-col">
-                  <p className="text-xs text-[#6d7e74] uppercase font-semibold tracking-wider">
-                    {specLabels[key] ?? key}
-                  </p>
-                  <p className="text-base font-bold text-[#131614]">
-                    {value}
-                  </p>
+                  <div className="flex flex-col">
+                    <p className="text-xs text-[#6d7e74] uppercase font-semibold tracking-wider">
+                      {specLabels[key] ?? key}
+                    </p>
+                    <p className="text-base font-bold text-[#131614]">
+                      {value}
+                    </p>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-8 text-gray-500">
+                <p>No specifications available</p>
               </div>
-            ))}
+            )}
           </div>
 
           <hr className="border-[#dee3e0]"></hr>
@@ -173,132 +258,246 @@ const MachineDetails = () => {
             About this machine
           </h2>
           <div className="text-[#6d7e74] leading-relaxed">
-            {machine.description.map((line, index) => (
-              <p key={index}>{line}</p>
-            ))}
+            {machine.description ? (
+              Array.isArray(machine.description) ? (
+                machine.description.map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))
+              ) : (
+                <p>{machine.description}</p>
+              )
+            ) : (
+              <p>No description available for this machine.</p>
+            )}
           </div>
         </div>
 
         {/* RIGHT BOOKING CARD */}
-        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-[#dee3e0] overflow-hidden h-fit">
+        <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-[#dee3e0] overflow-hidden h-fit lg:sticky lg:top-6">
           <div className="p-6 border-b border-[#dee3e0]">
             <div className="flex items-baseline justify-between">
               <div className="flex items-end gap-1">
                 <span className="text-2xl font-bold text-[#131614]">
-                  ₹{machine.pricePerDay}
+                  ₹{machine.pricePerHour}
                 </span>
                 <span className="text-[#6d7e74] text-sm font-medium">
-                  / day
+                  / hours
                 </span>
               </div>
-              <div className="text-xs font-semibold text-[#1f3d2b] bg-green-50 px-2 py-1 rounded">
+              <div className="text-xs font-semibold text-primary bg-green-50 px-2 py-1 rounded">
                 Best Value
               </div>
             </div>
           </div>
 
-          <div class="p-6 flex flex-col gap-5">
-            <div class="border border-[#dee3e0] rounded-xl overflow-hidden">
-              <div class="grid grid-cols-2 divide-x divide-[#dee3e0] border-b border-[#dee3e0]">
-                <div class="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
-                  <label class="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
-                    Start Date
+          <div className="p-6 flex flex-col gap-5">
+            <div className="border border-[#dee3e0] rounded-xl overflow-hidden">
+              <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors border-b border-[#dee3e0]">
+                <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
+                  Start Date
+                </label>
+                <div className="text-sm font-medium text-[#131614] mt-1">
+                  <input
+                    type="date"
+                    min={today}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full text-sm bg-transparent outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 divide-x divide-[#dee3e0] border-b border-[#dee3e0]">
+                {/* START TIME */}
+                <div className="p-3 hover:bg-[#f9faf7] transition-colors">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
+                    Start Time
                   </label>
-                  <div class="text-sm font-medium text-[#131614] mt-1">
-                    Oct 24, 2023
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="w-full mt-2 text-sm bg-transparent outline-none"
+                  />
+                </div>
+
+                {/* END TIME */}
+                <div className="p-3 hover:bg-[#f9faf7] transition-colors">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
+                    End Time
+                  </label>
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="w-full mt-2 text-sm bg-transparent outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 divide-x divide-[#dee3e0]">
+                <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
+                    Number of Hours
+                  </label>
+                  <div className="text-sm font-medium text-[#131614] mt-1">
+                    <input
+                      type="number"
+                      value={hours}
+                      readOnly
+                      className="w-full mt-2 text-sm bg-transparent outline-none border border-[#dee3e0] rounded-lg px-3 py-2"
+                    />
                   </div>
                 </div>
 
-                <div class="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
-                  <label class="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
+                {/* <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
                     End Date
                   </label>
-                  <div class="text-sm font-medium text-[#131614] mt-1">
-                    Oct 27, 2023
+                  <div className="text-sm font-medium text-[#131614] mt-1">
+                    <input
+                      type="date"
+                      value={endDate}
+                      min={startDate}
+                      disabled={!startDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="w-full text-sm bg-transparent outline-none"
+                    />
+
                   </div>
-                </div>
+                </div> */}
               </div>
 
-              <div class="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors flex items-center justify-between">
+              {/* <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors flex items-center justify-between">
                 <div>
-                  <label class="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
                     Duration
                   </label>
-                  <div class="text-sm font-medium text-[#131614] mt-1">
-                    3 Days
+                  <div className="text-sm font-medium text-[#131614] mt-1">
+                    {hours > 0 ? `${hours} Hours` : "Enter hours"}
                   </div>
                 </div>
-                <span class="material-symbols-outlined text-[#6d7e74]">
-                  <ChevronDown />
-                </span>
-              </div>
+              </div> */}
             </div>
 
-            <div class="flex flex-col gap-3">
-              <label class="flex items-start gap-3 cursor-pointer group">
+            <div className="flex flex-col gap-3">
+              <label className="flex items-start gap-3 cursor-pointer group">
                 <input
-                  class="mt-1 w-4 h-4 accent-[#1f3d2b] text-[#1f3d2b] bg-gray-100 border-gray-300 rounded focus:ring-[#1f3d2b]"
+                  className="mt-1 w-4 h-4 accent-[#1f3d2b] text-[#1f3d2b] bg-gray-100 border-gray-300 rounded focus:ring-[#1f3d2b]"
                   type="checkbox"
+                  checked={includeOperator}
+                  onChange={(e) => setIncludeOperator(e.target.checked)}
                 />
-                <div class="text-sm">
-                  <span class="font-medium text-[#131614] block group-hover:text-[#1f3d2b] transition-colors">
+                <div className="text-sm">
+                  <span className="font-medium text-[#131614] block group-hover:text-primary transition-colors">
                     Include Operator
                   </span>
-                  <span class="text-[#6d7e74] text-xs">
-                    Certified driver (+$350/day)
+                  <span className="text-[#6d7e74] text-xs">
+                    Certified driver (+₹{machine.operatorFeePerHour}/hour)
                   </span>
                 </div>
               </label>
-              <label class="flex items-start gap-3 cursor-pointer group">
+              <label className="flex items-start gap-3 cursor-pointer group">
                 <input
                   checked
-                  class="mt-1 w-4 h-4 accent-[#1f3d2b] text-[#1f3d2b] bg-gray-100 border-gray-300 rounded focus:ring-[#1f3d2b]"
+                  className="mt-1 w-4 h-4 accent-[#1f3d2b] text-[#1f3d2b] bg-gray-100 border-gray-300 rounded focus:ring-[#1f3d2b]"
                   type="checkbox"
                 />
-                <div class="text-sm">
-                  <span class="font-medium text-[#131614] block group-hover:text-[#1f3d2b] transition-colors">
+                <div className="text-sm">
+                  <span className="font-medium text-[#131614] block group-hover:text-primary transition-colors">
                     Logistics &amp; Transport
                   </span>
-                  <span class="text-[#6d7e74] text-xs">
-                    Delivery to site (+$150)
+                  <span className="text-[#6d7e74] text-xs">
+                    Delivery to site (+₹{machine.transportFee})
                   </span>
                 </div>
               </label>
             </div>
-            <button class="w-full bg-[#03a74f] hover:bg-[#38864b] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group">
-              <span class="material-symbols-outlined text-lg group-hover:animate-pulse">
-                <Calendar size={16} />
+
+            <button
+              onClick={() => {
+                const newBooking = {
+                  id: machine._id, // IMPORTANT: machine._id (not Date.now)
+                  name: machine.name,
+                  image: machine.images[0],
+                  startDate,
+                  hours,
+                  total: grandTotal,
+                };
+
+                const existing =
+                  JSON.parse(localStorage.getItem("bookings")) || [];
+
+                // 🔍 check if this machine already exists
+                const index = existing.findIndex(
+                  (item) => item.id === machine._id,
+                );
+
+                let updated;
+
+                if (index !== -1) {
+                  // ✅ replace existing machine booking
+                  updated = [...existing];
+                  updated[index] = newBooking;
+                } else {
+                  // ✅ add new machine
+                  updated = [...existing, newBooking];
+                }
+
+                localStorage.setItem("bookings", JSON.stringify(updated));
+
+                navigate("/checkout");
+              }}
+              className="w-full bg-[#03a74f] hover:bg-[#38864b] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-lg">
+                <Calendar size={20} />
               </span>
               Book Now
             </button>
-            <p class="text-center text-xs text-[#6d7e74]">
+            <p className="text-center text-xs text-[#6d7e74]">
               You won't be charged yet
             </p>
-            {/* <div class="flex flex-col gap-2 pt-2 text-sm text-[#131614] dark:text-gray-300">
-              <div class="flex justify-between">
-                <span class="underline decoration-dotted decoration-sage cursor-help">
-                  $1,200 x 3 days
+
+            <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
+              <div className="flex justify-between">
+                <span className="underline decoration-dotted decoration-sage cursor-help">
+                  ₹{machine.pricePerHour} x {duration || 0} hour
                 </span>
-                <span>$3,600</span>
+                <span>₹{rentTotal}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="underline decoration-dotted decoration-sage cursor-help">
+
+              {includeOperator && (
+                <div className="flex justify-between">
+                  <span className="underline decoration-dotted decoration-sage cursor-help">
+                    Operator Fee (₹{machine.operatorFeePerHour} × {duration}{" "}
+                    hour)
+                  </span>
+                  <span>₹{operatorTotal}</span>
+                </div>
+              )}
+
+              <div className="flex justify-between">
+                <span className="underline decoration-dotted decoration-sage cursor-help">
                   Transport Fee
                 </span>
-                <span>$150</span>
+                <span>₹{machine.transportFee}</span>
               </div>
-              <div class="flex justify-between">
-                <span class="underline decoration-dotted decoration-sage cursor-help">
+
+              <div className="flex justify-between">
+                <span className="underline decoration-dotted decoration-sage cursor-help">
                   Service Fee
                 </span>
-                <span>$125</span>
+                <span>₹{machine.serviceFee}</span>
               </div>
             </div>
-            <hr class="border-[#dee3e0] dark:border-gray-700" />
-            <div class="flex justify-between items-center text-[#131614] dark:text-white font-bold text-lg">
+
+            <hr className="border-[#dee3e0] dark:border-gray-700" />
+
+            <div className="flex justify-between items-center text-[#131614] font-bold text-lg">
               <span>Total</span>
-              <span>$3,875</span>
-            </div> */}
+              <span>₹{grandTotal}</span>
+            </div>
           </div>
         </div>
       </div>
