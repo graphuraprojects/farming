@@ -26,15 +26,7 @@ import {
 import CountUp from "react-countup";
 import { motion } from "framer-motion";
 const FarmerHome = () => {
-  const [loading, setLoading] = React.useState(true);
-  React.useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1200); // simulate loading
-
-    return () => clearTimeout(timer);
-  }, []);
-
+  
   const Categories = [
     {
       name: "Tractors",
@@ -62,25 +54,15 @@ const FarmerHome = () => {
         "https://res.cloudinary.com/drq2a0262/image/upload/f_webp/v1769355455/Rotavator_yf7y9d",
     },
   ];
-  const Skeleton = ({ className }) => {
-    return (
-      <div className={`animate-pulse bg-gray-300/60 rounded ${className}`} />
-    );
-  };
-
   return (
     <div className="bg-[#f2fff0]">
       {/* hero section */}
       <section className="relative h-[380px] md:h-[420px] lg:h-[450px]">
-        {loading ? (
-          <Skeleton className="w-full h-full" />
-        ) : (
-          <img
-            src="https://res.cloudinary.com/drq2a0262/image/upload/f_webp/v1769270928/home-banner_lkkcdb"
-            alt="home-banner"
-            className="w-full h-full object-cover"
-          />
-        )}
+        <img
+          src="https://res.cloudinary.com/drq2a0262/image/upload/f_webp/v1769270928/home-banner_lkkcdb"
+          alt="home-banner"
+          className="w-full h-full object-cover"
+        />
 
         <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/50 to-black/70"></div>
 
@@ -317,31 +299,26 @@ const FarmerHome = () => {
           </p>
           {/* category cards */}
           <div className="mt-10 flex flex-wrap gap-5 justify-center">
-            {loading
-              ? Array.from({ length: 5 }).map((_, index) => (
-                  <Skeleton key={index} className="w-55 h-50 rounded-2xl" />
-                ))
-              : Categories.map((machine, index) => (
-                  <div
-                    className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
-                    key={index}
-                  >
-                    <img
-                      src={machine.image}
-                      alt={machine.name}
-                      className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
-                    />
-                    <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                    <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg">
-                      {machine.name}
-                    </span>
-                    <Link className="absolute view-link bottom-2 left-5 text-[#03a74f] hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
-                      View all categories{" "}
-                      <MoveRight size={20} className="pt-1" />
-                    </Link>
-                  </div>
-                ))}
+            {Categories.map((machine, index) => (
+              <div
+                className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
+                key={index}
+              >
+                <img
+                  src={machine.image}
+                  alt={machine.name}
+                  className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
+                />
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg">
+                  {machine.name}
+                </span>
+                <Link className="absolute view-link bottom-2 left-5 text-[#03a74f] hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
+                  View all categories <MoveRight size={20} className="pt-1" />
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

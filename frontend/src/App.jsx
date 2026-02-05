@@ -1,11 +1,14 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import FarmerLayout from "./layouts/FarmerLayout";
 import Register from "./pages/auth/Register";
-import Login from "./Pages/auth/Login.jsx"
-import VerifyOtp from "./Pages/auth/VerifyOtp.jsx"
-import MachineApproval from "./Pages/machineApproval/MachineAppoval.jsx"
+import Login from "./Pages/auth/Login.jsx";
+import VerifyOtp from "./Pages/auth/VerifyOtp.jsx";
+import MachineApproval from "./Admin/MachineAppoval.jsx";
 import NotFound from "./pages/NotFound";
+
+// ✅ Admin Dashboard
+import AdminDashboard from "./Admin/AdminDashboard.jsx";
 
 // Farmer Pages
 import FarmerHome from "./pages/FarmerHome";
@@ -17,53 +20,37 @@ import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
 import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
 import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Invoice from "./Pages/bookngHistory/Invoice.jsx";
-import FarmingDashboard from "./Pages/farmingDashboard/FarmingDashboard.jsx";
-import MachineApproval from "./Pages/machineApproval/MachineAppoval.jsx"
+import ApprovalList from "./Admin/ApprovalList.jsx";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ Register (NO Navbar / Footer) */}
+        {/* AUTH */}
         <Route path="/register" element={<Register />} />
-        {/* <Route path="/login" element={<Login />} /> */}
-        {/* <Route path="/verify-otp" element={<VerifyOtp />} /> */}
-        <Route path="/machine-approval" element={<MachineApproval/>} />
-        <Route path="/invoice" element={<Invoice/>} />
-        {/* Redirect root */}
-        {/* <Route path="/" element={<Navigate to="/" replace />} /> */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/verify-otp" element={<VerifyOtp />} />
 
-        {/* Farmer Routes */}
+        {/* ADMIN TEST ROUTES */}
+        <Route path="/machine-approval" element={<MachineApproval />} />
+        <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="farmer-dashboard" element={<ApprovalList />} />
+
+        {/* FARMER ROUTES */}
         <Route path="/" element={<FarmerLayout />}>
           <Route index element={<FarmerHome />} />
+          <Route path="machine-listing" element={<Listing />} />
+          <Route path="machine-details/:id" element={<MachineDetails />} />
+          <Route path="rate-experience" element={<RateExperience />} />
+          <Route path="rent-review" element={<ReviewSuccessPage />} />
+          <Route path="booking-history" element={<BookingHistory />} />
+          <Route path="booking-conform" element={<BookingConfirmation />} />
+          <Route path="add-machine" element={<AddMachine />} />
+          <Route path="invoice" element={<Invoice />} />
         </Route>
 
-        <Route path="/machine-listing" element={<FarmerLayout />}>
-          <Route index element={<Listing />} />
-        </Route>
-
-        <Route path="/machine-details/:id" element={<FarmerLayout />}>
-          <Route index element={<MachineDetails />} />
-        </Route>
-
-        <Route path="/rate-experience" element={<FarmerLayout />}>
-          <Route index element={<RateExperience />} />
-        </Route>
-
-        <Route path="/rent-review" element={<FarmerLayout />}>
-          <Route index element={<ReviewSuccessPage />} />
-        </Route>
-
-        <Route path="/booking-history" element={<FarmerLayout />}>
-          <Route index element={<BookingHistory />} />
-        </Route>
-
-        <Route path="/booking-conform" element={<FarmerLayout />}>
-          <Route index element={<BookingConfirmation />} />
-        </Route>
-        <Route path="/add-machine" element={<FarmerLayout />}>
-          <Route index element={<AddMachine />} />
-        </Route>
+        {/* NOT FOUND */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );

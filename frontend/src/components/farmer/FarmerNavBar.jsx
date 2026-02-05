@@ -21,7 +21,7 @@ const FarmerNavBar = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex space-x-8">
-            <NavLink to="/r" end className={linkClass}>
+            <NavLink to="/" end className={linkClass}>
               Home
             </NavLink>
 
