@@ -16,6 +16,7 @@ import earningRoutes from "./routes/earningRoutes.js";
 import adminPaymentRoutes from "./routes/adminPaymentRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
+import userRoutes from "./routes/userRoutes.js"; 
 import dotenv from "dotenv";
 dotenv.config();
 
@@ -50,6 +51,9 @@ app.use("/api/earnings", earningRoutes);
 app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
+
+//Profile update route 
+app.use("/api/users", userRoutes);
 
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);

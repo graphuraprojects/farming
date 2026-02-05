@@ -1,25 +1,34 @@
 import Machine from "../models/Machine.model.js";
 import cloudinary from "../configs/cloudinary.js";
+
 /**
  * ADD MACHINE
- * 
  */
 export const addMachine = async (req, res) => {
   try {
     const data = JSON.parse(req.body.data);
 
+    // Multiple machine images
     const images =
       req.files?.images?.map(file => ({
-        url: file.path,          // Cloudinary URL
-        public_id: file.filename // Cloudinary public_id
+        url: file.path,
+        public_id: file.filename
       })) || [];
 
-    const document = req.files?.document?.[0]
+    // Ownership proof (single image)
+    const ownershipProof = req.files?.ownership_proof?.[0]
       ? {
-          url: req.files.document[0].path,
-          public_id: req.files.document[0].filename
+          url: req.files.ownership_proof[0].path,
+          public_id: req.files.ownership_proof[0].filename
         }
       : null;
+
+    if (!ownershipProof) {
+      return res.status(400).json({
+        success: false,
+        message: "Ownership proof image is required"
+      });
+    }
 
     const machine = await Machine.create({
       owner_id: req.user.userId,
@@ -42,9 +51,7 @@ export const addMachine = async (req, res) => {
       address: data.address,
 
       images,
-      documents: {
-        ownership_proof: document
-      }
+      ownership_proof: ownershipProof
     });
 
     res.status(201).json({
@@ -52,6 +59,7 @@ export const addMachine = async (req, res) => {
       message: "Machine added successfully",
       data: machine
     });
+
   } catch (error) {
     res.status(400).json({
       success: false,
@@ -60,6 +68,7 @@ export const addMachine = async (req, res) => {
     });
   }
 };
+
 /**
  * UPDATE MACHINE
  */
@@ -90,8 +99,6 @@ export const updateMachine = async (req, res) => {
   });
 };
 
-
-
 /**
  * DELETE MACHINE
  */
@@ -109,15 +116,15 @@ export const deleteMachine = async (req, res) => {
     return res.status(403).json({ success: false, message: "Unauthorized" });
   }
 
-  // 🔥 delete images from cloudinary
+  // 🔥 Delete machine images
   for (const img of machine.images) {
     await cloudinary.uploader.destroy(img.public_id);
   }
 
-  // 🔥 delete document
-  if (machine.documents?.ownership_proof?.public_id) {
+  // 🔥 Delete ownership proof image
+  if (machine.ownership_proof?.public_id) {
     await cloudinary.uploader.destroy(
-      machine.documents.ownership_proof.public_id
+      machine.ownership_proof.public_id
     );
   }
 
@@ -128,7 +135,6 @@ export const deleteMachine = async (req, res) => {
     message: "Machine deleted successfully"
   });
 };
-
 
 /**
  * SET PRICE
@@ -178,6 +184,7 @@ export const getAllMachines = async (req, res) => {
   });
 };
 
+<<<<<<< HEAD
 
 /**
  * GET ALL MACHINES
@@ -230,6 +237,61 @@ export const getAllMachines = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch machines",
+=======
+/**
+ * ADMIN – Approve or Reject Machine
+ */
+export const approveOrRejectMachine = async (req, res) => {
+  try {
+    const { action, rejection_reason } = req.body;
+    const { id } = req.params;
+
+    if (!["approve", "reject"].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        message: "Action must be approve or reject"
+      });
+    }
+
+    const machine = await Machine.findById(id);
+
+    if (!machine) {
+      return res.status(404).json({
+        success: false,
+        message: "Machine not found"
+      });
+    }
+
+    if (action === "approve") {
+      machine.isApproved = true;
+      machine.rejection_reason = "";
+    }
+
+    if (action === "reject") {
+      if (!rejection_reason) {
+        return res.status(400).json({
+          success: false,
+          message: "Rejection reason is required"
+        });
+      }
+
+      machine.isApproved = false;
+      machine.rejection_reason = rejection_reason;
+    }
+
+    await machine.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Machine ${action}d successfully`,
+      data: machine
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update machine status",
+>>>>>>> 8134490 (Approve/reject machine by Admin , Profile Updation and Cloudinary Pdf To Image)
       error: error.message
     });
   }
