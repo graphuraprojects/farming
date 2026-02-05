@@ -1,25 +1,34 @@
 import Machine from "../models/Machine.model.js";
 import cloudinary from "../configs/cloudinary.js";
+
 /**
  * ADD MACHINE
- * 
  */
 export const addMachine = async (req, res) => {
   try {
     const data = JSON.parse(req.body.data);
 
+    // Multiple machine images
     const images =
-      req.files?.images?.map(file => ({
-        url: file.path,          // Cloudinary URL
-        public_id: file.filename // Cloudinary public_id
+      req.files?.images?.map((file) => ({
+        url: file.path,
+        public_id: file.filename,
       })) || [];
 
-    const document = req.files?.document?.[0]
+    // Ownership proof (single image)
+    const ownershipProof = req.files?.ownership_proof?.[0]
       ? {
-          url: req.files.document[0].path,
-          public_id: req.files.document[0].filename
+          url: req.files.ownership_proof[0].path,
+          public_id: req.files.ownership_proof[0].filename,
         }
       : null;
+
+    if (!ownershipProof) {
+      return res.status(400).json({
+        success: false,
+        message: "Ownership proof image is required",
+      });
+    }
 
     const machine = await Machine.create({
       owner_id: req.user.userId,
@@ -36,30 +45,29 @@ export const addMachine = async (req, res) => {
 
       location: {
         latitude: data.latitude,
-        longitude: data.longitude
+        longitude: data.longitude,
       },
 
       address: data.address,
 
       images,
-      documents: {
-        ownership_proof: document
-      }
+      ownership_proof: ownershipProof,
     });
 
     res.status(201).json({
       success: true,
       message: "Machine added successfully",
-      data: machine
+      data: machine,
     });
   } catch (error) {
     res.status(400).json({
       success: false,
       message: "Failed to add machine",
-      error: error.message
+      error: error.message,
     });
   }
 };
+
 /**
  * UPDATE MACHINE
  */
@@ -67,7 +75,9 @@ export const updateMachine = async (req, res) => {
   const machine = await Machine.findById(req.params.id);
 
   if (!machine) {
-    return res.status(404).json({ success: false, message: "Machine not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Machine not found" });
   }
 
   if (
@@ -77,16 +87,14 @@ export const updateMachine = async (req, res) => {
     return res.status(403).json({ success: false, message: "Unauthorized" });
   }
 
-  const updated = await Machine.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
+  const updated = await Machine.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+  });
 
   res.json({
     success: true,
     message: "Machine updated",
-    data: updated
+    data: updated,
   });
 };
 /**
@@ -96,7 +104,9 @@ export const deleteMachine = async (req, res) => {
   const machine = await Machine.findById(req.params.id);
 
   if (!machine) {
-    return res.status(404).json({ success: false, message: "Machine not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Machine not found" });
   }
 
   if (
@@ -106,23 +116,21 @@ export const deleteMachine = async (req, res) => {
     return res.status(403).json({ success: false, message: "Unauthorized" });
   }
 
-  // 🔥 delete images from cloudinary
+  // 🔥 Delete machine images
   for (const img of machine.images) {
     await cloudinary.uploader.destroy(img.public_id);
   }
 
-  // 🔥 delete document
-  if (machine.documents?.ownership_proof?.public_id) {
-    await cloudinary.uploader.destroy(
-      machine.documents.ownership_proof.public_id
-    );
+  // 🔥 Delete ownership proof image
+  if (machine.ownership_proof?.public_id) {
+    await cloudinary.uploader.destroy(machine.ownership_proof.public_id);
   }
 
   await machine.deleteOne();
 
   res.json({
     success: true,
-    message: "Machine deleted successfully"
+    message: "Machine deleted successfully",
   });
 };
 /**
@@ -137,7 +145,9 @@ export const setPricePerHour = async (req, res) => {
 
   const machine = await Machine.findById(req.params.id);
   if (!machine) {
-    return res.status(404).json({ success: false, message: "Machine not found" });
+    return res
+      .status(404)
+      .json({ success: false, message: "Machine not found" });
   }
 
   machine.price_per_hour = price_per_hour;
@@ -146,7 +156,7 @@ export const setPricePerHour = async (req, res) => {
   res.json({
     success: true,
     message: "Price updated",
-    data: machine
+    data: machine,
   });
 };
 
@@ -173,7 +183,6 @@ export const setPricePerHour = async (req, res) => {
 //   });
 // };
 
-
 /**
  * GET ALL MACHINES
  * - Admin: all machines
@@ -198,7 +207,7 @@ export const getAllMachines = async (req, res) => {
     else {
       filter = {
         isApproved: true,
-        availability_status: true
+        availability_status: true,
       };
     }
 
@@ -208,8 +217,7 @@ export const getAllMachines = async (req, res) => {
     }
 
     if (req.query.availability_status !== undefined) {
-      filter.availability_status =
-        req.query.availability_status === "true";
+      filter.availability_status = req.query.availability_status === "true";
     }
 
     const machines = await Machine.find(filter)
@@ -219,13 +227,68 @@ export const getAllMachines = async (req, res) => {
     return res.status(200).json({
       success: true,
       count: machines.length,
-      data: machines
+      data: machines,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch machines",
-      error: error.message
+      error: error.message,
+    });
+  }
+}; /**
+ * ADMIN – Approve or Reject Machine
+ */
+export const approveOrRejectMachine = async (req, res) => {
+  try {
+    const { action, rejection_reason } = req.body;
+    const { id } = req.params;
+
+    if (!["approve", "reject"].includes(action)) {
+      return res.status(400).json({
+        success: false,
+        message: "Action must be approve or reject",
+      });
+    }
+
+    const machine = await Machine.findById(id);
+
+    if (!machine) {
+      return res.status(404).json({
+        success: false,
+        message: "Machine not found",
+      });
+    }
+
+    if (action === "approve") {
+      machine.isApproved = true;
+      machine.rejection_reason = "";
+    }
+
+    if (action === "reject") {
+      if (!rejection_reason) {
+        return res.status(400).json({
+          success: false,
+          message: "Rejection reason is required",
+        });
+      }
+
+      machine.isApproved = false;
+      machine.rejection_reason = rejection_reason;
+    }
+
+    await machine.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Machine ${action}d successfully`,
+      data: machine,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to update machine status",
+      error: error.message,
     });
   }
 };
