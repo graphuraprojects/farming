@@ -292,3 +292,48 @@ export const approveOrRejectMachine = async (req, res) => {
     });
   }
 };
+
+export const getAdminMachines = async (req, res) => {
+  try {
+    const machines = await Machine.find()
+      .populate("owner_id", "name email phone")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      data: machines
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch machines",
+      error: error.message
+    });
+  }
+};
+export const getMachineByIdAdmin = async (req, res) => {
+  try {
+    const machine = await Machine.findById(req.params.id)
+      .populate("owner_id", "name email phone");
+
+    if (!machine) {
+      return res.status(404).json({
+        success: false,
+        message: "Machine not found"
+      });
+    }
+
+    res.json({
+      success: true,
+      data: machine
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch machine",
+      error: error.message
+    });
+  }
+};
