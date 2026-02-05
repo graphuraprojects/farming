@@ -24,13 +24,19 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ✅ Terms validation
+    if (!form.terms) {
+      return setMessage("Please accept terms & conditions");
+    }
+
     try {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post("/api/auth/register", {
+      const res = await axios.post("http://localhost:5000/api/auth/register", {
         name: form.name,
         email: form.email,
+        phone: form.phone, // ✅ Added
         password: form.password,
         role: form.role,
       });

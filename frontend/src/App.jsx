@@ -2,6 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import FarmerLayout from "./layouts/FarmerLayout";
 import Register from "./pages/auth/Register";
+import Login from "./Pages/auth/Login.jsx"
+import VerifyOtp from "./Pages/auth/VerifyOtp.jsx"
+import MachineApproval from "./Pages/machineApproval/MachineAppoval.jsx"
 import NotFound from "./pages/NotFound";
 
 // Farmer Pages
@@ -12,6 +15,7 @@ import ReviewSuccessPage from "./pages/RentReview.jsx";
 import MachineDetails from "./pages/FarmerListing/MachineDetails.jsx";
 import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
 import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
+import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Invoice from "./Pages/bookngHistory/Invoice.jsx";
 import FarmingDashboard from "./Pages/farmingDashboard/FarmingDashboard.jsx";
 
@@ -55,6 +59,9 @@ function App() {
 
         <Route path="/booking-conform" element={<FarmerLayout />}>
           <Route index element={<BookingConfirmation />} />
+        </Route>
+        <Route path="/add-machine" element={<FarmerLayout />}>
+          <Route index element={<AddMachine />} />
         </Route>
       </Routes>
     </BrowserRouter>

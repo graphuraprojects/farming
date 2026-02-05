@@ -89,9 +89,6 @@ export const updateMachine = async (req, res) => {
     data: updated
   });
 };
-
-
-
 /**
  * DELETE MACHINE
  */
@@ -128,8 +125,6 @@ export const deleteMachine = async (req, res) => {
     message: "Machine deleted successfully"
   });
 };
-
-
 /**
  * SET PRICE
  */
@@ -158,25 +153,25 @@ export const setPricePerHour = async (req, res) => {
 /**
  * GET MACHINES
  */
-export const getAllMachines = async (req, res) => {
-  let filter = {};
+// export const getAllMachines = async (req, res) => {
+//   let filter = {};
 
-  if (req.user?.role === "owner") {
-    filter.owner_id = req.user.userId;
-  } else if (!req.user || req.user.role === "farmer") {
-    filter = { isApproved: true, availability_status: true };
-  }
+//   if (req.user?.role === "owner") {
+//     filter.owner_id = req.user.userId;
+//   } else if (!req.user || req.user.role === "farmer") {
+//     filter = { isApproved: true, availability_status: true };
+//   }
 
-  const machines = await Machine.find(filter)
-    .populate("owner_id", "name phone")
-    .sort({ createdAt: -1 });
+//   const machines = await Machine.find(filter)
+//     .populate("owner_id", "name phone")
+//     .sort({ createdAt: -1 });
 
-  res.json({
-    success: true,
-    count: machines.length,
-    data: machines
-  });
-};
+//   res.json({
+//     success: true,
+//     count: machines.length,
+//     data: machines
+//   });
+// };
 
 
 /**

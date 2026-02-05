@@ -73,3 +73,9 @@
   transform: translateY(0);
   pointer-events: auto;
 }
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}

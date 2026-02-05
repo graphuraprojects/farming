@@ -12,7 +12,8 @@ const generateOTP = () =>
  */
 export const register = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, phone } = req.body;
+
 
     // 1️⃣ Validate input
     if (!name || !email || !password || !role) {
@@ -39,6 +40,7 @@ export const register = async (req, res) => {
     const user = await User.create({
       name,
       email,
+      phone,
       role,
       password_hash: hashedPassword,
       otp,
