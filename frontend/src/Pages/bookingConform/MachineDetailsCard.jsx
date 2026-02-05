@@ -22,7 +22,7 @@ const MachineDetailsCard = ({ details }) => {
           <div>
             {/* Replaced text-primary */}
             <h3 className="text-[#1f3d2b]/60 uppercase tracking-widest text-[10px] sm:text-xs font-bold mb-1">
-              Machine Details
+              Machine Name
             </h3>
             {/* Replaced text-charcoal */}
             <h2 className="text-[#2b2b2b] font-bold leading-tight text-lg sm:text-xl lg:text-2xl">
