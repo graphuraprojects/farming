@@ -21,6 +21,8 @@ import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx"
 import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Invoice from "./Pages/bookngHistory/Invoice.jsx";
 import ApprovalList from "./Admin/ApprovalList.jsx";
+import TermsAndConditions from "./Pages/Terns&Condition.jsx";
+import PrivacyPolicy from "./Pages/PrivacyPolicy.jsx"
 
 function App() {
   return (
@@ -48,6 +50,9 @@ function App() {
           <Route path="add-machine" element={<AddMachine />} />
           <Route path="invoice" element={<Invoice />} />
         </Route>
+
+        <Route path="/T&C" element={<TermsAndConditions />} />
+        <Route path="/P" element={<PrivacyPolicy />} />
 
         {/* NOT FOUND */}
         <Route path="*" element={<NotFound />} />
