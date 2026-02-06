@@ -36,7 +36,7 @@ function App() {
         {/* ADMIN TEST ROUTES */}
         <Route path="/machine-approval" element={<MachineApproval />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="farmer-dashboard" element={<ApprovalList />} />
+        <Route path="/farmer-dashboard" element={<ApprovalList />} />
 
         {/* FARMER ROUTES */}
         <Route path="/" element={<FarmerLayout />}>
