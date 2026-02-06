@@ -5,7 +5,9 @@ import {
   deleteMachine,
   setPricePerHour,
   getAllMachines,
-  approveOrRejectMachine
+  approveOrRejectMachine,
+  getAdminMachines,
+  getMachineByIdAdmin
 } from "../controllers/machineController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
@@ -30,14 +32,9 @@ router.put("/:id", protect, allowOwnerOrAdmin, updateMachine);
 router.delete("/:id", protect, allowOwnerOrAdmin, deleteMachine);
 router.patch("/:id/price", protect, allowOwnerOrAdmin, setPricePerHour);
 
-// Public + Owner + Admin
-router.get("/", protect, getAllMachines);
-
-<<<<<<< HEAD
 // Get all machines
 // Public (farmers) + Owner + Admin
 router.get("/", protect, getAllMachines);
-=======
 
 /**
  * Admin approve / reject machine
@@ -48,7 +45,8 @@ router.patch(
   allowAdmin,
   approveOrRejectMachine
 );
+router.get("/admin/all", protect, allowAdmin, getAdminMachines);
+router.get("/admin/:id", protect, allowAdmin, getMachineByIdAdmin);
 
->>>>>>> 8134490 (Approve/reject machine by Admin , Profile Updation and Cloudinary Pdf To Image)
 
 export default router;

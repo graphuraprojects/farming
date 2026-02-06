@@ -1,17 +1,19 @@
-// import { Outlet } from "react-router-dom";
-// import AdminNavbar from "../components/admin/AdminNavbar";
-// import AdminFooter from "../components/admin/AdminFooter";
+import { Outlet } from "react-router-dom";
 
-// const AdminLayout = () => {
-//   return (
-//     <>
-//       <AdminNavbar />
-//       <main className="min-h-screen px-6">
-//         <Outlet />
-//       </main>
-//       <AdminFooter />
-//     </>
-//   );
-// };
+const AdminLayout = () => {
+  return (
+    <div className="flex">
+      {/* Admin Sidebar Here */}
+      <div className="w-64 bg-gray-900 text-white min-h-screen p-4">
+        Admin Panel
+      </div>
 
-// export default AdminLayout;
+      {/* Page Content */}
+      <div className="flex-1 p-6">
+        <Outlet />
+      </div>
+    </div>
+  );
+};
+
+export default AdminLayout;

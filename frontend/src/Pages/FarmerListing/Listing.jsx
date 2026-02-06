@@ -4,7 +4,7 @@ import axios from "axios";
 import MachineCard from "./MachineCard";
 import Filters from "./Filters";
 
-import { ChevronLeft, ChevronRight} from 'lucide-react';
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -22,38 +22,34 @@ const Listing = () => {
   const [machines, setMachines] = useState([]);
   const [loading, setLoading] = useState(true);
 
- useEffect(() => {
-  const fetchMachines = async () => {
-    try {
-      const token = localStorage.getItem("token");
+  useEffect(() => {
+    const fetchMachines = async () => {
+      try {
+        const token = localStorage.getItem("token");
 
-      const res = await axios.get(
-        "http://localhost:5000/api/machines",
-        {
+        const res = await axios.get("http://localhost:5000/api/machines", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
           withCredentials: true,
-        }
-      );
+        });
 
-      setMachines(res.data.data);
-    } catch (error) {
-      console.error("Error fetching machines:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+        setMachines(res.data.data);
+      } catch (error) {
+        console.error("Error fetching machines:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  fetchMachines();
-}, []);
+    fetchMachines();
+  }, []);
 
-
-// Reset page when filters/sort change
+  // Reset page when filters/sort change
   useEffect(() => {
     setCurrentPage(1);
   }, [filters, sort]);
-  
+
   // Count machines by type (for Tractors (3))
   const typeCounts = machines.reduce((acc, item) => {
     acc[item.type] = (acc[item.type] || 0) + 1;
@@ -61,23 +57,39 @@ const Listing = () => {
   }, {});
 
   //  FILTER
-  const filteredData = machines.map((m) => ({
-  id: m._id,
-  name: m.machine_name,
-  price: m.price_per_hour,
-  year: m.model_year,
-  image: m.images?.[0],
-  location: `${m.address?.street || ""}, ${m.address?.city || ""}, ${m.address?.state || ""}`,
-  type: m.category,
-  distance: 20, // dummy (backend not sending yet)
-  hp: 50,       // dummy
-  verified: true // or m.isApproved
-}));
+  const filteredData = machines
+    .map((m) => ({
+      id: m._id,
+      name: m.machine_name,
+      price: m.price_per_hour,
+      year: m.model_year,
+      image: m.images?.[0],
+      location: `${m.address?.street || ""}, ${m.address?.city || ""}, ${m.address?.state || ""}`,
+      type: m.category,
+      distance: 20, // dummy
+      hp: 50,
+      verified: true,
+    }))
 
-if (loading) {
-  return <p className="text-center py-20">Loading machines...</p>;
-}
+    // 🔍 SEARCH FILTER
+    .filter((item) =>
+      item.name.toLowerCase().includes(filters.search.toLowerCase()),
+    )
 
+    // 💰 PRICE FILTER
+    .filter((item) => item.price <= filters.price)
+
+    // 📍 DISTANCE FILTER
+    .filter((item) => item.distance <= filters.distance)
+
+    // 🚜 TYPE FILTER
+    .filter((item) =>
+      filters.type.length === 0 ? true : filters.type.includes(item.type),
+    );
+
+  if (loading) {
+    return <p className="text-center py-20">Loading machines...</p>;
+  }
 
   // SORT
   if (sort === "low-high") {
@@ -96,37 +108,46 @@ if (loading) {
     startIndex + ITEMS_PER_PAGE,
   );
 
-  
-
-
   return (
     <>
       <div className="relative w-full h-[65vh] overflow-hidden">
-        <img alt="Contact banner" className="w-full h-full object-cover object-center" 
-        src="https://img.freepik.com/premium-photo/two-working-gathering-harvest-machines-harvest-gathering-gold-field-dry-wheat_116317-7329.jpg" />
+        <img
+          alt="Contact banner"
+          className="w-full h-full object-cover object-center"
+          src="https://img.freepik.com/premium-photo/two-working-gathering-harvest-machines-harvest-gathering-gold-field-dry-wheat_116317-7329.jpg"
+        />
         <div className="absolute inset-0 bg-black/40"></div>
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
-          <h1 className="text-4xl font-bold mb-4">Certified machines, verified owners, flexible rentals</h1>
-          <p className="max-w-2xl sm:text-lg text-[12px] leading-relaxed">From small farms to big construction sites, we provide the right machine for every project.</p>
+          <h1 className="text-4xl font-bold mb-4">
+            Certified machines, verified owners, flexible rentals
+          </h1>
+          <p className="max-w-2xl sm:text-lg text-[12px] leading-relaxed">
+            From small farms to big construction sites, we provide the right
+            machine for every project.
+          </p>
         </div>
       </div>
-      
+
       <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* TOP BAR */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
           <div className="flex flex-col gap-2">
-            <h1 className="text-[#131614] text-4xl font-black tracking-tight">Available Machines 
-              <span className="text-2xl pl-1">
-                ({filteredData.length})
-              </span>
+            <h1 className="text-[#131614] text-4xl font-black tracking-tight">
+              Available Machines
+              <span className="text-2xl pl-1">({filteredData.length})</span>
             </h1>
-            <p className="text-[#6d7e74] text-lg">Browse premium agricultural machinery verified for enterprise use.</p>
+            <p className="text-[#6d7e74] text-lg">
+              Browse premium agricultural machinery verified for enterprise use.
+            </p>
           </div>
 
           <div className="flex items-center gap-3">
             <span className="text-sm font-medium text-[#6d7e74]">Sort by:</span>
-            <select value={sort}
-            onChange={(e) => setSort(e.target.value)} className="form-select border border-[#e6e8e6] bg-white rounded-lg text-sm font-medium py-2 pl-3 pr-10 focus:ring-[#1f3d2b] focus:border-[#1f3d2b]">
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+              className="form-select border border-[#e6e8e6] bg-white rounded-lg text-sm font-medium py-2 pl-3 pr-10 focus:ring-[#1f3d2b] focus:border-[#1f3d2b]"
+            >
               <option value="recommended">Recommended</option>
               <option value="low-high">Price: Low to High</option>
               <option value="high-low">Price: High to Low</option>
@@ -180,7 +201,7 @@ if (loading) {
                       : "hover:bg-gray-100"
                   }`}
                 >
-                  <ChevronLeft size={20}/>
+                  <ChevronLeft size={20} />
                 </button>
 
                 {/* PAGE NUMBERS */}
@@ -200,7 +221,9 @@ if (loading) {
 
                 {/* RIGHT ARROW */}
                 <button
-                  onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+                  onClick={() =>
+                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  }
                   disabled={currentPage === totalPages}
                   className={`cursor-pointer px-3 py-2 rounded ${
                     currentPage === totalPages
@@ -208,7 +231,7 @@ if (loading) {
                       : "hover:bg-gray-100"
                   }`}
                 >
-                  <ChevronRight size={20}/>
+                  <ChevronRight size={20} />
                 </button>
               </div>
             )}

@@ -155,10 +155,10 @@ const Location = ({ data, setData, prev, submit }) => {
   };
 
   const handleFileSelect = (file) => {
-    if (file && file.type === "application/pdf") {
+    if (file && file.type.startsWith("image/")) {
       setUploadedFile(file);
     } else {
-      alert("Please upload a PDF file");
+      alert("Please upload an image file (JPG, PNG, JPEG)");
     }
   };
 
@@ -404,7 +404,7 @@ const Location = ({ data, setData, prev, submit }) => {
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept=".pdf"
+                  accept="image/*"
                   onChange={handleFileInput}
                   className="hidden"
                   id="file-upload"
@@ -421,7 +421,7 @@ const Location = ({ data, setData, prev, submit }) => {
                     Proof of Purchase / Title
                   </p>
                   <p className="text-xs text-gray-500 text-center mb-3">
-                    PDF, JPG or PNG up to 10MB
+                    JPG, PNG, JPEG up to 10MB
                   </p>
                   <span className="text-sm text-[#03a74f] font-semibold">
                     Click to upload

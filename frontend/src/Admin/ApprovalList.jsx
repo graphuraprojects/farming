@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { IndianRupee } from "lucide-react";
 
-export default function FarmingDashboard() {
+export default function ApprovalList() {
   const [currentPage, setCurrentPage] = useState(1);
   const [machines, setMachines] = useState([]);
-  const [stats, setStats] = useState(null);
+  // const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [sortBy, setSortBy] = useState("newest");
@@ -13,36 +13,36 @@ export default function FarmingDashboard() {
   const [refreshing, setRefreshing] = useState(false);
 
   // Simulated API base URL - replace with your actual backend URL
-  const API_BASE_URL = "https://api";
+  const API_BASE_URL = "http://localhost:5000/api";
 
   // Fetch dashboard stats
-  const fetchStats = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/dashboard/stats`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`,
-          "Content-Type": "application/json",
-        },
-      });
+  // const fetchStats = async () => {
+  //   try {
+  //     const response = await fetch(`${API_BASE_URL}/dashboard/stats`, {
+  //       headers: {
+  //         Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      if (!response.ok) throw new Error("Failed to fetch stats");
+  //     if (!response.ok) throw new Error("Failed to fetch stats");
 
-      const data = await response.json();
-      setStats(data);
-    } catch (err) {
-      console.error("Error fetching stats:", err);
-      // Fallback to demo data
-      setStats({
-        totalCommission: 142890.0,
-        commissionGrowth: 12,
-        activeRegions: 14,
-        newRegions: 2,
-        pendingApprovals: 23,
-        activeMachines: 1240,
-        machineGrowth: 8,
-      });
-    }
-  };
+  //     const data = await response.json();
+  //     setStats(data);
+  //   } catch (err) {
+  //     console.error("Error fetching stats:", err);
+  //     // Fallback to demo data
+  //     setStats({
+  //       totalCommission: 142890.0,
+  //       commissionGrowth: 12,
+  //       activeRegions: 14,
+  //       newRegions: 2,
+  //       pendingApprovals: 23,
+  //       activeMachines: 1240,
+  //       machineGrowth: 8,
+  //     });
+  //   }
+  // };
 
   // Fetch machines with pagination and filters
   const fetchMachines = async (page = 1, sort = "newest", region = "all") => {
@@ -141,7 +141,7 @@ export default function FarmingDashboard() {
 
       // Refresh data
       await fetchMachines(currentPage, sortBy, filterRegion);
-      await fetchStats();
+      // await fetchStats();
 
       // Show success notification (you can integrate a toast library)
       alert("Machine approved successfully!");
@@ -168,7 +168,7 @@ export default function FarmingDashboard() {
 
       // Refresh data
       await fetchMachines(currentPage, sortBy, filterRegion);
-      await fetchStats();
+      // await fetchStats();
 
       alert("Machine rejected successfully!");
     } catch (err) {
@@ -206,17 +206,14 @@ export default function FarmingDashboard() {
   // Handle refresh
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Promise.all([
-      fetchStats(),
-      fetchMachines(currentPage, sortBy, filterRegion),
-    ]);
+    await fetchMachines(currentPage, sortBy, filterRegion);
   };
 
   // Initial data load
-  useEffect(() => {
-    fetchStats();
-    fetchMachines(currentPage, sortBy, filterRegion);
-  }, [currentPage, sortBy, filterRegion]);
+  // useEffect(() => {
+  //   fetchStats();
+  //   fetchMachines(currentPage, sortBy, filterRegion);
+  // }, [currentPage, sortBy, filterRegion]);
 
   const getStatusDisplay = (status) => {
     const statusMap = {
@@ -270,104 +267,6 @@ export default function FarmingDashboard() {
           </button>
         </div>
       </div>
-
-      {/* Stats Cards */}
-      {stats && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          {/* Total Platform Commission */}
-          <div
-            className="bg-white !rounded-2xl cursor-pointer p-4 sm:p-6 !shadow-lg hover:shadow-xl border border-gray-200 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-slide-up"
-            style={{ animationDelay: "0ms" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs sm:text-sm text-gray-600">
-                Total Platform Commission
-              </div>
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <span className="text-xl">💰</span>
-              </div>
-            </div>
-            <div className="flex items-center text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              <IndianRupee />
-              {stats.totalCommission.toLocaleString("en-US", {
-                minimumFractionDigits: 2,
-              })}
-            </div>
-            <div className="flex items-center text-xs sm:text-sm text-green-600">
-              <span className="mr-1">↗</span>
-              <span className="font-medium">+{stats.commissionGrowth}%</span>
-              <span className="text-gray-500 ml-1">vs last month</span>
-            </div>
-          </div>
-
-          {/* Active Regions */}
-          <div
-            className="bg-white rounded-2xl p-4 cursor-pointer sm:p-6 shadow-lg border border-gray-200 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-slide-up"
-            style={{ animationDelay: "100ms" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs sm:text-sm text-gray-600">
-                Active Regions
-              </div>
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <span className="text-xl">🗺️</span>
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {stats.activeRegions} Districts
-            </div>
-            <div className="flex items-center text-xs sm:text-sm text-green-600">
-              <span className="font-medium">+ {stats.newRegions} New</span>
-              <span className="text-gray-500 ml-1">this week</span>
-            </div>
-          </div>
-
-          {/* Pending Approvals */}
-          <div
-            className="bg-white rounded-2xl cursor-pointer p-4 sm:p-6 shadow-lg border border-gray-200 border-l-4 border-l-orange-400 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-slide-up"
-            style={{ animationDelay: "200ms" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs sm:text-sm text-gray-600">
-                Pending Approvals
-              </div>
-              <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-                <span className="text-xl">⏳</span>
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {stats.pendingApprovals} Requests
-            </div>
-            <div className="flex items-center text-xs sm:text-sm text-red-600">
-              <span className="mr-1">⚠️</span>
-              <span className="font-medium">Action Required</span>
-            </div>
-          </div>
-
-          {/* Total Active Machines */}
-          <div
-            className="bg-white rounded-2xl p-4 cursor-pointer sm:p-6 shadow-lg border border-gray-200 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1 animate-slide-up"
-            style={{ animationDelay: "300ms" }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="text-xs sm:text-sm text-gray-600">
-                Total Active Machines
-              </div>
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <span className="text-xl">🚜</span>
-              </div>
-            </div>
-            <div className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-              {stats.activeMachines.toLocaleString()}
-            </div>
-            <div className="flex items-center text-xs sm:text-sm text-green-600">
-              <span className="mr-1">↗</span>
-              <span className="font-medium">+{stats.machineGrowth}%</span>
-              <span className="text-gray-500 ml-1">growth</span>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Error Message */}
       {error && (
