@@ -290,38 +290,42 @@ const FarmerHome = () => {
 
       {/* popular category section */}
       <section className="flex justify-center">
-        <div className="mx-5 py-15 max-w-[1280px]">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
-            Popular Categories
-          </h1>
-          <p className="text-gray-500 font-medium text-sm w-full text-center">
-            Find the right tools to you specific seasonal needs.
-          </p>
-          {/* category cards */}
-          <div className="mt-10 flex flex-wrap gap-5 justify-center">
-            {Categories.map((machine, index) => (
-              <div
-                className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
-                key={index}
-              >
-                <img
-                  src={machine.image}
-                  alt={machine.name}
-                  className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
-                />
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg">
-                  {machine.name}
-                </span>
-                <Link className="absolute view-link bottom-2 left-5 text-[#03a74f] hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
-                  View all categories <MoveRight size={20} className="pt-1" />
-                </Link>
+              <div className="mx-5 py-15 max-w-[1280px]">
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+                  Popular Categories
+                </h1>
+                <p className="text-gray-500 font-medium text-sm w-full text-center">
+                  Find the right tools to you specific seasonal needs.
+                </p>
+                {/* category cards */}
+                <div className="mt-10 flex flex-wrap gap-5 justify-center">
+                  {Categories.map((machine, index) => (
+                    <div
+                      className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
+                      key={index}
+                    >
+                      <img
+                        src={machine.image}
+                        alt={machine.name}
+                        className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
+                      />
+                      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                      {/* <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full justify-between">
+                        <span>{machine.name}</span>{" "}
+                        <Link className="view-link text-white hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
+                          <MoveRight size={20} className="pt-1" />
+                        </Link>
+                      </span> */}
+                      <p className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full items-center justify-between">
+                        <span>{machine.name}</span>
+                        <MoveRight size={35} className="mr-8 pt-1 view-link" />
+                      </p>
+                    </div>
+                  ))}
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+            </section>
 
       {/* Benefits section */}
       <section className="flex  justify-center">
@@ -442,7 +446,7 @@ const FarmerHome = () => {
       </section>
 
       {/* start monetizing section */}
-      <section className="bg-green-900">
+      <section className="bg-green-900 mb-15">
         <div className="py-10 flex flex-col items-center gap-3">
           <h1 className="text-white text-2xl md:text-3xl lg:text-5xl font-bold text-center">
             Ready to monetize <br /> your machinery?
