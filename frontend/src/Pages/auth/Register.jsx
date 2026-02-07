@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Leaf, Tractor } from "lucide-react";
+
 const Register = () => {
   const [form, setForm] = useState({
     name: "",
@@ -11,43 +12,91 @@ const Register = () => {
     role: "farmer",
     terms: false,
   });
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // =====================
+  // INPUT CHANGE LOG
+  // =====================
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+
+    const updatedValue = type === "checkbox" ? checked : value;
+
+    console.log("Input Changed:", name, "=", updatedValue);
+
+    setForm((prev) => {
+      const updatedForm = { ...prev, [name]: updatedValue };
+      console.log("Updated Form State:", updatedForm);
+      return updatedForm;
+    });
   };
 
+  // =====================
+  // SUBMIT LOG
+  // =====================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ✅ Terms validation
+    console.log("========== REGISTER SUBMIT ==========");
+    console.log("Form Data:", form);
+
     if (!form.terms) {
+      console.warn("Terms not accepted");
       return setMessage("Please accept terms & conditions");
     }
 
     try {
       setLoading(true);
+      console.log("Loading TRUE");
       setMessage("");
 
-      const res = await axios.post("http://localhost:5000/api/auth/register", {
+      const payload = {
         name: form.name,
         email: form.email,
-        phone: form.phone, // ✅ Added
+        phone: form.phone,
         password: form.password,
         role: form.role,
-      });
+      };
+
+      console.log("Sending Payload:", payload);
+
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/register",
+        payload,
+      );
+
+      console.log("Register Success Response:", res);
+      console.log("Response Data:", res.data);
+
+      const userId = res?.data?.data?.userId;
+      console.log("Extracted UserId:", userId);
 
       navigate("/verify-otp", {
-        state: { userId: res.data.data.userId },
+        state: { userId },
       });
+
+      console.log("Navigation to /verify-otp triggered");
     } catch (err) {
+      console.error("REGISTER ERROR:", err);
+
+      if (err.response) {
+        console.error("Backend Response Error:", err.response.data);
+        console.error("Status Code:", err.response.status);
+      }
+
+      if (err.request) {
+        console.error("No response received:", err.request);
+      }
+
       setMessage(err.response?.data?.message || "Registration failed");
     } finally {
+      console.log("Loading FALSE");
       setLoading(false);
+      console.log("=====================================");
     }
   };
 
@@ -72,20 +121,7 @@ const Register = () => {
               Join the community that{" "}
               <em className="text-outline">Powers the Harvest.</em>
             </h1>
-            <div
-              className="mt-5
-    max-w-md w-full
-    rounded-3xl
-    overflow-hidden
-    bg-black/60
-    border border-white/20
-    shadow-[0_25px_60px_rgba(0,0,0,0.55)]
-    p-8
-    text-center
-    relative
-  "
-            >
-              {/* Icon */}
+            <div className="mt-5 max-w-md w-full rounded-3xl overflow-hidden bg-black/60 border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.55)] p-8 text-center relative">
               <div className="flex justify-center mb-3 relative z-10">
                 <img
                   className="w-16"
@@ -94,16 +130,13 @@ const Register = () => {
                 />
               </div>
 
-              {/* Quote */}
               <h1 className="relative z-10 text-lg md:text-xl font-semibold text-white leading-relaxed">
                 “Empowering farmers with the right machines,
                 <span className="text-[#03a74f]"> at the right time.</span>”
               </h1>
 
-              {/* Divider */}
               <div className="relative z-10 w-12 h-[3px] bg-[#03a74f] mx-auto my-4 rounded-full"></div>
 
-              {/* Sub text */}
               <p className="relative z-10 text-sm text-gray-300">
                 Join our community and grow smarter with trusted tools.
               </p>
@@ -115,7 +148,6 @@ const Register = () => {
       {/* RIGHT FORM SECTION */}
       <div className="flex flex-1 flex-col justify-center items-center p-2 overflow-y-auto bg-[#e9fbf1cc]">
         <div className="w-full max-w-[480px] flex flex-col gap-4">
-          {/* Header */}
           <div>
             <h1 className="text-[32px] font-bold">Create Your Account</h1>
             <p className="text-[#5E5E5E] dark:text-gray-700">
@@ -123,7 +155,6 @@ const Register = () => {
             </p>
           </div>
 
-          {/* FORM */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* ROLE */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -172,10 +203,7 @@ const Register = () => {
               required
               value={form.name}
               onChange={handleChange}
-              className="w-full rounded-lg border-gray-400 
-pl-4 py-3 
- placeholder-gray-400 border-[1.5px]
-focus:border-[#03a74f] focus:ring-[#1f3d2b] bg-white outline-none"
+              className="w-full rounded-lg border-gray-400 pl-4 py-3 placeholder-gray-400 border-[1.5px] focus:border-[#03a74f] focus:ring-[#1f3d2b] bg-white outline-none"
             />
 
             <input
@@ -184,10 +212,7 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] bg-white outline-none"
               value={form.email}
               onChange={handleChange}
               required
-              className="w-full rounded-lg border-gray-400 
-pl-4 py-3  bg-white 
- placeholder-gray-400 border-[1.5px]
-focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
+              className="w-full rounded-lg border-gray-400 pl-4 py-3 bg-white placeholder-gray-400 border-[1.5px] focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
             />
 
             <input
@@ -196,10 +221,7 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
               value={form.phone}
               required
               onChange={handleChange}
-              className="w-full rounded-lg border-gray-400 
-pl-4 py-3  bg-white 
- placeholder-gray-400 border-[1.5px]
-focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
+              className="w-full rounded-lg border-gray-400 pl-4 py-3 bg-white placeholder-gray-400 border-[1.5px] focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
             />
 
             <div className="relative">
@@ -210,21 +232,30 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
                 value={form.password}
                 required
                 onChange={handleChange}
-                className="w-full rounded-lg border-gray-400 
-pl-4 py-3  bg-white 
- placeholder-gray-400 border-[1.5px]
-focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
+                className="w-full rounded-lg border-gray-400 pl-4 py-3 bg-white placeholder-gray-400 border-[1.5px] focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
               />
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                onClick={() => {
+                  console.log("Toggle Password Visibility");
+                  setShowPassword(!showPassword);
+                }}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               >
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="terms"
+                checked={form.terms}
+                onChange={handleChange}
+                className="accent-[#03a74f]"
+              />
+              I agree to Terms & Conditions
+            </label>
 
-            {/* BUTTON */}
             <button
               disabled={loading}
               type="submit"
@@ -234,6 +265,7 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
             </button>
           </form>
         </div>
+
         <p className="text-center mt-2">
           Already have an account?{" "}
           <Link to="/login" className="text-[#03a74f] font-semibold">

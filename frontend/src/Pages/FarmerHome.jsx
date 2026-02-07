@@ -124,6 +124,27 @@ const FarmerHome = () => {
               </div>
             </div>
           </div>
+        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none pointer-events-none">
+          <svg
+            viewBox="0 0 1440 160"
+            preserveAspectRatio="none"
+            className="w-full h-[140px] wave-animate"
+          >
+            <path
+              d="
+          M0,90
+          C120,110 240,66 310,65
+          C520,55 620,120 760,115
+          C900,110 980,40 1120,35
+          C1240,20 1340,40 1440,55
+          L1440,160
+          L0,160
+          Z
+        "
+              fill="#f2fff0"
+            />
+          </svg>
+        </div>
         </div>
 
         {/* center status  card */}
@@ -150,27 +171,6 @@ const FarmerHome = () => {
       </section>
       {/* bottom wave */}
       {/* bottom wave */}
-      <div className="absolute bottom-25 left-0 w-full overflow-hidden leading-none pointer-events-none">
-        <svg
-          viewBox="0 0 1440 160"
-          preserveAspectRatio="none"
-          className="w-full h-[140px] wave-animate"
-        >
-          <path
-            d="
-        M0,90
-        C120,110 240,66 310,65
-        C520,55 620,120 760,115
-        C900,110 980,40 1120,35
-        C1240,20 1340,40 1440,55
-        L1440,160
-        L0,160
-        Z
-      "
-            fill="#f2fff0"
-          />
-        </svg>
-      </div>
 
       {/* About us section */}
       <section className="flex justify-center overflow-hidden">

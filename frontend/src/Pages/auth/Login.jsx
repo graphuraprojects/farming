@@ -22,7 +22,6 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-
     try {
       setLoading(true);
 
@@ -37,10 +36,8 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-
       // Redirect based on role
-      if (user.role === "farmer") navigate("/");
-      else navigate("/owner");
+      navigate("/");
     } catch (err) {
       console.error(err.response?.data?.message || "Login failed");
     } finally {
@@ -156,11 +153,7 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
               >
-                {showPassword ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
 
