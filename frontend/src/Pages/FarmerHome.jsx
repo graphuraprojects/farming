@@ -124,7 +124,7 @@ const FarmerHome = () => {
               </div>
             </div>
           </div>
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none pointer-events-none">
+        <div className="absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
           <svg
             viewBox="0 0 1440 160"
             preserveAspectRatio="none"
@@ -289,7 +289,7 @@ const FarmerHome = () => {
       </section>
 
       {/* popular category section */}
-      <section className="flex justify-center">
+       <section className="flex justify-center">
               <div className="mx-5 py-15 max-w-[1280px]">
                 <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
                   Popular Categories

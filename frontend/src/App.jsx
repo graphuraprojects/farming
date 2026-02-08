@@ -23,6 +23,8 @@ import Invoice from "./Pages/bookngHistory/Invoice.jsx";
 import ApprovalList from "./Admin/ApprovalList.jsx";
 import TermsAndConditions from "./Pages/Terns&Condition.jsx";
 import PrivacyPolicy from "./Pages/PrivacyPolicy.jsx"
+import AboutUs from "./Pages/about/AboutUs.jsx";
+import Profile from "./Pages/profile/Profile.jsx";
 
 function App() {
   return (
@@ -49,6 +51,8 @@ function App() {
           <Route path="booking-conform" element={<BookingConfirmation />} />
           <Route path="add-machine" element={<AddMachine />} />
           <Route path="invoice" element={<Invoice />} />
+          <Route path="/about-us" element={<AboutUs />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
 
         <Route path="/T&C" element={<TermsAndConditions />} />

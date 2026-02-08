@@ -35,82 +35,65 @@ const AddMachine = () => {
     document: null,
   });
 
-  const handleSubmit = async () => {
-    try {
-      const formData = new FormData();
+ const handleSubmit = async () => {
+  try {
+    const formData = new FormData();
 
-      const data = {
-        machine_name: machineData.machineName,
-        model: machineData.model,
-        model_year: machineData.modelYear,
-        registration_no: machineData.registrationNumber,
-        fuel_type: machineData.fuelType,
-        category: machineData.category,
-        price_per_hour: machineData.pricePerHour,
-        latitude: machineData.lat,
-        longitude: machineData.lng,
+    const data = {
+      machine_name: machineData.machineName,
+      model: machineData.model,
+      model_year: machineData.modelYear,
+      registration_no: machineData.registrationNumber,
+      fuel_type: machineData.fuelType,
+      category: machineData.category,
+      price_per_hour: machineData.pricePerHour,
+      latitude: machineData.lat,
+      longitude: machineData.lng,
 
-        // Fix address structure to match backend schema
-        address: {
-          street: machineData.address,
-          city: machineData.city,
-          state: machineData.state,
-          zip: machineData.zipCode,
-          country: machineData.country,
-        },
-      };
+      address: {
+        street: machineData.address,
+        city: machineData.city,
+        state: machineData.state,
+        zip: machineData.zipCode,
+        country: machineData.country,
+      },
+    };
 
-      formData.append("data", JSON.stringify(data));
+    formData.append("data", JSON.stringify(data));
 
-      machineData.photos.forEach((photo) => {
-        formData.append("images", photo.file);
-      });
+    // Images
+    machineData.photos.forEach((photo) => {
+      formData.append("images", photo.file);
+    });
 
-      if (machineData.document) {
-        formData.append("document", machineData.document);
-      }
-
-      const token = localStorage.getItem("token");
-
-      const res = await axios.post(
-        "http://localhost:5000/api/machines",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-
-      if (res.data.success) {
-        alert("Machine Added Successfully!");
-        setMachineData({
-          machineName: "",
-          model: "",
-          modelYear: "",
-          registrationNumber: "",
-          photos: [],
-          fuelType: "",
-          category: "",
-          pricePerHour: "",
-          lat: "",
-          lng: "",
-          address: "",
-          city: "",
-          state: "",
-          zipCode: "",
-          country: "",
-          document: null,
-        });
-        setStep(1);
-      }
-    } catch (err) {
-      console.error("Upload error:", err);
-      console.error("Error response:", err.response?.data); // More detailed error
-      alert("Upload failed: " + (err.response?.data?.message || err.message));
+    // Ownership proof (FIXED)
+    if (machineData.document) {
+      formData.append("ownership_proof", machineData.document);
     }
-  };
+
+    const token = localStorage.getItem("token");
+
+    const res = await axios.post(
+      "http://localhost:5000/api/machines",
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (res.data.success) {
+      alert("Machine Added Successfully!");
+      setStep(1);
+    }
+
+  } catch (err) {
+    console.error("Upload error:", err.response?.data || err.message);
+    alert("Upload failed");
+  }
+};
+
 
   return (
     <div className="bg-[#e9fbf1cc] pb-10 min-h-screen">

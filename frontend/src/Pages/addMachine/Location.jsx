@@ -240,7 +240,7 @@ const Location = ({ data, setData, prev, submit }) => {
               </button>
             </div>
 
-            <div className="relative">
+            <div className="relative z-0">
               {isLoadingLocation ? (
                 <div className="w-full h-80 rounded-lg bg-gray-100 flex items-center justify-center">
                   <div className="text-center">
@@ -259,6 +259,7 @@ const Location = ({ data, setData, prev, submit }) => {
                     height: "320px",
                     width: "100%",
                     borderRadius: "12px",
+                    zIndex: 0,
                   }}
                 >
                   <TileLayer
