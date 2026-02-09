@@ -7,7 +7,7 @@ const FarmerDashboard = () => {
         {/* KPI Cards */}
         <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {/* Card 1 */}
-          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_2px_10px_-4px_rgba(31,61,43,0.05)] transition-all hover:shadow-lg dark:border-gray-800 dark:bg-surface-dark">
+          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg dark:border-gray-800 dark:bg-surface-dark">
             <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-50 group-hover:scale-110"></div>
 
             <div className="relative z-10 flex flex-col gap-1">
@@ -28,7 +28,7 @@ const FarmerDashboard = () => {
           </div>
 
           {/* Card 2 */}
-          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_2px_10px_-4px_rgba(31,61,43,0.05)] transition-all hover:shadow-lg dark:border-gray-800 dark:bg-surface-dark">
+          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg dark:border-gray-800 dark:bg-surface-dark">
             <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-50 group-hover:scale-110"></div>
 
             <div className="relative z-10 flex flex-col gap-1">
@@ -49,7 +49,7 @@ const FarmerDashboard = () => {
           </div>
 
           {/* Card 3 */}
-          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_2px_10px_-4px_rgba(31,61,43,0.05)] transition-all hover:shadow-lg dark:border-gray-800 dark:bg-surface-dark">
+          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg dark:border-gray-800 dark:bg-surface-dark">
             <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-50 group-hover:scale-110"></div>
 
             <div className="relative z-10 flex flex-col gap-1">
@@ -73,7 +73,7 @@ const FarmerDashboard = () => {
         </section>
 
         {/* Table Section */}
-        <section className="flex flex-col gap-4 rounded-xl bg-white shadow-sm dark:border-gray-800 dark:bg-surface-dark">
+        <section className="flex flex-col gap-4 rounded-xl bg-white shadow-[0_4px_20px_rgba(0,0,0,0.08)] dark:border-gray-800 dark:bg-surface-dark">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5">
             <h3 className="text-lg font-bold text-primary">

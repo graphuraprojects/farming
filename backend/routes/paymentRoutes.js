@@ -1,23 +1,25 @@
 import express from "express";
-
-import Booking from "../models/booking.js";
-import razorpay from "../config/razorpay.js";
+import Payment from "../models/Payment.model.js";
+import Booking from "../models/Booking.model.js";
+import razorpay from "../configs/razorpay.js";
+import crypto from "crypto";
 
 const router = express.Router();
 
-// CREATE PAYMENT ORDER
+
+// ================= CREATE ORDER =================
 router.post("/create-order", async (req, res) => {
-  if (!razorpay) {
-    return res.status(503).json({
-      message: "Payment gateway not configured (dev mode)",
-    });
-  }
-
   try {
-    const { booking_id } = req.body;
+    if (!razorpay) {
+      return res.status(503).json({
+        message: "Payment gateway not configured",
+      });
+    }
 
-    if (!booking_id) {
-      return res.status(400).json({ message: "booking_id is required" });
+    const { booking_id, total_amount } = req.body;
+
+    if (!booking_id || !total_amount) {
+      return res.status(400).json({ message: "Missing data" });
     }
 
     const booking = await Booking.findById(booking_id);
@@ -25,66 +27,83 @@ router.post("/create-order", async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    const options = {
-      amount: booking.total_amount * 100, // INR → paise
+    // Commission split
+    const adminCommission = total_amount * 0.1;
+    const ownerAmount = total_amount - adminCommission;
+
+    // Razorpay order
+    const order = await razorpay.orders.create({
+      amount: total_amount * 100,
       currency: "INR",
       receipt: `booking_${booking._id}`,
-    };
-
-   const order = await razorpay.orders.create(options);
-
-
-await Payment.create({
-  booking_id: booking._id,
-  razorpay_order_id: order.id,
-  amount_paid: booking.total_amount,
-  payment_status: "created",
-});
-
-res.status(200).json({
-  order_id: order.id,
-  amount: order.amount,
-  currency: order.currency,
-});
-  } catch (error) {
-    console.error("Razorpay error:", error);
-
-res.status(500).json({
-  message: "Payment order creation failed",
-  error: error.message,
-  stack: error.stack,
-});
-  }
-});
-
-// PAYMENT SUCCESS
-router.post("/verify", async (req, res) => {
-  if (!razorpay) {
-    return res.status(503).json({
-      message: "Payment gateway not configured (dev mode)",
     });
+
+    // Create payment record
+    await Payment.create({
+      booking_id: booking._id,
+      farmer_id: booking.farmer_id,
+      owner_id: booking.owner_id,
+      total_amount,
+      admin_commission: adminCommission,
+      owner_amount: ownerAmount,
+      razorpay_order_id: order.id,
+      payment_status: "pending",
+    });
+
+    res.json({
+      order_id: order.id,
+      amount: order.amount,
+      currency: order.currency,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Order creation failed" });
   }
+});
 
+
+// ================= VERIFY PAYMENT =================
+router.post("/verify", async (req, res) => {
   try {
-    const { booking_id } = req.body;
+    const {
+      booking_id,
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+    } = req.body;
 
-    if (!booking_id) {
-      return res.status(400).json({ message: "booking_id is required" });
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+      .update(body)
+      .digest("hex");
+
+    if (expectedSignature !== razorpay_signature) {
+      return res.status(400).json({ message: "Invalid signature" });
     }
 
+    // Update booking
     await Booking.findByIdAndUpdate(booking_id, {
       booking_status: "confirmed",
       payment_status: "paid",
     });
 
-    res.status(200).json({
-      message: "Payment successful",
-    });
+    // Update payment record
+    await Payment.findOneAndUpdate(
+      { razorpay_order_id },
+      {
+        razorpay_payment_id,
+        razorpay_signature,
+        payment_status: "paid",
+      }
+    );
+
+    res.json({ message: "Payment verified successfully" });
+
   } catch (error) {
-    res.status(500).json({
-      message: "Payment verification failed",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Verification failed" });
   }
 });
 

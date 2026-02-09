@@ -13,16 +13,17 @@ import machineRoutes from "./routes/machineRoutes.js";
 import availabilityRoutes from "./routes/availabilityRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import earningRoutes from "./routes/earningRoutes.js";
-import adminPaymentRoutes from "./routes/adminPaymentRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import fleetRoutes from "./routes/fleet.routes.js";
 import bookingOwnerRoutes from "./routes/booking.routes.js";
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 import contactRoutes from "./routes/contactRoutes.js"
 import invoiceRoutes from "./routes/invoiceRoutes.js";
+// import paymentRoutes from "./routes/paymentRoutes.js";
 // dotenv.config();
 
 const app = express();
@@ -53,10 +54,11 @@ app.use("/api/earnings", earningRoutes);
 app.use("/api/owner/dashboard", dashboardRoutes);
 app.use("/api/owner/fleet", fleetRoutes);
 app.use("/api/owner/bookings", bookingOwnerRoutes);
+// app.use("/api/payments", paymentRoutes);
 
 // Admin Routes
 //Admin Payment Routes
-app.use("/api/admin/payments", adminPaymentRoutes);
+app.use("/api/admin/payments", paymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
 app.use("/api/contact", contactRoutes);

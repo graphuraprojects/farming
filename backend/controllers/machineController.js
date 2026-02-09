@@ -211,18 +211,11 @@ export const getAllMachines = async (req, res) => {
   try {
     let filter = {};
 
-    // Admin → no filter
     if (req.user?.role === "admin") {
       filter = {};
-    }
-
-    // Owner → only own machines
-    else if (req.user?.role === "owner") {
+    } else if (req.user?.role === "owner") {
       filter.owner_id = req.user.userId;
-    }
-
-    // Farmer / Public
-    else {
+    } else {
       filter = {
         isApproved: true,
         availability_status: true,
@@ -233,7 +226,7 @@ export const getAllMachines = async (req, res) => {
       .populate("owner_id", "name phone")
       .sort({ createdAt: -1 });
 
-    // ⭐ ADD TECHNICAL SPECIFICATIONS HERE
+    // ⭐ AUTO CREATE SPECS
     const formattedMachines = machines.map((machine) => {
       const obj = machine.toObject();
 
@@ -242,7 +235,6 @@ export const getAllMachines = async (req, res) => {
         model_year: obj.model_year,
         fuel_type: obj.fuel_type,
         category: obj.category,
-        ...(obj.specs || {}),
       };
 
       return obj;

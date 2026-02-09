@@ -5,46 +5,50 @@ const paymentSchema = new mongoose.Schema(
     booking_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Booking",
-      required: true
+      required: true,
     },
 
     farmer_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
 
     owner_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
     },
 
     total_amount: {
       type: Number,
-      required: true
+      required: true,
     },
 
     admin_commission: {
       type: Number,
-      required: true
+      required: true,
     },
 
     owner_amount: {
       type: Number,
-      required: true
+      required: true,
     },
+
+    razorpay_order_id: String,
+    razorpay_payment_id: String,
+    razorpay_signature: String,
 
     payment_status: {
       type: String,
       enum: ["pending", "paid", "failed"],
-      default: "paid"
+      default: "pending",
     },
 
     payment_method: {
       type: String,
-      default: "online"
-    }
+      default: "online",
+    },
   },
   { timestamps: true }
 );

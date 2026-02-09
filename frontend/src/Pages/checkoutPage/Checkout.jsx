@@ -27,65 +27,63 @@ export default function Checkout() {
 
   const handlePayment = async () => {
     try {
-      // 1. Create Razorpay order from backend
       const res = await fetch(
         "http://localhost:5000/api/admin/payments/create-order",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({
             booking_id: currentBooking._id,
+            total_amount: totalAmount,
           }),
-          credentials: "include",
         },
       );
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Payment failed");
+        alert(data.message);
         return;
       }
 
-      // 2. Open Razorpay checkout
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: data.amount,
         currency: data.currency,
         name: "Farmer Machine Booking",
-        description: "Machine Rental Payment",
         order_id: data.order_id,
 
         handler: async function (response) {
-          // 3. Verify payment
           await fetch("http://localhost:5000/api/admin/payments/verify", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               booking_id: currentBooking._id,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
+              ...response,
             }),
           });
 
-          alert("Payment successful 🎉");
+          alert("Payment Successful 🎉");
         },
 
-        theme: {
-          color: "#03a74f",
+        prefill: {
+          name: "Customer",
+          email: "customer@email.com",
         },
+
+        theme: { color: "#03a74f" },
       };
 
       const rzp = new window.Razorpay(options);
+
+      rzp.on("payment.failed", () => {
+        alert("Payment Failed ❌");
+      });
+
       rzp.open();
-    } catch (error) {
-      console.error(error);
-      alert("Payment error");
+    } catch (err) {
+      alert("Payment Error");
     }
   };
 
