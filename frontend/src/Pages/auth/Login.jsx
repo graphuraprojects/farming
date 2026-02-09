@@ -32,12 +32,24 @@ const Login = () => {
 
       const { token, user } = res.data.data;
 
-      // Save token (localStorage for now)
+      // Save auth data
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // Redirect based on role
-      navigate("/");
+      // ✅ Role navigation
+      switch (user.role) {
+        case "admin":
+          navigate("/admin-dashboard");
+          break;
+
+        case "owner":
+          navigate("/owner-dashboard");
+          break;
+
+        case "farmer":
+        default:
+          navigate("/");
+      }
     } catch (err) {
       console.error(err.response?.data?.message || "Login failed");
     } finally {

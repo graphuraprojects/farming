@@ -48,7 +48,7 @@ export default function ApprovalList() {
       if (result.success && result.data) {
         // Filter for pending approvals (isApproved: false)
         const pendingMachines = result.data.filter(
-          (machine) => machine.isApproved === false,
+          (machine) => machine.isApproved === true,
         );
 
         // Sort machines based on sortBy

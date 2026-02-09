@@ -11,7 +11,7 @@ const ITEMS_PER_PAGE = 6;
 const Listing = () => {
   const [filters, setFilters] = useState({
     search: "",
-    price: 2000,
+    price: 2500,
     distance: 100,
     type: [],
   });
@@ -71,18 +71,18 @@ const Listing = () => {
       verified: true,
     }))
 
-    // 🔍 SEARCH FILTER
+    // SEARCH FILTER
     .filter((item) =>
       item.name.toLowerCase().includes(filters.search.toLowerCase()),
     )
 
-    // 💰 PRICE FILTER
+    //PRICE FILTER
     .filter((item) => item.price <= filters.price)
 
-    // 📍 DISTANCE FILTER
+    // DISTANCE FILTER
     .filter((item) => item.distance <= filters.distance)
 
-    // 🚜 TYPE FILTER
+    // TYPE FILTER
     .filter((item) =>
       filters.type.length === 0 ? true : filters.type.includes(item.type),
     );
@@ -169,7 +169,7 @@ const Listing = () => {
                   resetFilters={() =>
                     setFilters({
                       search: "",
-                      price: 2000,
+                      price: 2500,
                       distance: 100,
                       type: [],
                     })
