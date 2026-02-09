@@ -46,6 +46,7 @@ function App() {
         {/* ADMIN TEST ROUTES */}
         <Route path="/admin/machines/:id" element={<MachineApproval />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        {/* <Route path="/appList" element={<ApprovalList />} /> */}
 
         {/* FARMER ROUTES */}
         <Route path="/" element={<FarmerLayout />}>
@@ -57,7 +58,7 @@ function App() {
           <Route path="booking-history" element={<BookingHistory />} />
           <Route path="booking-conform" element={<BookingConfirmation />} />
           <Route path="add-machine" element={<AddMachine />} />
-          <Route path="invoice" element={<Invoice />} />
+          <Route path="/invoice" element={<Invoice />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/contact" element={<Contact />} />
