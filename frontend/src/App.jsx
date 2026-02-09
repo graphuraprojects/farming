@@ -1,3 +1,4 @@
+import ScrollToTop from "./components/ScrollToTop.jsx"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import FarmerLayout from "./layouts/FarmerLayout";
@@ -32,6 +33,7 @@ import WithdrwalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx"
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop/>
       <Routes>
         {/* AUTH */}
         <Route path="/register" element={<Register />} />
@@ -57,7 +59,7 @@ function App() {
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
-          <Route path="/about-us" element={<AboutUs />} />
+          {/* <Route path="/about-us" element={<AboutUs />} /> */}
           <Route path="/withdrawl" element={<WithdrwaEarnings />} />
           <Route path="/withdrawl-success" element={<WithdrwalSuccess />} />
         </Route>

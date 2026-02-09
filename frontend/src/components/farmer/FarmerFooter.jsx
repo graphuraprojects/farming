@@ -60,9 +60,6 @@ const FarmerFooter = () => {
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
               <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                Help Center
-              </li>
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
                 Privacy Policy
               </li>
               <li className="hover:text-[#4e8d67] cursor-pointer transition">
