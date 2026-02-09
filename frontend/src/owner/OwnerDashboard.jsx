@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const API_BASE_URL = "http://localhost:5000/api";
 
@@ -316,13 +317,16 @@ export default function App() {
             </p>
           </div>
           <div className="flex gap-2">
-            <button
-              className={rangeButtonClass("month")}
-              onClick={() => setActiveRange("month")}
-            >
-              This Month
-            </button>
-            <button
+            <Link to="/farmer-dashboard">
+              <button
+                className={rangeButtonClass("month")}
+                onClick={() => setActiveRange("month")}
+              >
+                Farmer Dashboard
+              </button>
+            </Link>
+
+            {/* <button
               className={rangeButtonClass("last")}
               onClick={() => setActiveRange("last")}
             >
@@ -333,7 +337,7 @@ export default function App() {
               onClick={() => setActiveRange("ytd")}
             >
               Year to Date
-            </button>
+            </button> */}
           </div>
         </div>
 

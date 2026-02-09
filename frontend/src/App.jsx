@@ -30,6 +30,7 @@ import OwnerDashboard from "./owner/OwnerDashboard.jsx"
 import WithdrwaEarnings from "./Pages/Withdrawal/WithdrawEarnings.jsx"
 import WithdrwalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx"
 import Contact from "./Pages/contact/Contact.jsx";
+import ContactForm from "./Pages/ContactUs.jsx";
 
 function App() {
   return (
@@ -63,6 +64,7 @@ function App() {
           {/* <Route path="/about-us" element={<AboutUs />} /> */}
           <Route path="/withdrawl" element={<WithdrwaEarnings />} />
           <Route path="/withdrawl-success" element={<WithdrwalSuccess />} />
+          <Route path="/contact-us" element={<ContactForm />} />
         </Route>
 
         <Route path="/T&C" element={<TermsAndConditions />} />
