@@ -284,7 +284,11 @@ export const approveOrRejectMachine = async (req, res) => {
     }
 
     if (action === "reject") {
-      if (!rejection_reason) {
+      const trimmedReason =
+        typeof rejection_reason === "string"
+          ? rejection_reason.trim()
+          : "";
+      if (!trimmedReason) {
         return res.status(400).json({
           success: false,
           message: "Rejection reason is required",
@@ -292,7 +296,7 @@ export const approveOrRejectMachine = async (req, res) => {
       }
 
       machine.isApproved = false;
-      machine.rejection_reason = rejection_reason;
+      machine.rejection_reason = trimmedReason;
     }
 
     await machine.save();

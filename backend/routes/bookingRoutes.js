@@ -2,9 +2,12 @@ import express from "express";
 
 import { protect } from "../middleware/authMiddleware.js";
 import { allowOwnerOrAdmin } from "../middleware/roleMiddleware.js";
-import { decideBooking, getBookings } from "../controllers/bookingController.js";
+import { createBooking, decideBooking, getBookings } from "../controllers/bookingController.js";
 
 const router = express.Router();
+
+// Create booking (farmer)
+router.post("/create", protect, createBooking);
 
 // Accept / Reject booking
 router.patch(

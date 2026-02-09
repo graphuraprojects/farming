@@ -2,6 +2,99 @@ import Booking from "../models/Booking.model.js";
 import Machine from "../models/Machine.model.js";
 
 /**
+ * CREATE BOOKING (Farmer)
+ */
+export const createBooking = async (req, res) => {
+  try {
+    const {
+      machine_id,
+      start_date,
+      start_time,
+      end_time,
+      total_hours,
+      total_amount,
+    } = req.body;
+
+    if (!machine_id || !start_date || !start_time || !end_time || total_hours == null || !total_amount) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required fields: machine_id, start_date, start_time, end_time, total_hours, total_amount",
+      });
+    }
+
+    const machine = await Machine.findById(machine_id);
+    if (!machine) {
+      return res.status(404).json({
+        success: false,
+        message: "Machine not found",
+      });
+    }
+
+    if (!machine.availability_status || !machine.isApproved) {
+      return res.status(400).json({
+        success: false,
+        message: "Machine is not available for booking",
+      });
+    }
+
+    const farmerId = req.user?.userId;
+    if (!farmerId) {
+      return res.status(401).json({
+        success: false,
+        message: "Please login to create a booking",
+      });
+    }
+
+    const ownerId = machine.owner_id?._id || machine.owner_id;
+
+    const startDateTime = new Date(`${start_date}T${start_time}:00`);
+    const endDateTime = new Date(`${start_date}T${end_time}:00`);
+
+    if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid date or time format",
+      });
+    }
+
+    const booking = await Booking.create({
+      farmer_id: farmerId,
+      machine_id: machine._id,
+      owner_id: ownerId,
+      start_time: startDateTime,
+      end_time: endDateTime,
+      total_hours: Number(total_hours),
+      total_amount: Number(total_amount),
+      booking_status: "pending",
+      payment_status: "pending",
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Booking created successfully",
+      data: {
+        booking: {
+          _id: booking._id,
+          machine_id: booking.machine_id,
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+          total_hours: booking.total_hours,
+          total_amount: booking.total_amount,
+          booking_status: booking.booking_status,
+        },
+      },
+    });
+  } catch (error) {
+    console.error("Create booking error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to create booking",
+      error: error.message,
+    });
+  }
+};
+
+/**
  * ACCEPT OR REJECT BOOKING (Owner/Admin)
  */
 export const decideBooking = async (req, res) => {

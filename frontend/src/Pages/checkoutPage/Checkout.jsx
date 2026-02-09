@@ -4,61 +4,117 @@ import DeliveryForm from "./DeliveryForm";
 import Section from "./section";
 import Row from "./Row";
 import { MoveLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { CreditCard } from "lucide-react";
 
+const API_BASE = "http://localhost:5000";
+
 export default function Checkout() {
+  const navigate = useNavigate();
   const [deliveryMode, setDeliveryMode] = useState("delivery");
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
   if (bookings.length === 0) return <p>No booking data found</p>;
-  // pick only the last booking (the one just added)
   const currentBooking = bookings[bookings.length - 1];
 
-  // Subtotal from booked machines
   const subtotal = Number(currentBooking?.total || 0);
   const shipping = Number(deliveryMode === "delivery" ? 1000 : 0);
   const totalAmount = subtotal + shipping;
 
   const handlePayment = async () => {
+    const bookingId = currentBooking?._id || currentBooking?.id;
+    if (!bookingId) {
+      alert("Missing booking information. Please try again.");
+      return;
+    }
+
+    if (!window.Razorpay) {
+      alert("Payment gateway failed to load. Please refresh and try again.");
+      return;
+    }
+
+    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+    if (!razorpayKey) {
+      alert("Payment configuration error. Please contact support.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+    const headers = {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    };
+
     try {
-      const res = await fetch(
-        "http://localhost:5000/api/admin/payments/create-order",
+      const createRes = await fetch(
+        `${API_BASE}/api/admin/payments/create-order`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers,
           credentials: "include",
           body: JSON.stringify({
-            booking_id: currentBooking._id,
+            booking_id: bookingId,
             total_amount: totalAmount,
           }),
         },
       );
 
-      const data = await res.json();
+      const data = await createRes.json();
 
-      if (!res.ok) {
-        alert(data.message);
+      if (!createRes.ok) {
+        alert(data?.message || "Failed to create order");
         return;
       }
 
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: razorpayKey,
         amount: data.amount,
-        currency: data.currency,
+        currency: data.currency || "INR",
         name: "Farmer Machine Booking",
         order_id: data.order_id,
 
         handler: async function (response) {
-          await fetch("http://localhost:5000/api/admin/payments/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              booking_id: currentBooking.id,
-              ...response,
-            }),
-          });
+          try {
+            const verifyRes = await fetch(
+              `${API_BASE}/api/admin/payments/verify`,
+              {
+                method: "POST",
+                headers,
+                credentials: "include",
+                body: JSON.stringify({
+                  booking_id: bookingId,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              },
+            );
 
-          alert("Payment Successful 🎉");
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok) {
+              alert(verifyData?.message || "Verification failed");
+              return;
+            }
+
+            const confirmationData = {
+              machineName: currentBooking?.name,
+              machineImage: currentBooking?.image,
+              bookingDate: currentBooking?.startDate,
+              hoursBooked: currentBooking?.hours,
+              totalPrice: totalAmount,
+              orderId: response.razorpay_order_id,
+              paymentStatus: "paid",
+            };
+
+            localStorage.setItem(
+              "paymentConfirmationData",
+              JSON.stringify(confirmationData)
+            );
+
+            navigate(`/booking-confirmation/${response.razorpay_order_id}`);
+          } catch (verifyErr) {
+            alert("Verification failed. Please contact support.");
+          }
         },
 
         prefill: {
@@ -72,12 +128,12 @@ export default function Checkout() {
       const rzp = new window.Razorpay(options);
 
       rzp.on("payment.failed", () => {
-        alert("Payment Failed ❌");
+        alert("Payment Failed");
       });
 
       rzp.open();
     } catch (err) {
-      alert("Payment Error");
+      alert(err?.message || "Payment error. Please try again.");
     }
   };
 

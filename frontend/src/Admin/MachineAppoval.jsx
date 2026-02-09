@@ -61,9 +61,12 @@ const MachineApproval = () => {
   };
 
   const handleAction = async (actionType) => {
-    if (actionType === 'reject' && !adminNotes) {
-      alert("Please add notes explaining why the machine is being rejected.");
-      return;
+    if (actionType === 'reject') {
+      const trimmedNotes = (adminNotes || '').trim();
+      if (!trimmedNotes) {
+        alert("Please add notes explaining why the machine is being rejected.");
+        return;
+      }
     }
 
     if (actionType === 'approve') {
@@ -78,10 +81,18 @@ const MachineApproval = () => {
     try {
       setSubmitting(true);
       const token = localStorage.getItem("token");
-      
+
+      if (!token) {
+        alert("Session expired. Please login again.");
+        navigate('/login');
+        return;
+      }
+
       const payload = {
         action: actionType,
-        ...(actionType === 'reject' && { rejection_reason: adminNotes })
+        ...(actionType === 'reject' && {
+          rejection_reason: (adminNotes || '').trim(),
+        }),
       };
 
       const response = await fetch(`${API_BASE_URL}/machines/${id}/approval`, {
@@ -90,16 +101,20 @@ const MachineApproval = () => {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error(`Failed to ${actionType} machine`);
+      const result = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(result?.message || `Failed to ${actionType} machine`);
+      }
 
       alert(`Machine ${actionType}d successfully!`);
       navigate('/admin/dashboard');
     } catch (err) {
       console.error(`Error ${actionType}ing machine:`, err);
-      alert(`Failed to ${actionType} machine. Please try again.`);
+      alert(err?.message || `Failed to ${actionType} machine. Please try again.`);
     } finally {
       setSubmitting(false);
     }

@@ -115,7 +115,7 @@ const MachineDetails = () => {
   const duration = hours;
 
   const operatorTotal = includeOperator
-    ? machine.operatorFeePerHour * duration
+    ? (machine.operatorFeePerHour || 0) * duration
     : 0;
 
   const rentTotal = duration * machine.price_per_hour;
@@ -412,7 +412,7 @@ const MachineDetails = () => {
               </label>
               <label className="flex items-start gap-3 cursor-pointer group">
                 <input
-                  checked
+                  defaultChecked
                   className="mt-1 w-4 h-4 accent-[#1f3d2b] text-[#1f3d2b] bg-gray-100 border-gray-300 rounded focus:ring-[#1f3d2b]"
                   type="checkbox"
                 />
@@ -428,38 +428,74 @@ const MachineDetails = () => {
             </div>
 
             <button
-              onClick={() => {
-                const newBooking = {
-                  id: machine._id, // IMPORTANT: machine._id (not Date.now)
-                  name: machine.machine_name,
-                  image: machine.images?.[0]?.url,
-                  startDate,
-                  hours,
-                  total: grandTotal,
-                };
-
-                const existing =
-                  JSON.parse(localStorage.getItem("bookings")) || [];
-
-                // 🔍 check if this machine already exists
-                const index = existing.findIndex(
-                  (item) => item.id === machine._id,
-                );
-
-                let updated;
-
-                if (index !== -1) {
-                  // ✅ replace existing machine booking
-                  updated = [...existing];
-                  updated[index] = newBooking;
-                } else {
-                  // ✅ add new machine
-                  updated = [...existing, newBooking];
+              onClick={async () => {
+                if (!startDate || !startTime || !endTime || hours <= 0) {
+                  alert("Please select date and time range.");
+                  return;
                 }
 
-                localStorage.setItem("bookings", JSON.stringify(updated));
+                const token = localStorage.getItem("token");
+                if (!token) {
+                  alert("Please login to book a machine.");
+                  navigate("/login");
+                  return;
+                }
 
-                navigate("/checkout");
+                try {
+                  const res = await axios.post(
+                    "http://localhost:5000/api/bookings/create",
+                    {
+                      machine_id: machine._id,
+                      start_date: startDate,
+                      start_time: startTime,
+                      end_time: endTime,
+                      total_hours: hours,
+                      total_amount: grandTotal,
+                    },
+                    {
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+
+                  if (!res.data?.success) {
+                    alert(res.data?.message || "Failed to create booking.");
+                    return;
+                  }
+
+                  const booking = res.data.data?.booking;
+                  const newBooking = {
+                    _id: booking._id,
+                    id: machine._id,
+                    name: machine.machine_name,
+                    image: machine.images?.[0]?.url,
+                    startDate,
+                    hours,
+                    total: grandTotal,
+                  };
+
+                  const existing =
+                    JSON.parse(localStorage.getItem("bookings")) || [];
+                  const index = existing.findIndex(
+                    (item) => item.id === machine._id || item._id === booking._id
+                  );
+                  let updated;
+                  if (index !== -1) {
+                    updated = [
+                      ...existing.filter((_, i) => i !== index),
+                      newBooking,
+                    ];
+                  } else {
+                    updated = [...existing, newBooking];
+                  }
+
+                  localStorage.setItem("bookings", JSON.stringify(updated));
+                  navigate("/checkout");
+                } catch (err) {
+                  alert(
+                    err.response?.data?.message ||
+                      "Failed to create booking. Please try again."
+                  );
+                }
               }}
               className="w-full bg-[#03a74f] hover:bg-[#38864b] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group cursor-pointer"
             >

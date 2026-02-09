@@ -57,6 +57,7 @@ function App() {
           <Route path="rent-review" element={<ReviewSuccessPage />} />
           <Route path="booking-history" element={<BookingHistory />} />
           <Route path="booking-conform" element={<BookingConfirmation />} />
+          <Route path="booking-confirmation/:orderId" element={<BookingConfirmation />} />
           <Route path="add-machine" element={<AddMachine />} />
           <Route path="/invoice" element={<Invoice />} />
           <Route path="/about-us" element={<AboutUs />} />

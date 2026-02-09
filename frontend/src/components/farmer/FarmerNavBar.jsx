@@ -168,7 +168,7 @@ const FarmerNavBar = () => {
             <NavLink to="/machine-listing" className={linkClass}>
               Machines
             </NavLink>
-            <NavLink to="/rate-experience" className={linkClass}>
+            <NavLink to="/about-us" className={linkClass}>
               About
             </NavLink>
             <NavLink to="/contact" className={linkClass}>
@@ -176,7 +176,7 @@ const FarmerNavBar = () => {
             </NavLink>
 
             {token && (
-              <NavLink to="/dashboard" className={linkClass}>
+              <NavLink to="/owner-dashboard" className={linkClass}>
                 Dashboard
               </NavLink>
             )}

@@ -13,8 +13,8 @@ const IS_LIVE = false;
 const API_BASE_URL = "https://your-backend-api.com/api/order-summary";
 
 const BookingConfirmation = () => {
-  const { id } = useParams();
-  const orderId = id || "ORD-9921"; 
+  const { id, orderId: orderIdParam } = useParams();
+  const orderId = orderIdParam || id || "ORD-9921";
 
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -26,39 +26,66 @@ const BookingConfirmation = () => {
         setLoading(true);
         let rawData;
 
-        if (IS_LIVE) {
-          const response = await fetch(`${API_BASE_URL}/${orderId}`);
-          if (!response.ok) throw new Error("Failed to load your order.");
-          rawData = await response.json();
+        const paymentData = localStorage.getItem("paymentConfirmationData");
+        if (paymentData) {
+          const parsed = JSON.parse(paymentData);
+          rawData = {
+            order_id: parsed.orderId,
+            status: "Confirmed",
+            payment_status: parsed.paymentStatus,
+            machines: [
+              {
+                id: parsed.orderId,
+                name: parsed.machineName || "Machine",
+                image_url: parsed.machineImage,
+                start_date: parsed.bookingDate || "",
+                end_date: parsed.bookingDate || "",
+                usage_hours: parsed.hoursBooked || 0,
+                price: parsed.totalPrice,
+                location: "To be confirmed",
+              },
+            ],
+            next_steps: [
+              { title: "Contact Owner", desc: "Check inbox for details." },
+              { title: "Digital Key", desc: "Available in your dashboard." },
+              { title: "Insurance", desc: "Documents sent to email." },
+            ],
+          };
+          localStorage.removeItem("paymentConfirmationData");
         } else {
-          rawData = await simulateCheckoutResponse();
+          const codData = localStorage.getItem("codOrder");
+          if (codData) {
+            rawData = JSON.parse(codData);
+          } else if (IS_LIVE) {
+            const response = await fetch(`${API_BASE_URL}/${orderId}`);
+            if (!response.ok) throw new Error("Failed to load your order.");
+            rawData = await response.json();
+          } else {
+            rawData = await simulateCheckoutResponse();
+          }
         }
 
-        /* TRANSFORMATION LAYER:
-           We convert the backend array into a format our UI loves.
-        */
         const cleanedData = {
-          orderId: rawData.order_id || rawData.id,
+          orderId: rawData.order_id || rawData.id || orderId,
           status: rawData.status || "Confirmed",
-          // We map over every machine in the array
-          machines: (rawData.machines || []).map(m => ({
+          paymentStatus: rawData.payment_status || "paid",
+          machines: (rawData.machines || []).map((m) => ({
             id: m.id || Math.random(),
-            // Mapping specific field names for MachineDetailsCard
             cardProps: {
-              machineName: m.name || m.title, 
-              description: m.description || m.desc,
-              rentalDates: `${m.start_date} - ${m.end_date}`,
-              totalUsage: `${m.usage_hours} Hours`,
-              pickupLocation: m.location || rawData.global_location,
-              imageUrl: m.image_url || m.img,
-            }
+              machineName: m.name || m.title,
+              description: m.description || m.desc || "",
+              rentalDates: `${m.start_date || ""} - ${m.end_date || ""}`.trim() || "Date pending",
+              totalUsage: `${m.usage_hours ?? 0} Hours`,
+              pickupLocation: m.location || rawData.global_location || "To be confirmed",
+              imageUrl: m.image_url || m.img || "",
+            },
           })),
-          nextSteps: rawData.next_steps || []
+          nextSteps: rawData.next_steps || [],
         };
 
         setOrderData(cleanedData);
       } catch (err) {
-        setError(err.message);
+        setError(err?.message || "Failed to load order");
       } finally {
         setLoading(false);
       }
