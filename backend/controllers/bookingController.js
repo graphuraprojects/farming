@@ -78,3 +78,48 @@ export const decideBooking = async (req, res) => {
     });
   }
 };
+
+export const getBookings = async (req, res) => {
+  try {
+    let filter = {};
+
+    // Farmer → only his bookings
+    if (req.user.role === "farmer") {
+      filter.farmer_id = req.user.userId;
+    }
+
+    // Owner → bookings of his machines
+    else if (req.user.role === "owner") {
+      filter.owner_id = req.user.userId;
+    }
+
+    // Admin → no filter (all)
+    else if (req.user.role === "admin") {
+      filter = {};
+    }
+
+    // Optional status filter (for history/current)
+    if (req.query.status) {
+      filter.booking_status = req.query.status;
+    }
+
+    const bookings = await Booking.find(filter)
+      .populate("machine_id", "machine_name images price_per_hour")
+      .populate("farmer_id", "name phone")
+      .populate("owner_id", "name phone")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: bookings.length,
+      data: bookings
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch bookings",
+      error: error.message
+    });
+  }
+};
