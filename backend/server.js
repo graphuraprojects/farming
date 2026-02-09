@@ -19,6 +19,7 @@ import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
 import userRoutes from "./routes/userRoutes.js"; 
 import dotenv from "dotenv";
 import contactRoutes from "./routes/contactRoutes.js"
+import invoiceRoutes from "./routes/invoiceRoutes.js";
 // dotenv.config();
 
 const app = express();
@@ -57,6 +58,9 @@ app.use("/api/contact", contactRoutes);
 
 //Profile update route 
 app.use("/api/users", userRoutes);
+
+// invoice 
+app.use("/api/invoice", invoiceRoutes);
 
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
