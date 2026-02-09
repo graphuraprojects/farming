@@ -12,8 +12,10 @@ import {
   ChevronRight,
 } from "lucide-react";
 import CountUp from "react-countup";
+import { useNavigate } from "react-router-dom";
 
 const AboutUs = () => {
+  const navigate = useNavigate();
   const stats = [
     { icon: Tractor, value: 500, suffix: "+", label: "Machines Listed" },
     { icon: Users, value: 2000, suffix: "+", label: "Active Users" },
@@ -211,11 +213,11 @@ const AboutUs = () => {
               Join thousands of farmers and equipment owners who are already benefiting from our platform
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="bg-[#03a74f] py-4 px-5 flex justify-center gap-3 items-center rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95 cursor-pointer">
+              <button onClick={() => navigate("/machine-listing")} className="bg-[#03a74f] py-4 px-5 flex justify-center gap-3 items-center rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95 cursor-pointer">
                 Browse Machines
                 <ChevronRight className="w-5 h-5 mt-1" />
               </button>
-              <button className="py-4 px-5 flex justify-center items-center gap-3 rounded-lg font-medium border-2 bg-white/20 border-white text-white hover:-translate-y-2 transition-transform duration-300 hover:bg-white hover:text-black active:scale-95 cursor-pointer">
+              <button onClick={() => navigate("/add-machine")} className="py-4 px-5 flex justify-center items-center gap-3 rounded-lg font-medium border-2 bg-white/20 border-white text-white hover:-translate-y-2 transition-transform duration-300 hover:bg-white hover:text-black active:scale-95 cursor-pointer">
                 List Your Machine
                 <ChevronRight className="w-5 h-5 mt-1" />
               </button>

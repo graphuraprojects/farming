@@ -1,5 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { use } from "react";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 import BoltIcon from "@mui/icons-material/Bolt";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
@@ -26,7 +26,7 @@ import {
 import CountUp from "react-countup";
 import { motion } from "framer-motion";
 const FarmerHome = () => {
-  
+  const navigate = useNavigate();
   const Categories = [
     {
       name: "Tractors",
@@ -78,10 +78,16 @@ const FarmerHome = () => {
               next harvest. Affordable, vetted, and right in your neighborhood
             </p>
             <div className="mt-4 flex gap-4 fade-up">
-              <Link className="bg-[#03a74f] py-2 px-3 lg:py-3 rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95">
+              <Link
+                to="/machine-listing"
+                className="bg-[#03a74f] py-2 px-3 lg:py-3 rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95"
+              >
                 Rent a Machine
               </Link>
-              <Link className="py-2 px-3 lg:py-3 rounded-lg font-medium border-2 bg-white/20 border-white text-white hover:-translate-y-2 transition-transform duration-300 hover:bg-white hover:text-black active:scale-95">
+              <Link
+                to="/add-machine"
+                className="py-2 px-3 lg:py-3 rounded-lg font-medium border-2 bg-white/20 border-white text-white hover:-translate-y-2 transition-transform duration-300 hover:bg-white hover:text-black active:scale-95"
+              >
                 List Your Equipment
               </Link>
             </div>
@@ -124,14 +130,14 @@ const FarmerHome = () => {
               </div>
             </div>
           </div>
-        <div className="absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
-          <svg
-            viewBox="0 0 1440 160"
-            preserveAspectRatio="none"
-            className="w-full h-[140px] wave-animate"
-          >
-            <path
-              d="
+          <div className="absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
+            <svg
+              viewBox="0 0 1440 160"
+              preserveAspectRatio="none"
+              className="w-full h-[140px] wave-animate"
+            >
+              <path
+                d="
           M0,90
           C120,110 240,66 310,65
           C520,55 620,120 760,115
@@ -141,10 +147,10 @@ const FarmerHome = () => {
           L0,160
           Z
         "
-              fill="#f2fff0"
-            />
-          </svg>
-        </div>
+                fill="#f2fff0"
+              />
+            </svg>
+          </div>
         </div>
 
         {/* center status  card */}
@@ -289,43 +295,43 @@ const FarmerHome = () => {
       </section>
 
       {/* popular category section */}
-       <section className="flex justify-center">
-              <div className="mx-5 py-15 max-w-[1280px]">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
-                  Popular Categories
-                </h1>
-                <p className="text-gray-500 font-medium text-sm w-full text-center">
-                  Find the right tools to you specific seasonal needs.
-                </p>
-                {/* category cards */}
-                <div className="mt-10 flex flex-wrap gap-5 justify-center">
-                  {Categories.map((machine, index) => (
-                    <div
-                      className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
-                      key={index}
-                    >
-                      <img
-                        src={machine.image}
-                        alt={machine.name}
-                        className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
-                      />
-                      <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
-                      {/* <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full justify-between">
+      <section className="flex justify-center">
+        <div className="mx-5 py-15 max-w-[1280px]">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+            Popular Categories
+          </h1>
+          <p className="text-gray-500 font-medium text-sm w-full text-center">
+            Find the right tools to you specific seasonal needs.
+          </p>
+          {/* category cards */}
+          <div className="mt-10 flex flex-wrap gap-5 justify-center">
+            {Categories.map((machine, index) => (
+              <div
+                className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
+                key={index}
+              >
+                <img
+                  src={machine.image}
+                  alt={machine.name}
+                  className="h-full w-full object-cover brightness-75 group-hover:brightness-90 transition-all duration-300"
+                />
+                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/50 to-transparent skew-x-12 group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
+                {/* <span className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full justify-between">
                         <span>{machine.name}</span>{" "}
                         <Link className="view-link text-white hidden sm:flex gap-2 active:scale-95 duration-200 transition-transform">
                           <MoveRight size={20} className="pt-1" />
                         </Link>
                       </span> */}
-                      <p className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full items-center justify-between">
-                        <span>{machine.name}</span>
-                        <MoveRight size={35} className="mr-8 pt-1 view-link" />
-                      </p>
-                    </div>
-                  ))}
-                </div>
+                <p className="absolute bottom-6 left-5 text-white font-bold text-2xl drop-shadow-lg flex w-full items-center justify-between">
+                  <span>{machine.name}</span>
+                  <MoveRight size={35} className="mr-8 pt-1 view-link" />
+                </p>
               </div>
-            </section>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Benefits section */}
       <section className="flex  justify-center">
@@ -394,7 +400,7 @@ const FarmerHome = () => {
               current location. Real-time availablity for the current planting
               season.
             </p>
-            <div className="group relative shadow-[0_6px_18px_rgba(0,0,0,0.12)] rounded-xl flex gap-2 items-center p-2 border-l-3 border-[#03a74f] mt-10 hover:-translate-y-2 cursor-pointer duration-300 transition-transform active:scale-95">
+            <div onClick={() => navigate("/machine-listing")} className="group relative shadow-[0_6px_18px_rgba(0,0,0,0.12)] rounded-xl flex gap-2 items-center p-2 border-l-3 border-[#03a74f] mt-10 hover:-translate-y-2 cursor-pointer duration-300 transition-transform active:scale-95">
               <Search
                 size={55}
                 className="text-[#03a74f] p-3 bg-[#d3f9e4] rounded-full group-hover:rotate-90 transition-transform duration-300"
@@ -455,7 +461,11 @@ const FarmerHome = () => {
             Join thousands of farmers who are reducing their overhead and
             supporting the community by sharing their equipment safely.
           </p>
-          <button className="bg-[#03a74f] text-white hover:bg-[#38864b] cursor-pointer hover:-translate-y-1 transition-transform duration-300 font-semibold rounded-xl py-3 px-4 active:scale-95">
+
+          <button
+            onClick={() => navigate("/add-machine")}
+            className="bg-[#03a74f] text-white hover:bg-[#38864b] cursor-pointer hover:-translate-y-1 transition-transform duration-300 font-semibold rounded-xl py-3 px-4 active:scale-95"
+          >
             Start Listing Today
           </button>
           <span className="flex gap-2 text-white text-center">
