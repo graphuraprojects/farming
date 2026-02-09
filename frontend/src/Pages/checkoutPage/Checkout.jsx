@@ -15,15 +15,9 @@ export default function Checkout() {
   const currentBooking = bookings[bookings.length - 1];
 
   // Subtotal from booked machines
-  const subtotal = currentBooking ? currentBooking.total : 0;
-  // Discount
-  // const discount = subtotal * 0.1;
-
-  // Shipping based on deliveryMode
-  const shipping = deliveryMode === "delivery" ? 1000 : 0;
-
-  // Final total
-  const totalAmount = subtotal + shipping; // define totalAmount
+  const subtotal = Number(currentBooking?.total || 0);
+  const shipping = Number(deliveryMode === "delivery" ? 1000 : 0);
+  const totalAmount = subtotal + shipping;
 
   const handlePayment = async () => {
     try {
@@ -59,7 +53,7 @@ export default function Checkout() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              booking_id: currentBooking._id,
+              booking_id: currentBooking.id,
               ...response,
             }),
           });
@@ -165,8 +159,7 @@ export default function Checkout() {
             {/* Pricing */}
             <div className="border-t mt-4 pt-4 space-y-2 text-sm">
               <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
-              {/* <Row label="Discount (10%)" value={`-₹${discount.toFixed(2)}`} /> */}
-              <Row label="Shipping" value={`₹${shipping.toFixed(2)}`} />
+              <Row label="Shipping" value={`₹${Number(shipping).toFixed(2)}`} />
             </div>
 
             {/* <div className="border-t mt-4 pt-4 flex justify-between font-bold text-lg">

@@ -121,7 +121,10 @@ const MachineDetails = () => {
   const rentTotal = duration * machine.price_per_hour;
 
   const grandTotal =
-    rentTotal + operatorTotal + machine.transport + (machine.serviceFee || 0);
+    Number(rentTotal || 0) +
+    Number(operatorTotal || 0) +
+    Number(machine.transport || 0) +
+    Number(machine.serviceFee || 0);
 
   return (
     <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
