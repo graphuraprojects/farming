@@ -1,4 +1,4 @@
-import ScrollToTop from "./components/ScrollToTop.jsx"
+import ScrollToTop from "./components/ScrollToTop.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import FarmerLayout from "./layouts/FarmerLayout";
@@ -23,19 +23,20 @@ import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Invoice from "./Pages/bookngHistory/Invoice.jsx";
 // import ApprovalList from "./Admin/ApprovalList.jsx";
 import TermsAndConditions from "./Pages/Terns&Condition.jsx";
-import PrivacyPolicy from "./Pages/PrivacyPolicy.jsx"
+import PrivacyPolicy from "./Pages/PrivacyPolicy.jsx";
 import AboutUs from "./Pages/about/AboutUs.jsx";
 import Profile from "./Pages/profile/Profile.jsx";
-import OwnerDashboard from "./owner/OwnerDashboard.jsx"
-import WithdrwaEarnings from "./Pages/Withdrawal/WithdrawEarnings.jsx"
-import WithdrwalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx"
+import OwnerDashboard from "./owner/OwnerDashboard.jsx";
+import WithdrwaEarnings from "./Pages/Withdrawal/WithdrawEarnings.jsx";
+import WithdrwalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx";
 import Contact from "./Pages/contact/Contact.jsx";
-import ContactForm from "./Pages/ContactUs.jsx";
+import Checkout from "./Pages/checkoutPage/Checkout.jsx";
+import FarmerDashboard from "./Pages/FarmerDashboard.jsx";
 
 function App() {
   return (
     <BrowserRouter>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         {/* AUTH */}
         <Route path="/register" element={<Register />} />
@@ -64,7 +65,9 @@ function App() {
           {/* <Route path="/about-us" element={<AboutUs />} /> */}
           <Route path="/withdrawl" element={<WithdrwaEarnings />} />
           <Route path="/withdrawl-success" element={<WithdrwalSuccess />} />
-          <Route path="/contact-us" element={<ContactForm />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
         </Route>
 
         <Route path="/T&C" element={<TermsAndConditions />} />

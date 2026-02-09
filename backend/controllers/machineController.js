@@ -229,23 +229,29 @@ export const getAllMachines = async (req, res) => {
       };
     }
 
-    // Optional query filters
-    if (req.query.machine_type) {
-      filter.machine_type = req.query.machine_type;
-    }
-
-    if (req.query.availability_status !== undefined) {
-      filter.availability_status = req.query.availability_status === "true";
-    }
-
     const machines = await Machine.find(filter)
       .populate("owner_id", "name phone")
       .sort({ createdAt: -1 });
 
+    // ⭐ ADD TECHNICAL SPECIFICATIONS HERE
+    const formattedMachines = machines.map((machine) => {
+      const obj = machine.toObject();
+
+      obj.specs = {
+        model: obj.model,
+        model_year: obj.model_year,
+        fuel_type: obj.fuel_type,
+        category: obj.category,
+        ...(obj.specs || {}),
+      };
+
+      return obj;
+    });
+
     return res.status(200).json({
       success: true,
-      count: machines.length,
-      data: machines,
+      count: formattedMachines.length,
+      data: formattedMachines,
     });
   } catch (error) {
     return res.status(500).json({
@@ -254,7 +260,9 @@ export const getAllMachines = async (req, res) => {
       error: error.message,
     });
   }
-}; /**
+};
+
+/**
  * ADMIN – Approve or Reject Machine
  */
 export const approveOrRejectMachine = async (req, res) => {

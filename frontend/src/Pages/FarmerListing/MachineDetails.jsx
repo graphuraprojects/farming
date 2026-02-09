@@ -26,6 +26,11 @@ const specIcons = {
   weight: <Weight className="text-[#6d7e74]" />,
   drive: <Settings className="text-[#6d7e74]" />,
   hitch: <Tractor className="text-[#6d7e74]" />,
+
+  model: <Tractor className="text-[#6d7e74]" />,
+  model_year: <Calendar className="text-[#6d7e74]" />,
+  fuel_type: <Fuel className="text-[#6d7e74]" />,
+  category: <Settings className="text-[#6d7e74]" />,
 };
 
 const specLabels = {
@@ -35,6 +40,11 @@ const specLabels = {
   weight: "Machine Weight",
   drive: "Drive Type",
   hitch: "Hitch Category",
+
+  model: "Model",
+  model_year: "Model Year",
+  fuel_type: "Fuel Type",
+  category: "Category",
 };
 
 const MachineDetails = () => {
@@ -108,26 +118,26 @@ const MachineDetails = () => {
     ? machine.operatorFeePerHour * duration
     : 0;
 
-  const rentTotal = duration * machine.pricePerHour;
+  const rentTotal = duration * machine.price_per_hour;
 
   const grandTotal =
-    rentTotal + operatorTotal + machine.transportFee + machine.serviceFee;
+    rentTotal + operatorTotal + machine.transport + (machine.serviceFee || 0);
 
   return (
     <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* BREADCRUMB */}
       <p className="text-sm text-gray-500 mb-4">
         <Link to="/machine-listing">Machinery / </Link>
-        <span className="text-black">{machine.name}</span>
+        <span className="text-black">{machine.machine_name}</span>
       </p>
 
       {/* IMAGE GRID */}
       <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-2 h-[300px] md:h-[450px] rounded-lg overflow-hidden mb-8 group/gallery">
         <img
-          src={machine.images[0]?.url}
+          src={machine.images?.[0]?.url}
           className="col-span-1 md:col-span-2 row-span-2 relative w-full object-cover h-full rounded-lg cursor-pointer hover:scale-105 transition-transform duration-500"
         />
-        {machine.images.slice(1).map((img, i) => (
+        {machine.images?.slice(1).map((img, i) => (
           <img
             key={i}
             src={img.url}
@@ -143,7 +153,7 @@ const MachineDetails = () => {
           <div className="flex flex-col gap-4 border-b border-[#dee3e0] pb-8">
             <div className="flex justify-between items-start">
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#131614]">
-                {machine.name} - {machine.model} Model
+                {machine.machine_name} - {machine.model} Model
               </h1>
               <div className="flex gap-5 text-[#131614]">
                 <Share2 />
@@ -254,7 +264,7 @@ const MachineDetails = () => {
           <hr className="border-[#dee3e0]"></hr>
 
           {/* ABOUT */}
-          <h2 className="text-xl font-bold text-[#131614]">
+          {/* <h2 className="text-xl font-bold text-[#131614]">
             About this machine
           </h2>
           <div className="text-[#6d7e74] leading-relaxed">
@@ -269,7 +279,7 @@ const MachineDetails = () => {
             ) : (
               <p>No description available for this machine.</p>
             )}
-          </div>
+          </div> */}
         </div>
 
         {/* RIGHT BOOKING CARD */}
@@ -278,7 +288,7 @@ const MachineDetails = () => {
             <div className="flex items-baseline justify-between">
               <div className="flex items-end gap-1">
                 <span className="text-2xl font-bold text-[#131614]">
-                  ₹{machine.pricePerHour}
+                  ₹{machine.price_per_hour}
                 </span>
                 <span className="text-[#6d7e74] text-sm font-medium">
                   / hours
@@ -408,7 +418,7 @@ const MachineDetails = () => {
                     Logistics &amp; Transport
                   </span>
                   <span className="text-[#6d7e74] text-xs">
-                    Delivery to site (+₹{machine.transportFee})
+                    Delivery to site (+₹{machine.transport})
                   </span>
                 </div>
               </label>
@@ -418,8 +428,8 @@ const MachineDetails = () => {
               onClick={() => {
                 const newBooking = {
                   id: machine._id, // IMPORTANT: machine._id (not Date.now)
-                  name: machine.name,
-                  image: machine.images[0],
+                  name: machine.machine_name,
+                  image: machine.images?.[0]?.url,
                   startDate,
                   hours,
                   total: grandTotal,
@@ -455,6 +465,57 @@ const MachineDetails = () => {
               </span>
               Book Now
             </button>
+
+            <button
+              onClick={() => {
+                const codOrder = {
+                  order_id: `COD-${Date.now()}`,
+                  status: "Confirmed (Cash on Delivery)",
+                  global_location:
+                    typeof machine.address === "string"
+                      ? machine.address
+                      : machine.address?.city || "Farm Location",
+
+                  machines: [
+                    {
+                      id: machine._id,
+                      name: machine.machine_name,
+                      description: machine.model,
+                      start_date: startDate,
+                      end_date: startDate,
+                      usage_hours: hours,
+                      image_url: machine.images?.[0]?.url,
+                      price: grandTotal,
+                    },
+                  ],
+
+                  next_steps: [
+                    {
+                      title: "Owner Confirmation",
+                      desc: "Owner will call you shortly.",
+                    },
+                    { title: "Prepare Cash", desc: "Pay at delivery time." },
+                    {
+                      title: "Machine Delivery",
+                      desc: "On selected date & time.",
+                    },
+                  ],
+                };
+
+                // 🔐 store COD order
+                localStorage.setItem("codOrder", JSON.stringify(codOrder));
+
+                // 🚀 redirect
+                navigate(`/booking-confirmation/${codOrder.order_id}`);
+              }}
+              className="w-full bg-[#03a74f] hover:bg-[#38864b] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group cursor-pointer"
+            >
+              <span className="material-symbols-outlined text-lg">
+                <Calendar size={20} />
+              </span>
+              Cash on Delivery
+            </button>
+
             <p className="text-center text-xs text-[#6d7e74]">
               You won't be charged yet
             </p>
@@ -462,7 +523,7 @@ const MachineDetails = () => {
             <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
               <div className="flex justify-between">
                 <span className="underline decoration-dotted decoration-sage cursor-help">
-                  ₹{machine.pricePerHour} x {duration || 0} hour
+                  ₹{machine.price_per_hour} x {duration || 0} hour
                 </span>
                 <span>₹{rentTotal}</span>
               </div>
@@ -481,7 +542,7 @@ const MachineDetails = () => {
                 <span className="underline decoration-dotted decoration-sage cursor-help">
                   Transport Fee
                 </span>
-                <span>₹{machine.transportFee}</span>
+                <span>₹{machine.transport}</span>
               </div>
 
               <div className="flex justify-between">

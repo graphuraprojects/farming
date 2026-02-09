@@ -76,7 +76,7 @@ const FarmerNavBar = () => {
             <NavLink to="/about-us" className={linkClass}>
               About
             </NavLink>
-            <NavLink to="/contact-us" className={linkClass}>
+            <NavLink to="/contact" className={linkClass}>
               Contact
             </NavLink>
 
@@ -171,7 +171,7 @@ const FarmerNavBar = () => {
             <NavLink to="/rate-experience" className={linkClass}>
               About
             </NavLink>
-            <NavLink to="/contact-us" className={linkClass}>
+            <NavLink to="/contact" className={linkClass}>
               Contact
             </NavLink>
 
