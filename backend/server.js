@@ -21,6 +21,7 @@ import dashboardRoutes from "./routes/dashboard.routes.js";
 import fleetRoutes from "./routes/fleet.routes.js";
 import bookingOwnerRoutes from "./routes/booking.routes.js";
 import dotenv from "dotenv";
+import contactRoutes from "./routes/contactRoutes.js"
 // dotenv.config();
 
 const app = express();
@@ -57,8 +58,9 @@ app.use("/api/owner/bookings", bookingOwnerRoutes);
 app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
+app.use("/api/contact", contactRoutes);
 
-//Profile update route
+//Profile update route 
 app.use("/api/users", userRoutes);
 
 app.listen(port, () => {

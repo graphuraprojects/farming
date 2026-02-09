@@ -1,6 +1,6 @@
 import express from "express";
 import { getTotalRevenue } from "../controllers/totalrevenue.js";
-import { getEarningsTrend } from "../controllers/earningstrend.js";
+import { getEarningsTrend } from "../controllers/earningTrends.js";
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
