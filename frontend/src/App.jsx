@@ -29,6 +29,7 @@ import Profile from "./Pages/profile/Profile.jsx";
 import OwnerDashboard from "./owner/OwnerDashboard.jsx"
 import WithdrwaEarnings from "./Pages/Withdrawal/WithdrawEarnings.jsx"
 import WithdrwalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx"
+import Contact from "./Pages/contact/Contact.jsx";
 
 function App() {
   return (
@@ -57,6 +58,7 @@ function App() {
           <Route path="invoice" element={<Invoice />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/owner-dashboard" element={<OwnerDashboard />} />
           {/* <Route path="/about-us" element={<AboutUs />} /> */}
           <Route path="/withdrawl" element={<WithdrwaEarnings />} />

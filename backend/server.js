@@ -18,6 +18,7 @@ import couponRoutes from "./routes/couponRoutes.js";
 import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
 import userRoutes from "./routes/userRoutes.js"; 
 import dotenv from "dotenv";
+import contactRoutes from "./routes/contactRoutes.js"
 // dotenv.config();
 
 const app = express();
@@ -51,6 +52,8 @@ app.use("/api/earnings", earningRoutes);
 app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
+
+app.use("/api/contact", contactRoutes);
 
 //Profile update route 
 app.use("/api/users", userRoutes);
