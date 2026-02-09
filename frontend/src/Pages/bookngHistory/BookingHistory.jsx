@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 
 export default function BookingHistory() {
-  const [currentPage, setCurrentPage] = useState("bookings");
-  const [selectedBooking, setSelectedBooking] = useState(null);
+  // const [currentPage, setCurrentPage] = useState("bookings");
+  // const [selectedBooking, setSelectedBooking] = useState(null);
 
   // ✅ Dynamic State
   const [bookings, setBookings] = useState([]);
@@ -86,51 +86,6 @@ export default function BookingHistory() {
             Detailed log of your agricultural machinery rentals and fleet
             management.
           </p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-          <div className="bg-white rounded-lg border border-gray-200 p-5 sm:p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-blue-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                Total Rentals
-              </span>
-            </div>
-            <span className="text-4xl font-bold text-gray-900">
-              {bookings.length}
-            </span>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-5 sm:p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
-                <Clock className="w-5 h-5 text-orange-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                Hours Logged
-              </span>
-            </div>
-            <span className="text-4xl font-bold text-gray-900">
-              {bookings.reduce((acc, b) => acc + (b.total_hours || 0), 0)}
-            </span>
-          </div>
-
-          <div className="bg-white rounded-lg border border-gray-200 p-5 sm:p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              </div>
-              <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
-                Active Bookings
-              </span>
-            </div>
-            <span className="text-4xl font-bold text-gray-900">
-              {bookings.filter((b) => b.booking_status === "In-Transit").length}
-            </span>
-          </div>
         </div>
 
         {/* Bookings Table */}
