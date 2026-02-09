@@ -124,13 +124,13 @@ const MachineDetails = () => {
       {/* IMAGE GRID */}
       <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-2 h-[300px] md:h-[450px] rounded-lg overflow-hidden mb-8 group/gallery">
         <img
-          src={machine.images[0]}
+          src={machine.images[0]?.url}
           className="col-span-1 md:col-span-2 row-span-2 relative w-full object-cover h-full rounded-lg cursor-pointer hover:scale-105 transition-transform duration-500"
         />
         {machine.images.slice(1).map((img, i) => (
           <img
             key={i}
-            src={img}
+            src={img.url}
             className="w-full h-full bg-cover bg-center cursor-pointer hover:scale-105 transition-transform duration-500 rounded-lg object-cover hidden md:block "
           />
         ))}

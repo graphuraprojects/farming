@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 import {
   Download,
   Printer,
@@ -12,74 +13,69 @@ import {
   Building,
 } from "lucide-react";
 
-// Sample data
-const bookingsData = [
-  {
-    id: 1,
-    machine: "John Deere 8R 410",
-    type: "Heavy Duty Tractor",
-    bookingId: "#AR-9921",
-    date: "Oct 12, 2023",
-    duration: "24 Hours",
-    amount: "$1,250.00",
-    status: "Completed",
-    image: "🚜",
-  },
-  {
-    id: 2,
-    machine: "Class Lexion 8900",
-    type: "Combine Harvester",
-    bookingId: "#AR-9854",
-    date: "Oct 08, 2023",
-    duration: "72 Hours",
-    amount: "$4,800.00",
-    status: "In-Transit",
-    image: "🚜",
-  },
-  {
-    id: 3,
-    machine: "Case IH Magnum 340",
-    type: "Utility Tractor",
-    bookingId: "#AR-9712",
-    date: "Sep 28, 2023",
-    duration: "12 Hours",
-    amount: "$650.00",
-    status: "Cancelled",
-    image: "🚜",
-  },
-  {
-    id: 4,
-    machine: "Kubota M7-172",
-    type: "Compact Tractor",
-    bookingId: "#AR-9688",
-    date: "Sep 22, 2023",
-    duration: "48 Hours",
-    amount: "$1,920.00",
-    status: "Completed",
-    image: "🚜",
-  },
-];
-
 export default function BookingHistory() {
   const [currentPage, setCurrentPage] = useState("bookings");
   const [selectedBooking, setSelectedBooking] = useState(null);
 
+  // ✅ Dynamic State
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // ✅ Fetch Bookings API
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        setLoading(true);
+
+        const token = localStorage.getItem("token");
+
+        const res = await axios.get("http://localhost:5000/api/bookings", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        setBookings(res.data.data);
+      } catch (err) {
+        console.log(err.response?.data);
+        setError(err.response?.data?.message || "Failed to load bookings");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
   const getStatusColor = (status) => {
     switch (status) {
-      case "Completed":
+      case "completed":
         return "bg-green-100 text-green-700";
-      case "In-Transit":
+      case "accepted":
         return "bg-blue-100 text-blue-700";
-      case "Cancelled":
+      case "cancelled":
+      case "rejected":
         return "bg-red-100 text-red-700";
+      case "pending":
+        return "bg-yellow-100 text-yellow-700";
       default:
         return "bg-gray-100 text-gray-700";
     }
   };
 
+  // ✅ Loading UI
+  if (loading) {
+    return <p className="text-center py-10">Loading bookings...</p>;
+  }
+
+  // ✅ Error UI
+  if (error) {
+    return <p className="text-center text-red-500">{error}</p>;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Header */}
         <div className="mb-6 sm:mb-8">
@@ -96,192 +92,120 @@ export default function BookingHistory() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <div className="bg-white rounded-lg border border-gray-200 p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-50 flex items-center justify-center flex-shrink-0">
-                <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
+              <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                <Calendar className="w-5 h-5 text-blue-600" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wide">
+              <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
                 Total Rentals
               </span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-bold text-gray-900">
-                42
-              </span>
-              <span className="text-xs sm:text-sm text-gray-500">units</span>
-            </div>
+            <span className="text-4xl font-bold text-gray-900">
+              {bookings.length}
+            </span>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-orange-50 flex items-center justify-center flex-shrink-0">
-                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
+              <div className="w-10 h-10 rounded-full bg-orange-50 flex items-center justify-center">
+                <Clock className="w-5 h-5 text-orange-600" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wide">
+              <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
                 Hours Logged
               </span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-bold text-gray-900">
-                1,280
-              </span>
-              <span className="text-xs sm:text-sm text-gray-500">hrs</span>
-            </div>
+            <span className="text-4xl font-bold text-gray-900">
+              {bookings.reduce((acc, b) => acc + (b.total_hours || 0), 0)}
+            </span>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-5 sm:p-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
-                <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5 text-green-600" />
+              <div className="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
-              <span className="text-xs sm:text-sm font-medium text-gray-600 uppercase tracking-wide">
+              <span className="text-sm font-medium text-gray-600 uppercase tracking-wide">
                 Active Bookings
               </span>
             </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-3xl sm:text-4xl font-bold text-gray-900">
-                03
-              </span>
-              <span className="text-xs sm:text-sm text-gray-500">rentals</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4 sm:p-6 mb-6">
-          <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
-            <div className="sm:col-span-5">
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
-                Search Machine
-              </label>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="ID or Name..."
-                  className="w-full pl-9 sm:pl-10 pr-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            <div className="sm:col-span-3">
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
-                Machine Type
-              </label>
-              <div className="relative">
-                <select className="w-full px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                  <option>All Types</option>
-                  <option>Tractor</option>
-                  <option>Harvester</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-
-            <div className="sm:col-span-3">
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
-                Status
-              </label>
-              <div className="relative">
-                <select className="w-full px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent">
-                  <option>Any Status</option>
-                  <option>Completed</option>
-                  <option>In-Transit</option>
-                  <option>Cancelled</option>
-                </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-
-            <div className="sm:col-span-1 flex items-end">
-              <button className="w-full bg-green-700 hover:bg-green-800 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2">
-                <span className="hidden sm:inline">Apply Filters</span>
-                <span className="sm:hidden">Apply</span>
-              </button>
-            </div>
+            <span className="text-4xl font-bold text-gray-900">
+              {bookings.filter((b) => b.booking_status === "In-Transit").length}
+            </span>
           </div>
         </div>
 
         {/* Bookings Table */}
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-          {/* Desktop Table */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase">
                     Machine
                   </th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase">
                     Booking ID
                   </th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase">
                     Date
                   </th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase">
                     Duration
                   </th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase">
                     Amount Paid
                   </th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
+                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase">
                     Status
-                  </th>
-                  <th className="text-left px-6 py-4 text-xs font-medium text-gray-700 uppercase tracking-wide">
-                    Actions
                   </th>
                 </tr>
               </thead>
+
               <tbody className="divide-y divide-gray-200">
-                {bookingsData.map((booking) => (
-                  <tr
-                    key={booking.id}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
+                {bookings.map((booking) => (
+                  <tr key={booking._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
-                          {booking.image}
-                        </div>
+                        <img
+                          src={
+                            booking.machine_id?.images?.length > 0
+                              ? booking.machine_id.images[0]?.url
+                              : "https://via.placeholder.com/150"
+                          }
+                          alt={booking.machine_id?.machine_name || "Machine"}
+                          className="w-12 h-12 object-cover rounded-lg"
+                        />
                         <div>
                           <div className="font-semibold text-gray-900 text-sm">
-                            {booking.machine}
-                          </div>
-                          <div className="text-xs text-gray-500">
-                            {booking.type}
+                            {booking.machine_id?.machine_name}
                           </div>
                         </div>
                       </div>
                     </td>
+
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                      {booking.bookingId}
+                      {booking._id}
                     </td>
+
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {booking.date}
+                      {new Date(booking.createdAt).toLocaleDateString()}
                     </td>
+
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {booking.duration}
+                      {booking.total_hours} Hours
                     </td>
+
                     <td className="px-6 py-4 text-sm font-semibold text-yellow-600">
-                      {booking.amount}
+                      ₹{booking.total_amount}
                     </td>
+
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}
+                        className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                          booking.booking_status,
+                        )}`}
                       >
-                        {booking.status}
+                        {booking.booking_status}
                       </span>
-                    </td>
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => {
-                          setSelectedBooking(booking);
-                          setCurrentPage("invoice");
-                        }}
-                        className="text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center gap-1 transition-colors cursor-pointer"
-                      >
-                        Details
-                        <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                      </button>
                     </td>
                   </tr>
                 ))}
@@ -289,84 +213,59 @@ export default function BookingHistory() {
             </table>
           </div>
 
-          {/* Mobile Cards */}
+          {/* Mobile View */}
           <div className="lg:hidden divide-y divide-gray-200">
-            {bookingsData.map((booking) => (
-              <div key={booking.id} className="p-4">
+            {bookings.map((booking) => (
+              <div key={booking._id} className="p-4">
                 <div className="flex items-start gap-3 mb-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-green-400 to-green-600 rounded-lg flex items-center justify-center text-2xl flex-shrink-0">
-                    {booking.image}
+                  <img
+                    src={
+                      booking.machine_id?.images?.length > 0
+                        ? booking.machine_id.images[0]?.url
+                        : "https://via.placeholder.com/150"
+                    }
+                    alt={booking.machine_id?.machine_name || "Machine"}
+                    className="w-12 h-12 object-cover rounded-lg"
+                  />
+
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900 text-sm">
+                      {booking.machine_id?.machine_name}
+                    </div>
+
+                    <div className="text-xs text-gray-500">{booking._id}</div>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-semibold text-gray-900 text-sm mb-0.5">
-                      {booking.machine}
-                    </div>
-                    <div className="text-xs text-gray-500 mb-2">
-                      {booking.type}
-                    </div>
-                    <div className="text-xs font-medium text-gray-700">
-                      {booking.bookingId}
-                    </div>
-                  </div>
+
                   <span
-                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(booking.status)}`}
+                    className={`inline-flex px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      booking.booking_status,
+                    )}`}
                   >
-                    {booking.status}
+                    {booking.booking_status}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3 mb-3 text-sm">
+                <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Date</div>
-                    <div className="text-gray-900">{booking.date}</div>
+                    <div className="text-xs text-gray-500">Date</div>
+                    <div>
+                      {new Date(booking.createdAt).toLocaleDateString()}
+                    </div>
                   </div>
+
                   <div>
-                    <div className="text-xs text-gray-500 mb-1">Duration</div>
-                    <div className="text-gray-900">{booking.duration}</div>
+                    <div className="text-xs text-gray-500">Duration</div>
+                    <div>{booking.total_hours} Hours</div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-100 cursor-pointer">
+                <div className="pt-3 border-t mt-3">
                   <div className="text-lg font-semibold text-yellow-600">
-                    {booking.amount}
+                    ₹{booking.total_amount}
                   </div>
-                  <button
-                    onClick={() => {
-                      setSelectedBooking(booking);
-                      setCurrentPage("invoice");
-                    }}
-                    className="text-sm font-medium text-gray-700 hover:text-gray-900 flex items-center gap-1"
-                  >
-                    Details
-                    <ChevronDown className="w-4 h-4 rotate-[-90deg]" />
-                  </button>
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Pagination */}
-          <div className="border-t border-gray-200 px-4 sm:px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div className="text-sm text-gray-600">
-              Showing results
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 cursor-pointer rounded transition-colors">
-                Previous
-              </button>
-              {/* <button className="px-3 py-1.5 text-sm bg-yellow-500 text-white rounded font-medium">
-                1
-              </button>
-              <button className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
-                2
-              </button>
-              <button className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded transition-colors">
-                3
-              </button> */}
-              <button className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 cursor-pointer hover:bg-gray-100 rounded transition-colors">
-                Next
-              </button>
-            </div>
           </div>
         </div>
       </div>

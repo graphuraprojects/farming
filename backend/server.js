@@ -1,4 +1,4 @@
-import "dotenv/config";   // ✅ this already loads env vars
+import "dotenv/config"; // ✅ this already loads env vars
 
 import express from "express";
 import "./configs/cloudinary.js";
@@ -16,7 +16,10 @@ import earningRoutes from "./routes/earningRoutes.js";
 import adminPaymentRoutes from "./routes/adminPaymentRoutes.js";
 import couponRoutes from "./routes/couponRoutes.js";
 import adminAnalyticsRoutes from "./routes/adminAnalyticsRoutes.js";
-import userRoutes from "./routes/userRoutes.js"; 
+import userRoutes from "./routes/userRoutes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import fleetRoutes from "./routes/fleet.routes.js";
+import bookingOwnerRoutes from "./routes/booking.routes.js";
 import dotenv from "dotenv";
 // dotenv.config();
 
@@ -45,6 +48,9 @@ app.use("/api/machines", machineRoutes);
 app.use("/api/availability", availabilityRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/earnings", earningRoutes);
+app.use("/api/owner/dashboard", dashboardRoutes);
+app.use("/api/owner/fleet", fleetRoutes);
+app.use("/api/owner/bookings", bookingOwnerRoutes);
 
 // Admin Routes
 //Admin Payment Routes
@@ -52,7 +58,7 @@ app.use("/api/admin/payments", adminPaymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
 
-//Profile update route 
+//Profile update route
 app.use("/api/users", userRoutes);
 
 app.listen(port, () => {

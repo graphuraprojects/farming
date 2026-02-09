@@ -63,7 +63,7 @@ const Listing = () => {
       name: m.machine_name,
       price: m.price_per_hour,
       year: m.model_year,
-      image: m.images?.[0],
+      image: m.images?.[0]?.url,
       location: `${m.address?.street || ""}, ${m.address?.city || ""}, ${m.address?.state || ""}`,
       type: m.category,
       distance: 20, // dummy

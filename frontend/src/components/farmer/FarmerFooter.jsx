@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logo1 from "../../assets/logo1.webp";
 
 const FarmerFooter = () => {
@@ -23,15 +24,34 @@ const FarmerFooter = () => {
               Farmer
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                Browse Machines
+
+              <li>
+                <Link
+                  to="/machine-listing"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Browse Machines
+                </Link>
               </li>
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                My Bookings
+
+              <li>
+                <Link
+                  to="/booking-history"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  My Bookings
+                </Link>
               </li>
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                Payments
+
+              <li>
+                <Link
+                  to="/invoice"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Payments
+                </Link>
               </li>
+
             </ul>
           </div>
 
@@ -41,15 +61,34 @@ const FarmerFooter = () => {
               Machine Owner
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                List Machine
+
+              <li>
+                <Link
+                  to="/add-machine"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  List Machine
+                </Link>
               </li>
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                My Machines
+
+              <li>
+                <Link
+                  to="/owner-dashboard"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  My Machines
+                </Link>
               </li>
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                Earnings
+
+              <li>
+                <Link
+                  to="/withdrawl"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Earnings
+                </Link>
               </li>
+
             </ul>
           </div>
 
@@ -59,12 +98,25 @@ const FarmerFooter = () => {
               Support
             </h4>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                Privacy Policy
+
+              <li>
+                <Link
+                  to="/P"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Privacy Policy
+                </Link>
               </li>
-              <li className="hover:text-[#4e8d67] cursor-pointer transition">
-                Terms & Conditions
+
+              <li>
+                <Link
+                  to="/T&C"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Terms & Conditions
+                </Link>
               </li>
+
             </ul>
           </div>
 
@@ -80,15 +132,15 @@ const FarmerFooter = () => {
           </p>
 
           <div className="flex space-x-6">
-            <span className="hover:text-[#4e8d67] cursor-pointer transition">
+            <a href="#" className="hover:text-[#4e8d67] transition">
               Facebook
-            </span>
-            <span className="hover:text-[#4e8d67] cursor-pointer transition">
+            </a>
+            <a href="#" className="hover:text-[#4e8d67] transition">
               Instagram
-            </span>
-            <span className="hover:text-[#4e8d67] cursor-pointer transition">
+            </a>
+            <a href="#" className="hover:text-[#4e8d67] transition">
               Twitter
-            </span>
+            </a>
           </div>
         </div>
 

@@ -13,7 +13,12 @@ const Specs = ({ data, setData, next, prev }) => {
   };
 
   const handleSubmit = () => {
-    if (!data.fuelType || !data.category || !data.pricePerHour) {
+    if (
+      !data.fuelType ||
+      !data.category ||
+      !data.pricePerHour ||
+      data.transport === ""
+    ) {
       alert("Please fill all required fields");
       return;
     }
@@ -118,6 +123,28 @@ const Specs = ({ data, setData, next, prev }) => {
                   <span className="font-semibold text-[#03a74f]">95%</span> of
                   the total amount after each booking
                 </p>
+              </div>
+              <div className="flex flex-col gap-2 mt-5">
+                <label className="font-medium text-gray-700 text-sm">
+                  Transport Fee
+                </label>
+
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                    ₹
+                  </span>
+
+                  <input
+                    type="number"
+                    name="transport"
+                    value={data.transport}
+                    onChange={handleChange}
+                    placeholder="Enter transport fee"
+                    min="0"
+                    step="1"
+                    className="w-full pl-8 pr-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  />
+                </div>
               </div>
             </div>
           </div>

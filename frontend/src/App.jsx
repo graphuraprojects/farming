@@ -21,7 +21,7 @@ import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
 import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
 import AddMachine from "./pages/addMachine/AddMachine.jsx";
 import Invoice from "./Pages/bookngHistory/Invoice.jsx";
-import ApprovalList from "./Admin/ApprovalList.jsx";
+// import ApprovalList from "./Admin/ApprovalList.jsx";
 import TermsAndConditions from "./Pages/Terns&Condition.jsx";
 import PrivacyPolicy from "./Pages/PrivacyPolicy.jsx"
 import AboutUs from "./Pages/about/AboutUs.jsx";

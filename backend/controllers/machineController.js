@@ -42,7 +42,7 @@ export const addMachine = async (req, res) => {
       category: data.category,
 
       price_per_hour: data.price_per_hour,
-
+      transport: data.transport,
       location: {
         latitude: data.latitude,
         longitude: data.longitude,
@@ -72,31 +72,49 @@ export const addMachine = async (req, res) => {
  * UPDATE MACHINE
  */
 export const updateMachine = async (req, res) => {
-  const machine = await Machine.findById(req.params.id);
+  try {
+    const machine = await Machine.findById(req.params.id);
 
-  if (!machine) {
-    return res
-      .status(404)
-      .json({ success: false, message: "Machine not found" });
+    if (!machine) {
+      return res.status(404).json({
+        success: false,
+        message: "Machine not found",
+      });
+    }
+
+    if (
+      req.user.role === "owner" &&
+      machine.owner_id.toString() !== req.user.userId
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized",
+      });
+    }
+
+    const updated = await Machine.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        transport: req.body.transport ?? machine.transport,
+      },
+      { new: true },
+    );
+
+    res.json({
+      success: true,
+      message: "Machine updated",
+      data: updated,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Update failed",
+      error: error.message,
+    });
   }
-
-  if (
-    req.user.role === "owner" &&
-    machine.owner_id.toString() !== req.user.userId
-  ) {
-    return res.status(403).json({ success: false, message: "Unauthorized" });
-  }
-
-  const updated = await Machine.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-  });
-
-  res.json({
-    success: true,
-    message: "Machine updated",
-    data: updated,
-  });
 };
+
 /**
  * DELETE MACHINE
  */
@@ -301,39 +319,39 @@ export const getAdminMachines = async (req, res) => {
 
     res.json({
       success: true,
-      data: machines
+      data: machines,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch machines",
-      error: error.message
+      error: error.message,
     });
   }
 };
 export const getMachineByIdAdmin = async (req, res) => {
   try {
-    const machine = await Machine.findById(req.params.id)
-      .populate("owner_id", "name email phone");
+    const machine = await Machine.findById(req.params.id).populate(
+      "owner_id",
+      "name email phone",
+    );
 
     if (!machine) {
       return res.status(404).json({
         success: false,
-        message: "Machine not found"
+        message: "Machine not found",
       });
     }
 
     res.json({
       success: true,
-      data: machine
+      data: machine,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch machine",
-      error: error.message
+      error: error.message,
     });
   }
 };

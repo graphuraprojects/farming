@@ -49,6 +49,10 @@ const machineSchema = new mongoose.Schema(
       type: Number,
       required: true
     },
+    transport: {
+      type: Number,
+      required: true
+    },
 
     // LOCATION
     location: {
