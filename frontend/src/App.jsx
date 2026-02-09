@@ -41,9 +41,8 @@ function App() {
         <Route path="/verify-otp" element={<VerifyOtp />} />
 
         {/* ADMIN TEST ROUTES */}
-        <Route path="/machine-approval" element={<MachineApproval />} />
-        <Route path="/admin-dashboard" element={<AdminDashboard />} />
-        <Route path="/approval-list" element={<ApprovalList />} />
+        <Route path="/admin/machines/:id" element={<MachineApproval />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
 
         {/* FARMER ROUTES */}
         <Route path="/" element={<FarmerLayout />}>
