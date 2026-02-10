@@ -130,7 +130,7 @@ const FarmerHome = () => {
               </div>
             </div>
           </div>
-          <div className="absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
+          <div className="hidden sm:block absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
             <svg
               viewBox="0 0 1440 160"
               preserveAspectRatio="none"
@@ -181,11 +181,11 @@ const FarmerHome = () => {
       {/* About us section */}
       <section className="flex justify-center overflow-hidden">
         <div className="mx-5 md:mx-10 pt-10 pb-15 max-w-[1280px] w-full">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-[40px] font-bold text-center">
             Empowering Farmers Through{" "}
             <span className="text-[#03a74f]">Shared Resources</span>
           </h1>
-          <p className="text-gray-500 font-medium text-sm w-full text-center">
+          <p className="text-gray-500 font-medium text-sm w-full text-center mt-2">
             We connect farmers with the equipment they need, when they need it.
           </p>
           <div className="flex flex-col lg:flex-row gap-10 mt-5 md:mt-10 justify-center lg:justify-between items-center">
@@ -297,7 +297,7 @@ const FarmerHome = () => {
       {/* popular category section */}
       <section className="flex justify-center">
         <div className="mx-5 py-15 max-w-[1280px]">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-[40px] font-bold text-center">
             Popular Categories
           </h1>
           <p className="text-gray-500 font-medium text-sm w-full text-center">
@@ -336,7 +336,7 @@ const FarmerHome = () => {
       {/* Benefits section */}
       <section className="flex  justify-center">
         <div className="max-w-[1280px] w-full py-10">
-          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-center">
+          <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-[40px] font-bold text-center">
             Why It Benefits You
           </h1>
           <p className="text-gray-500 font-medium text-sm w-full text-center mt-2">

@@ -11,7 +11,7 @@ import {
 } from "../controllers/machineController.js";
 
 import { protect } from "../middleware/authMiddleware.js";
-import { allowOwnerOrAdmin } from "../middleware/roleMiddleware.js";
+import { allowOwnerAdminFarmer, allowOwnerOrAdmin } from "../middleware/roleMiddleware.js";
 import upload from "../configs/multer.js";
 import { allowAdmin } from "../middleware/roleMiddleware.js";
 
@@ -20,7 +20,7 @@ const router = express.Router();
 router.post(
   "/",
   protect,
-  allowOwnerOrAdmin,
+  allowOwnerAdminFarmer,
   upload.fields([
   { name: "images", maxCount: 5 },
   { name: "ownership_proof", maxCount: 1 }
