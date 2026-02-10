@@ -7,6 +7,7 @@ import Login from "./Pages/auth/Login.jsx";
 import VerifyOtp from "./Pages/auth/VerifyOtp.jsx";
 import MachineApproval from "./Admin/MachineAppoval.jsx";
 import NotFound from "./pages/NotFound";
+import AdminRegister from "./Admin/AdminRegister.jsx";
 
 // ✅ Admin Dashboard
 import AdminDashboard from "./Admin/AdminDashboard.jsx";
@@ -46,6 +47,7 @@ function App() {
         {/* ADMIN TEST ROUTES */}
         <Route path="/admin/machines/:id" element={<MachineApproval />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/register" element={<AdminRegister />} />
         {/* <Route path="/appList" element={<ApprovalList />} /> */}
 
         {/* FARMER ROUTES */}

@@ -20,8 +20,8 @@ import userRoutes from "./routes/userRoutes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import fleetRoutes from "./routes/fleet.routes.js";
 import bookingOwnerRoutes from "./routes/booking.routes.js";
-// import dotenv from "dotenv";
-import contactRoutes from "./routes/contactRoutes.js"
+import adminAuthRoutes from "./routes/adminAuthRoutes.js";
+import contactRoutes from "./routes/contactRoutes.js";
 import invoiceRoutes from "./routes/invoiceRoutes.js";
 // import paymentRoutes from "./routes/paymentRoutes.js";
 // dotenv.config();
@@ -61,12 +61,13 @@ app.use("/api/owner/bookings", bookingOwnerRoutes);
 app.use("/api/admin/payments", paymentRoutes);
 app.use("/api/admin/coupons", couponRoutes);
 app.use("/api/admin/analytics", adminAnalyticsRoutes);
+app.use("/api/adminAuth", adminAuthRoutes);
 app.use("/api/contact", contactRoutes);
 
-//Profile update route 
+//Profile update route
 app.use("/api/users", userRoutes);
 
-// invoice 
+// invoice
 app.use("/api/invoice", invoiceRoutes);
 
 app.listen(port, () => {

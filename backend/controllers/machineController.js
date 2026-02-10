@@ -259,47 +259,84 @@ export const getAllMachines = async (req, res) => {
  */
 export const approveOrRejectMachine = async (req, res) => {
   try {
+    console.log("\n================ APPROVAL REQUEST START ================");
+    console.log("Route Params ID:", req.params.id);
+    console.log("Request Body:", req.body);
+    console.log("User:", req.user);
+
     const { action, rejection_reason } = req.body;
     const { id } = req.params;
 
     if (!["approve", "reject"].includes(action)) {
+      console.log("❌ Invalid action received:", action);
       return res.status(400).json({
         success: false,
-        message: "Action must be approve or reject",
+        message: "Invalid action",
       });
     }
 
+    console.log("🔍 Fetching machine from DB...");
     const machine = await Machine.findById(id);
 
+    console.log("Machine Found:", machine ? machine._id : "NOT FOUND");
+
     if (!machine) {
+      console.log("❌ Machine not found in database");
       return res.status(404).json({
         success: false,
         message: "Machine not found",
       });
     }
 
-    if (action === "approve") {
-      machine.isApproved = true;
-      machine.rejection_reason = "";
-    }
+    console.log("Machine Ownership Proof:", machine.ownership_proof);
 
-    if (action === "reject") {
-      const trimmedReason =
-        typeof rejection_reason === "string"
-          ? rejection_reason.trim()
-          : "";
-      if (!trimmedReason) {
+    // ✅ APPROVE
+    if (action === "approve") {
+      console.log("👉 Approval flow triggered");
+
+      if (!machine.ownership_proof?.url) {
+        console.log("❌ Ownership proof missing. Approval blocked.");
         return res.status(400).json({
           success: false,
-          message: "Rejection reason is required",
+          message: "Ownership document required to approve machine",
+        });
+      }
+
+      machine.isApproved = true;
+      machine.rejection_reason = "";
+
+      console.log("✅ Machine marked APPROVED");
+    }
+
+    // ✅ REJECT
+    if (action === "reject") {
+      console.log("👉 Rejection flow triggered");
+
+      const trimmedReason = (rejection_reason || "").trim();
+
+      console.log("Rejection reason received:", rejection_reason);
+      console.log("Trimmed rejection reason:", trimmedReason);
+
+      if (!trimmedReason) {
+        console.log("❌ Rejection reason missing");
+        return res.status(400).json({
+          success: false,
+          message: "Rejection reason required",
         });
       }
 
       machine.isApproved = false;
       machine.rejection_reason = trimmedReason;
+
+      console.log("✅ Machine marked REJECTED");
     }
 
+    console.log("💾 Saving machine...");
     await machine.save();
+
+    console.log("✅ Machine saved successfully");
+
+    console.log("================ APPROVAL REQUEST END ================\n");
 
     res.status(200).json({
       success: true,
@@ -307,6 +344,10 @@ export const approveOrRejectMachine = async (req, res) => {
       data: machine,
     });
   } catch (error) {
+    console.log("\n🚨 APPROVAL ERROR OCCURRED 🚨");
+    console.error(error);
+    console.log("=====================================================\n");
+
     res.status(500).json({
       success: false,
       message: "Failed to update machine status",

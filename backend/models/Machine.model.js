@@ -50,8 +50,7 @@ const machineSchema = new mongoose.Schema(
       required: true
     },
     transport: {
-      type: Number,
-      required: true
+      type: Number
     },
 
     // LOCATION
@@ -76,8 +75,8 @@ const machineSchema = new mongoose.Schema(
 ],
 
 ownership_proof: {
-  url: { type: String, required: true },
-  public_id: { type: String, required: true }
+  url: { type: String },
+  public_id: { type: String }
 },
 
   
