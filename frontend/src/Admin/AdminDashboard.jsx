@@ -12,6 +12,7 @@ import {
   Package,
   Calendar,
 } from "lucide-react";
+import logo from "../assets/logo1.webp";
 import {
   LineChart,
   Line,
@@ -60,7 +61,7 @@ const AdminDashboard = () => {
       >
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-green-800">
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center">
                 <Tractor size={24} />
               </div>
@@ -68,7 +69,8 @@ const AdminDashboard = () => {
                 <h1 className="text-xl font-bold">AgriRent</h1>
                 <p className="text-xs text-green-300">Admin Panel</p>
               </div>
-            </div>
+            </div> */}
+            <img src={logo} alt="logo" />
           </div>
 
           <nav className="flex-1 p-4">
