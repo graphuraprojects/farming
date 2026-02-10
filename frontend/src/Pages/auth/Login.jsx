@@ -39,7 +39,7 @@ const Login = () => {
       // ✅ Role navigation
       switch (user.role) {
         case "admin":
-          navigate("/admin-dashboard");
+          navigate("/admin/dashboard");
           break;
 
         case "owner":

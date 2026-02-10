@@ -132,13 +132,13 @@ const FarmerFooter = () => {
           </p>
 
           <div className="flex space-x-6">
-            <a href="#" className="hover:text-[#4e8d67] transition">
+            <a href="https://www.facebook.com/Graphura.in" className="hover:text-[#4e8d67] transition">
               Facebook
             </a>
-            <a href="#" className="hover:text-[#4e8d67] transition">
+            <a href="https://www.instagram.com/Graphura.in" className="hover:text-[#4e8d67] transition">
               Instagram
             </a>
-            <a href="#" className="hover:text-[#4e8d67] transition">
+            <a href="https://x.com/Graphura" className="hover:text-[#4e8d67] transition">
               Twitter
             </a>
           </div>
