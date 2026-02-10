@@ -35,18 +35,21 @@ const MachineApproval = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
+      console.log("Fetching machine details for ID:", id);
+      console.log("Token:", token);
+
       const response = await fetch(`${API_BASE_URL}/machines/admin/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Fetching machine details for ID:", id);
-      console.log("Token:", token);
-      console.log("Response:", result);
 
       if (!response.ok) throw new Error("Failed to fetch machine details");
 
       const result = await response.json();
+
+      console.log("Response:", result); // ✅ moved here
+
       setMachineData(result.data);
       setError(null);
     } catch (err) {
