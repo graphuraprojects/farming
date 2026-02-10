@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
@@ -180,6 +180,21 @@ export default function App() {
 
     fetchRangeStats();
   }, [activeRange]);
+
+  const hasShownAlert = useRef(false);
+
+useEffect(() => {
+  if (hasShownAlert.current) return;
+
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+
+  if (!token || !user) {
+    hasShownAlert.current = true;
+    alert("Login first");
+    navigate("/404", { replace: true });
+  }
+}, []);
 
   useEffect(() => {
     setCurrentStats((prev) => ({

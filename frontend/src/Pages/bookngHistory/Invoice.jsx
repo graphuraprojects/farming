@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Download,
   Printer,
@@ -23,6 +23,21 @@ export default function Invoice() {
       .then((data) => setInvoice(data))
       .catch((err) => console.error(err));
   }, [bookingId]);
+
+  const hasShownAlert = useRef(false);
+
+  useEffect(() => {
+    if (hasShownAlert.current) return;
+
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
+
+    if (!token || !user) {
+      hasShownAlert.current = true;
+      alert("Login first");
+      navigate("/404", { replace: true });
+    }
+  }, []);
 
   // 🔹 Download PDF (same UI)
   const downloadPDF = async () => {
@@ -115,7 +130,9 @@ export default function Invoice() {
                 <Building className="w-4 h-4" /> SERVICE PROVIDER
               </div>
               <p className="font-bold text-lg">{invoice.provider.name}</p>
-              <p className="text-sm text-gray-600">{invoice.provider.address}</p>
+              <p className="text-sm text-gray-600">
+                {invoice.provider.address}
+              </p>
               <p className="text-sm text-gray-600">{invoice.provider.email}</p>
             </div>
           </div>

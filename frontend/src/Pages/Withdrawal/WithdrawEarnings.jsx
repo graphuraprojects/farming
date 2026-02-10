@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ShieldCheck, RefreshCcw, Lock, CheckCircle } from "lucide-react";
 
@@ -18,6 +18,23 @@ export default function WithdrawEarnings() {
     const value = Math.round(availableBalance * percent) / 100;
     setAmount(Number(value.toFixed(2)));
   };
+
+ 
+const hasShownAlert = useRef(false);
+
+useEffect(() => {
+  if (hasShownAlert.current) return;
+
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+
+  if (!token || !user) {
+    hasShownAlert.current = true;
+    alert("Login first");
+    navigate("/404", { replace: true });
+  }
+}, []);
+
 
   const handleRefresh = () => {
     if (refreshing) return;

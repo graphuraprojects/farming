@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BasicInfo from "./BasicInfo";
 import Specs from "./Specs";
 import Location from "./Location";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const AddMachine = () => {
   const [step, setStep] = useState(1);
 
   const steps = ["Basic Info", "Specs & Pricing", "Location"];
+  const navigate = useNavigate();
 
   const [machineData, setMachineData] = useState({
     // Basic Info
@@ -35,6 +37,21 @@ const AddMachine = () => {
     // Document
     document: null,
   });
+
+  const hasShownAlert = useRef(false);
+
+useEffect(() => {
+  if (hasShownAlert.current) return;
+
+  const token = localStorage.getItem("token");
+  const user = localStorage.getItem("user");
+
+  if (!token || !user) {
+    hasShownAlert.current = true;
+    alert("Login first");
+    navigate("/404", { replace: true });
+  }
+}, []);
 
   const handleSubmit = async () => {
     try {
