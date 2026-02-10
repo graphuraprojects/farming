@@ -41,7 +41,7 @@ const machineSchema = new mongoose.Schema(
 
     category: {
       type: String,
-      enum: ["Tractors", "Harvester", "Balers", "Seeders", "Rotavators"],
+      enum: ["Tractors", "Harvesters", "Balers", "Seeders", "Rotavators"],
       required: true,
     },
 
