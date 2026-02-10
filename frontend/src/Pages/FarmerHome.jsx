@@ -130,7 +130,7 @@ const FarmerHome = () => {
               </div>
             </div>
           </div>
-          <div className="absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
+          <div className="hidden sm:block absolute -bottom-8 left-0 w-full overflow-hidden leading-none pointer-events-none">
             <svg
               viewBox="0 0 1440 160"
               preserveAspectRatio="none"
