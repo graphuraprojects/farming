@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Package,
   Calendar,
+  Home,
 } from "lucide-react";
 import logo from "../assets/logo1.webp";
 import {
@@ -99,7 +100,13 @@ const AdminDashboard = () => {
             </ul>
           </nav>
 
-          <div className="p-4 border-t border-green-800">
+          <div className="p-4 border-t border-green-800 space-y-2">
+            <Link to="/">
+              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-800/50 transition-all">
+                <Home size={20} />
+                <span className="font-medium">Back to Home</span>
+              </button>
+            </Link>
             <button
               onClick={handleLogout}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-800/50 transition-all text-red-300 hover:text-red-200"
@@ -328,5 +335,4 @@ const MachineApprovals = () => {
   );
 };
 
-<button>Back to Home</button>
 export default AdminDashboard;

@@ -79,11 +79,11 @@ const Specs = ({ data, setData, next, prev }) => {
                   className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
                 >
                   <option value="">Select category</option>
-                  <option value="Tractor">Tractor</option>
-                  <option value="Harvester">Harvester</option>
-                  <option value="Rotavator">Rotavator</option>
-                  <option value="Seeder">Seeder</option>
-                  <option value="Baler">Baler</option>
+                  <option value="Tractors">Tractor</option>
+                  <option value="Harvesters">Harvester</option>
+                  <option value="Rotavators">Rotavator</option>
+                  <option value="Seeders">Seeder</option>
+                  <option value="Balers">Baler</option>
                 </select>
               </div>
             </div>
