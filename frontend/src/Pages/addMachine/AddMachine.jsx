@@ -105,7 +105,7 @@ useEffect(() => {
 
       if (res.data.success) {
         alert("Machine Added Successfully!");
-        setStep(1);
+        navigate("/");
       }
     } catch (err) {
       console.error("Upload error:", err.response?.data || err.message);

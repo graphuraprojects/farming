@@ -48,6 +48,5 @@ router.patch(
 router.get("/admin/all", protect, allowAdmin, getAdminMachines);
 router.get("/admin/:id", protect, allowAdmin, getMachineByIdAdmin);
 
-router.get("/public", getPublicMachines);
 
 export default router;
