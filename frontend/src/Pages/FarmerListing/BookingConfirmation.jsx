@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import MachineDetailsCard from "./MachineDetailsCard";
+import MachineDetailsCard from "./MachineCard";
 import { Link, useParams } from "react-router-dom";
 
 /**
@@ -14,7 +14,11 @@ const API_BASE_URL = "https://your-backend-api.com/api/order-summary";
 
 const BookingConfirmation = () => {
   const { id } = useParams();
-  const orderId = id || "ORD-9921";
+
+  console.log("📦 BookingConfirmation Loaded");
+  console.log("📦 URL Param ID:", id);
+
+  const orderId = id;
 
   const [orderData, setOrderData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -23,39 +27,31 @@ const BookingConfirmation = () => {
   useEffect(() => {
     const fetchOrderDetails = async () => {
       try {
+        console.log("🚀 Fetch Order Started");
+        console.log("➡️ orderId:", orderId);
+
         setLoading(true);
         let rawData;
 
-        // 1. CHECK COD ORDER FIRST
         const codData = localStorage.getItem("codOrder");
+
+        console.log("🧾 COD LocalStorage:", codData);
 
         if (codData) {
           rawData = JSON.parse(codData);
-
-          // optional: clear after loading once
-          // localStorage.removeItem("codOrder");
-        }
-        // 2. BACKEND (future)
-        else if (IS_LIVE) {
-          const response = await fetch(`${API_BASE_URL}/${orderId}`);
-          if (!response.ok) throw new Error("Failed to load your order.");
-          rawData = await response.json();
-        }
-        // 3. SIMULATION (fallback)
-        else {
+          console.log("✅ Using COD Data:", rawData);
+        } else {
+          console.log("⚠️ Using Simulation Data");
           rawData = await simulateCheckoutResponse();
         }
 
-        /* TRANSFORMATION LAYER:
-           We convert the backend array into a format our UI loves.
-        */
+        console.log("📥 Raw Order Data:", rawData);
+
         const cleanedData = {
-          orderId: rawData.order_id || rawData.id,
+          bookingId: rawData.bookingId || rawData._id,
           status: rawData.status || "Confirmed",
-          // We map over every machine in the array
           machines: (rawData.machines || []).map((m) => ({
             id: m.id || Math.random(),
-            // Mapping specific field names for MachineDetailsCard
             cardProps: {
               machineName: m.name || m.title,
               description: m.description || m.desc,
@@ -68,109 +64,37 @@ const BookingConfirmation = () => {
           nextSteps: rawData.next_steps || [],
         };
 
+        console.log("🧹 Cleaned Order Data:", cleanedData);
+        console.log("🧾 Raw Booking Data:", rawData);
+        console.log(
+          "🧾 Extracted Booking ID:",
+          rawData.bookingId || rawData._id,
+        );
+
         setOrderData(cleanedData);
       } catch (err) {
+        console.error("❌ Order Fetch Error:", err);
         setError(err.message);
       } finally {
+        console.log("🏁 Order Fetch Completed");
         setLoading(false);
       }
     };
+
     fetchOrderDetails();
   }, [orderId]);
 
-  if (loading)
-    return (
-      <div className="min-h-screen flex items-center justify-center font-bold text-[#03a74f]">
-        Processing Order...
-      </div>
-    );
-  if (error)
-    return (
-      <div className="min-h-screen flex items-center justify-center text-red-500">
-        {error}
-      </div>
-    );
+  if (loading) return <div>Processing Order...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
-    <>
-      <style>{`
-        @keyframes popIn { 0% { opacity: 0; transform: scale(0.5); } 100% { opacity: 1; transform: scale(1); } }
-        .animate-pop { animation: popIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-      `}</style>
+    <div>
+      <h2>Booking {orderData.status}</h2>
 
-      <div className="min-h-screen w-full bg-[#fafaf7] text-[#2b2b2b] font-['Inter',sans-serif] pb-20">
-        <div className="max-w-[800px] mx-auto pt-10 px-4 space-y-10">
-          {/* HEADER */}
-          <div className="text-center space-y-4">
-            <div className="mx-auto flex items-center justify-center rounded-full bg-[#03a74f] text-white w-20 h-20 shadow-xl animate-pop">
-              <span className="material-symbols-outlined text-[48px]">
-                check
-              </span>
-            </div>
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold">
-                Booking {orderData.status}!
-              </h1>
-              <p className="text-[#5b6e58] font-medium">
-                Order Reference: #{orderData.orderId}
-              </p>
-              <p className="text-sm text-[#03a74f] mt-1 font-bold">
-                {orderData.machines.length} Machines Reserved
-              </p>
-            </div>
-          </div>
-
-          {/* LIST OF MACHINES */}
-          <div className="space-y-8">
-            <h2 className="text-xl font-semibold border-b border-[#03a74f]/10 pb-2">
-              Machine Details
-            </h2>
-            {orderData.machines.map((item, index) => (
-              <div key={item.id} className="relative">
-                <div className="absolute -left-2 -top-2 bg-[#03a74f] text-white w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold z-10 shadow-md">
-                  {index + 1}
-                </div>
-                <MachineDetailsCard details={item.cardProps} />
-              </div>
-            ))}
-          </div>
-
-          {/* NEXT STEPS */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-bold">What's Next?</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {orderData.nextSteps.map((step, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white p-5 rounded-xl border border-[#03a74f]/10 shadow-sm"
-                >
-                  <h4 className="font-bold text-[#2b2b2b]">{step.title}</h4>
-                  <p className="text-[#5b6e58] text-xs mt-1">{step.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* ACTIONS */}
-          <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link to="/invoice" className="flex-1">
-              <button className="w-full bg-[#03a74f] text-white rounded-xl h-14 font-bold flex items-center justify-center gap-2 shadow-lg">
-                <span className="material-symbols-outlined">visibility</span>{" "}
-                View Invoice
-              </button>
-            </Link>
-            <Link to="/booking-history" className="flex-1">
-              <button className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl h-14 font-bold flex items-center justify-center gap-2">
-                <span className="material-symbols-outlined">
-                  dashboard_customize
-                </span>{" "}
-                My Bookings
-              </button>
-            </Link>
-          </div>
-        </div>
-      </div>
-    </>
+      <Link to={`/invoice/${orderData.bookingId}`}>
+        <button>View Invoice</button>
+      </Link>
+    </div>
   );
 };
 
@@ -179,7 +103,7 @@ const simulateCheckoutResponse = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
-        order_id: "ORD-9921",
+        bookingId: "698b1d55be25f64771dccc14",
         status: "Confirmed",
         global_location: "GreenValley Hub, Sector 4, CA",
         machines: [

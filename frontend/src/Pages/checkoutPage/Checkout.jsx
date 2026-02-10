@@ -108,7 +108,7 @@ export default function Checkout() {
 
             localStorage.setItem(
               "paymentConfirmationData",
-              JSON.stringify(confirmationData)
+              JSON.stringify(confirmationData),
             );
 
             navigate(`/booking-confirmation/${response.razorpay_order_id}`);

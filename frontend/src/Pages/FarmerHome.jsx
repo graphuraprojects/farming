@@ -307,7 +307,10 @@ const FarmerHome = () => {
           <div className="mt-10 flex flex-wrap gap-5 justify-center">
             {Categories.map((machine, index) => (
               <div
-                className="group w-55 h-50 overflow-hidden relative rounded-2xl group cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
+                onClick={() =>
+                  navigate(`/machine-listing?category=${machine.name}`)
+                }
+                className="group w-55 h-50 overflow-hidden relative rounded-2xl cursor-pointer transition-transform duration-300 hover:-translate-y-3 shadow-lg hover:shadow-xl"
                 key={index}
               >
                 <img
@@ -400,7 +403,10 @@ const FarmerHome = () => {
               current location. Real-time availablity for the current planting
               season.
             </p>
-            <div onClick={() => navigate("/machine-listing")} className="group relative shadow-[0_6px_18px_rgba(0,0,0,0.12)] rounded-xl flex gap-2 items-center p-2 border-l-3 border-[#03a74f] mt-10 hover:-translate-y-2 cursor-pointer duration-300 transition-transform active:scale-95">
+            <div
+              onClick={() => navigate("/machine-listing")}
+              className="group relative shadow-[0_6px_18px_rgba(0,0,0,0.12)] rounded-xl flex gap-2 items-center p-2 border-l-3 border-[#03a74f] mt-10 hover:-translate-y-2 cursor-pointer duration-300 transition-transform active:scale-95"
+            >
               <Search
                 size={55}
                 className="text-[#03a74f] p-3 bg-[#d3f9e4] rounded-full group-hover:rotate-90 transition-transform duration-300"

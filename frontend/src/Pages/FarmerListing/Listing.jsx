@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import MachineCard from "./MachineCard";
 import Filters from "./Filters";
-
+import { useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const ITEMS_PER_PAGE = 6;
@@ -15,6 +15,17 @@ const Listing = () => {
     distance: 100,
     type: [],
   });
+const location = useLocation();
+const queryParams = new URLSearchParams(location.search);
+const categoryFromURL = queryParams.get("category");
+useEffect(() => {
+  if (categoryFromURL) {
+    setFilters((prev) => ({
+      ...prev,
+      type: [categoryFromURL],
+    }));
+  }
+}, [categoryFromURL]);
 
   const [sort, setSort] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,7 +63,7 @@ const Listing = () => {
 
   // Count machines by type (for Tractors (3))
   const typeCounts = machines.reduce((acc, item) => {
-    acc[item.type] = (acc[item.type] || 0) + 1;
+    acc[item.category] = (acc[item.category] || 0) + 1;
     return acc;
   }, {});
 

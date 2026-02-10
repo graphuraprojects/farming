@@ -146,11 +146,11 @@ const BookingConfirmation = () => {
 
           {/* ACTIONS */}
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <Link to="/invoice" className="flex-1">
+            {/* <Link to={`/invoice/${orderData.orderId}`} className="flex-1">
               <button className="w-full bg-[#03a74f] text-white rounded-xl h-14 font-bold flex items-center justify-center gap-2 shadow-lg">
                 <span className="material-symbols-outlined">visibility</span> View Invoice
               </button>
-            </Link>
+            </Link> */}
             <Link to="/booking-history" className="flex-1">
               <button className="w-full bg-[#03a74f]/10 text-[#03a74f] rounded-xl h-14 font-bold flex items-center justify-center gap-2">
                 <span className="material-symbols-outlined">dashboard_customize</span> My Bookings

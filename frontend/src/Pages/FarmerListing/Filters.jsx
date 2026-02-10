@@ -40,7 +40,7 @@ const Filters = ({ filters, setFilters, resetFilters, typeCounts }) => {
             type="number"
             value={filters.distance}
             onChange={(e) =>
-              setFilters({ ...filters, distance: e.target.value })
+              setFilters({ ...filters, distance: Number(e.target.value) })
             }
           />
           <span className="flex items-center justify-center px-3 bg-[#fdfdf9] border border-[#e6e8e6] rounded-lg text-sm font-medium text-[#6d7e74]">
@@ -91,33 +91,35 @@ const Filters = ({ filters, setFilters, resetFilters, typeCounts }) => {
           Machine Type
         </p>
 
-        {["Tractors", "Harvesters", "Sprayers"].map((type) => (
-          <label
-            key={type}
-            className="flex justify-between items-center cursor-pointer group-only:"
-          >
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={filters.type.includes(type)}
-                onChange={() => {
-                  const updated = filters.type.includes(type)
-                    ? filters.type.filter((t) => t !== type)
-                    : [...filters.type, type];
+        {["Tractors", "Harvester", "Balers", "Seeders", "Rotavators"].map(
+          (type) => (
+            <label
+              key={type}
+              className="flex justify-between items-center cursor-pointer group-only:"
+            >
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={filters.type.includes(type)}
+                  onChange={() => {
+                    const updated = filters.type.includes(type)
+                      ? filters.type.filter((t) => t !== type)
+                      : [...filters.type, type];
 
-                  setFilters({ ...filters, type: updated });
-                }}
-                className="accent-[#1f3d2b] size-4"
-              />
-              <span className="text-sm text-[#131614] group-hover:text-[#1f3d2b] transition-colors">
-                {type}
+                    setFilters({ ...filters, type: updated });
+                  }}
+                  className="accent-[#1f3d2b] size-4"
+                />
+                <span className="text-sm text-[#131614] group-hover:text-[#1f3d2b] transition-colors">
+                  {type}
+                </span>
+              </div>
+              <span className="text-sm font-medium text-[#6d7e74]">
+                ({typeCounts[type] || 0})
               </span>
-            </div>
-            <span className="text-sm font-medium text-[#6d7e74]">
-              ({typeCounts[type] || 0})
-            </span>
-          </label>
-        ))}
+            </label>
+          ),
+        )}
       </div>
 
       <button

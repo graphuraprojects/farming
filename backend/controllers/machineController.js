@@ -400,25 +400,3 @@ export const getMachineByIdAdmin = async (req, res) => {
     });
   }
 };
-export const getPublicMachines = async (req, res) => {
-  try {
-    const machines = await Machine.find({
-      isApproved: true,
-      availability_status: true,
-    })
-      .populate("owner_id", "name phone")
-      .sort({ createdAt: -1 });
-
-    res.status(200).json({
-      success: true,
-      count: machines.length,
-      data: machines,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch machines",
-      error: error.message,
-    });
-  }
-};
