@@ -131,8 +131,8 @@ const Register = () => {
               </div>
 
               <h1 className="relative z-10 text-lg md:text-xl font-semibold text-white leading-relaxed">
-                “Empowering farmers with the right machines,
-                <span className="text-[#03a74f]"> at the right time.</span>”
+                "Empowering farmers with the right machines,
+                <span className="text-[#03a74f]"> at the right time.</span>"
               </h1>
 
               <div className="relative z-10 w-12 h-[3px] bg-[#03a74f] mx-auto my-4 rounded-full"></div>
@@ -157,7 +157,7 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* ROLE */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="cursor-pointer">
                 <input
                   type="radio"
@@ -193,7 +193,7 @@ const Register = () => {
                   </span>
                 </div>
               </label>
-            </div>
+            </div> */}
 
             {/* INPUTS */}
 
@@ -245,33 +245,80 @@ const Register = () => {
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-            <label className="flex items-center gap-2 text-sm">
+
+            {/* Updated Terms & Conditions Checkbox */}
+            <label className="flex items-start gap-2 text-sm">
               <input
                 type="checkbox"
                 name="terms"
                 checked={form.terms}
                 onChange={handleChange}
-                className="accent-[#03a74f]"
+                className="accent-[#03a74f] mt-1 flex-shrink-0"
               />
-              I agree to Terms & Conditions
+              <span className="text-gray-700">
+                I agree to the{" "}
+                <Link
+                  to="/terms-and-conditions"
+                  className="text-[#03a74f] font-semibold hover:underline"
+                  target="_blank"
+                >
+                  Terms & Conditions
+                </Link>{" "}
+                and{" "}
+                <Link
+                  to="/privacy-policy"
+                  className="text-[#03a74f] font-semibold hover:underline"
+                  target="_blank"
+                >
+                  Privacy Policy
+                </Link>
+              </span>
             </label>
+
+            {message && (
+              <p className="text-red-600 text-sm text-center bg-red-50 py-2 rounded-lg">
+                {message}
+              </p>
+            )}
 
             <button
               disabled={loading}
               type="submit"
-              className="w-full py-3 rounded-lg text-white font-semibold bg-[#03a74f] hover:bg-[#028a42] cursor-pointer transition-transform active:scale-95 hover:-translate-y-2 duration-300"
+              className="w-full py-3 rounded-lg text-white font-semibold bg-[#03a74f] hover:bg-[#028a42] cursor-pointer transition-transform active:scale-95 hover:-translate-y-2 duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating..." : "Create Account"}
             </button>
           </form>
         </div>
 
-        <p className="text-center mt-2">
-          Already have an account?{" "}
-          <Link to="/login" className="text-[#03a74f] font-semibold">
-            Login here
-          </Link>
-        </p>
+        <div className="text-center mt-4 space-y-2">
+          <p>
+            Already have an account?{" "}
+            <Link
+              to="/login"
+              className="text-[#03a74f] font-semibold hover:underline"
+            >
+              Login here
+            </Link>
+          </p>
+
+          {/* Additional Links */}
+          <div className="flex items-center justify-center gap-3 text-xs text-gray-600">
+            <Link
+              to="/T&C"
+              className="hover:text-[#03a74f] transition-colors"
+            >
+              Terms & Conditions
+            </Link>
+            <span>•</span>
+            <Link
+              to="/P"
+              className="hover:text-[#03a74f] transition-colors"
+            >
+              Privacy Policy
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
