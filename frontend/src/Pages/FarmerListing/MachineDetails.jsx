@@ -228,9 +228,9 @@ const MachineDetails = () => {
                 </div>
               </div>
             </div>
-            <button className="hidden sm:block text-[#1f3d2b] font-semibold text-sm hover:underline">
+            {/* <button className="hidden sm:block text-[#1f3d2b] font-semibold text-sm hover:underline">
               Contact Owner
-            </button>
+            </button> */}
           </div>
 
           {/* SPECS */}

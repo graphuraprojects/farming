@@ -191,10 +191,10 @@ const Location = ({ data, setData, prev, submit }) => {
   };
 
   const handleSubmit = () => {
-    if (!location.lat || !location.lng) {
-      alert("Please select a location on the map");
-      return;
-    }
+    // if (!location.lat || !location.lng) {
+    //   alert("Please select a location on the map");
+    //   return;
+    // }
 
     if (
       !location.address ||
