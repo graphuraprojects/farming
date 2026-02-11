@@ -33,6 +33,8 @@ import WithdrwalSuccess from "./Pages/Withdrawal/WithdrawalSuccess.jsx";
 import Contact from "./Pages/contact/Contact.jsx";
 import Checkout from "./Pages/checkoutPage/Checkout.jsx";
 import FarmerDashboard from "./Pages/FarmerDashboard.jsx";
+import ProtectedOwner from "./components/ProtectedOwner.jsx";
+import ProtectedFarmer from "./components/ProtectedFarmer.jsx";
 
 function App() {
   return (
@@ -57,13 +59,21 @@ function App() {
           <Route path="machine-details/:id" element={<MachineDetails />} />
           <Route path="rate-experience" element={<RateExperience />} />
           <Route path="rent-review" element={<ReviewSuccessPage />} />
-          <Route path="booking-history" element={<BookingHistory />} />
+          <Route path="booking-history" element={<ProtectedFarmer allowedRoles={["farmer","admin"]}> <BookingHistory /></ProtectedFarmer>} />
           <Route path="booking-conform" element={<BookingConfirmation />} />
           <Route
             path="booking-confirmation/:orderId"
             element={<BookingConfirmation />}
           />
-          <Route path="add-machine" element={<AddMachine />} />
+
+          <Route
+            path="/add-machine"
+            element={
+              <ProtectedOwner allowedRoles={["owner", "admin"]}>
+                <AddMachine />
+              </ProtectedOwner>
+            }
+          />
           <Route path="/invoice/:bookingId" element={<Invoice />} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />

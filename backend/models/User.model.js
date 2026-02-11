@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       unique: true,
-      sparse: true // allows multiple null values
+      sparse: true
     },
 
     role: {
@@ -47,14 +47,14 @@ const userSchema = new mongoose.Schema(
 
     isVerified: {
       type: Boolean,
+      default: true  
+    },
+
+    isBlocked: {
+      type: Boolean,
       default: false
     },
 
-    // OTP SYSTEM (existing)
-    otp: String,
-    otpExpiry: Date,
-
-    // FUTURE SAFE EXTENSION
     pendingEmail: String,
     pendingPhone: String
   },

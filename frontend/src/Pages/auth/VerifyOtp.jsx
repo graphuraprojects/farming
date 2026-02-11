@@ -6,8 +6,9 @@ const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // userId passed from register page
-  const userId = location.state?.userId;
+  // Get email from register page instead of userId
+  const email = location.state?.email;
+  const name = location.state?.name;
 
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -25,13 +26,19 @@ const VerifyOtp = () => {
       setMessage("");
 
       const res = await axios.post("/api/auth/verify-otp", {
-        userId,
+        email,  // ✅ Send email instead of userId
         otp,
       });
 
       setMessage(res.data.message);
 
-      // Redirect to login after success
+      // ✅ Store token and user from response (auto-login after verification)
+      if (res.data.data?.token) {
+        localStorage.setItem("token", res.data.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.data.user));
+      }
+
+      // Redirect to home/dashboard after success
       setTimeout(() => {
         navigate("/");
       }, 1500);
@@ -42,10 +49,33 @@ const VerifyOtp = () => {
     }
   };
 
-  if (!userId) {
+  // Handle resend OTP
+  const handleResendOtp = async () => {
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const res = await axios.post("/api/auth/resend-otp", { email });
+      setMessage(res.data.message);
+    } catch (err) {
+      setMessage(err.response?.data?.message || "Failed to resend OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!email) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
-        <p className="text-red-500">Invalid access. Please register again.</p>
+        <div className="text-center">
+          <p className="text-red-500 mb-4">Invalid access. Please register again.</p>
+          <button 
+            onClick={() => navigate("/register")}
+            className="px-6 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42]"
+          >
+            Go to Register
+          </button>
+        </div>
       </div>
     );
   }
@@ -71,20 +101,7 @@ const VerifyOtp = () => {
               Almost there!{" "}
               <em className="text-outline">Verify Your Account.</em>
             </h1>
-            <div
-              className="mt-5
-    max-w-md w-full
-    rounded-3xl
-    overflow-hidden
-    bg-black/60
-    border border-white/20
-    shadow-[0_25px_60px_rgba(0,0,0,0.55)]
-    p-8
-    text-center
-    relative
-  "
-            >
-              {/* Icon */}
+            <div className="mt-5 max-w-md w-full rounded-3xl overflow-hidden bg-black/60 border border-white/20 shadow-[0_25px_60px_rgba(0,0,0,0.55)] p-8 text-center relative">
               <div className="flex justify-center mb-3 relative z-10">
                 <img
                   className="w-16"
@@ -93,18 +110,15 @@ const VerifyOtp = () => {
                 />
               </div>
 
-              {/* Quote */}
               <h1 className="relative z-10 text-lg md:text-xl font-semibold text-white leading-relaxed">
                 "Secure your account,
                 <span className="text-[#03a74f]"> start your journey.</span>"
               </h1>
 
-              {/* Divider */}
               <div className="relative z-10 w-12 h-[3px] bg-[#03a74f] mx-auto my-4 rounded-full"></div>
 
-              {/* Sub text */}
               <p className="relative z-10 text-sm text-gray-300">
-                We've sent a verification code to your email.
+                We've sent a verification code to <strong>{email}</strong>
               </p>
             </div>
           </div>
@@ -120,7 +134,7 @@ const VerifyOtp = () => {
               Verify Your Email
             </h1>
             <p className="text-[#5E5E5E] dark:text-gray-700">
-              Enter the 6-digit OTP sent to your email
+              Enter the 6-digit OTP sent to <strong>{email}</strong>
             </p>
           </div>
 
@@ -130,7 +144,7 @@ const VerifyOtp = () => {
             <input
               type="text"
               value={otp}
-              onChange={(e) => setOtp(e.target.value)}
+              onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
               placeholder="Enter OTP"
               maxLength={6}
               className="w-full text-center tracking-widest text-lg rounded-lg border-gray-400 
@@ -141,16 +155,31 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
 
             {/* VERIFY BUTTON */}
             <button
+              type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-lg text-white font-semibold bg-[#03a74f] hover:bg-[#028a42] cursor-pointer transition-transform active:scale-95 hover:-translate-y-2 duration-300"
+              className="w-full py-3 rounded-lg text-white font-semibold bg-[#03a74f] hover:bg-[#028a42] cursor-pointer transition-transform active:scale-95 hover:-translate-y-2 duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
 
             {/* Message */}
             {message && (
-              <p className="text-center text-sm text-gray-700">{message}</p>
+              <p className={`text-center text-sm ${message.includes("success") ? "text-green-600" : "text-red-600"}`}>
+                {message}
+              </p>
             )}
+
+            {/* Resend OTP */}
+            {/* <div className="text-center">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={loading}
+                className="text-[#03a74f] hover:text-[#028a42] font-medium text-sm disabled:opacity-50"
+              >
+                Didn't receive code? Resend OTP
+              </button>
+            </div> */}
           </form>
         </div>
       </div>

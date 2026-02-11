@@ -38,20 +38,11 @@ const AddMachine = () => {
     document: null,
   });
 
-  const hasShownAlert = useRef(false);
-
-useEffect(() => {
-  if (hasShownAlert.current) return;
-
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
-
-  if (!token || !user) {
-    hasShownAlert.current = true;
-    alert("Login first");
-    navigate("/404", { replace: true });
-  }
-}, []);
+if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
+  alert("⚠️ You are blocked. You cannot add machines. Please contact support.");
+  navigate("/404")
+  return;
+}
 
   const handleSubmit = async () => {
     try {
