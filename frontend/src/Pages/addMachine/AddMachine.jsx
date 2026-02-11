@@ -40,18 +40,28 @@ const AddMachine = () => {
 
   const hasShownAlert = useRef(false);
 
-useEffect(() => {
-  if (hasShownAlert.current) return;
+  useEffect(() => {
+    if (hasShownAlert.current) return;
 
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
 
-  if (!token || !user) {
-    hasShownAlert.current = true;
-    alert("Login first");
-    navigate("/404", { replace: true });
-  }
-}, []);
+    // Not logged in
+    if (!token || !user) {
+      hasShownAlert.current = true;
+      alert("Login first");
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    // Role check (ONLY owner/admin)
+    if (user.role !== "owner" && user.role !== "admin") {
+      hasShownAlert.current = true;
+      navigate("/404", { replace: true });
+      alert("Access denied. Only Owner/Admin allowed.");
+      return;
+    }
+  }, [navigate]);
 
   const handleSubmit = async () => {
     try {

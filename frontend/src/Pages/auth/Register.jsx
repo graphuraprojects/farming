@@ -39,66 +39,44 @@ const Register = () => {
   // SUBMIT LOG
   // =====================
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    console.log("========== REGISTER SUBMIT ==========");
-    console.log("Form Data:", form);
+  if (!form.terms) {
+    return setMessage("Please accept terms & conditions");
+  }
 
-    if (!form.terms) {
-      console.warn("Terms not accepted");
-      return setMessage("Please accept terms & conditions");
-    }
+  try {
+    setLoading(true);
+    setMessage("");
 
-    try {
-      setLoading(true);
-      console.log("Loading TRUE");
-      setMessage("");
+    const payload = {
+      name: form.name,
+      email: form.email,
+      phone: form.phone,
+      password: form.password,
+      role: form.role,
+    };
 
-      const payload = {
-        name: form.name,
-        email: form.email,
-        phone: form.phone,
-        password: form.password,
-        role: form.role,
-      };
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/register",
+      payload,
+    );
 
-      console.log("Sending Payload:", payload);
+    // ✅ Remove the userId extraction - just use form.email directly
+    navigate("/verify-otp", {
+      state: { 
+        email: form.email,  // Use form data, not response data
+        name: form.name 
+      },
+    });
 
-      const res = await axios.post(
-        "http://localhost:5000/api/auth/register",
-        payload,
-      );
-
-      console.log("Register Success Response:", res);
-      console.log("Response Data:", res.data);
-
-      const userId = res?.data?.data?.userId;
-      console.log("Extracted UserId:", userId);
-
-      navigate("/verify-otp", {
-        state: { userId },
-      });
-
-      console.log("Navigation to /verify-otp triggered");
-    } catch (err) {
-      console.error("REGISTER ERROR:", err);
-
-      if (err.response) {
-        console.error("Backend Response Error:", err.response.data);
-        console.error("Status Code:", err.response.status);
-      }
-
-      if (err.request) {
-        console.error("No response received:", err.request);
-      }
-
-      setMessage(err.response?.data?.message || "Registration failed");
-    } finally {
-      console.log("Loading FALSE");
-      setLoading(false);
-      console.log("=====================================");
-    }
-  };
+  } catch (err) {
+    console.error("REGISTER ERROR:", err);
+    setMessage(err.response?.data?.message || "Registration failed");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="flex min-h-screen w-full flex-row overflow-hidden bg-[#FAFAF7] dark:bg-[#161c18]">
@@ -157,7 +135,7 @@ const Register = () => {
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
             {/* ROLE */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <label className="cursor-pointer">
                 <input
                   type="radio"
@@ -193,7 +171,7 @@ const Register = () => {
                   </span>
                 </div>
               </label>
-            </div> */}
+            </div>
 
             {/* INPUTS */}
 
