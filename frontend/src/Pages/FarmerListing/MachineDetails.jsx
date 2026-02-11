@@ -53,10 +53,15 @@ const MachineDetails = () => {
 
   const [machine, setMachine] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [startDate, setStartDate] = useState();
-  const [hours, setHours] = useState(0);
+  const [startDate, setStartDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
+  const [duration, setDuration] = useState({
+    hours: 0,
+    minutes: 0,
+    totalHoursDecimal: 0, // needed for price calculation
+  });
   const [includeOperator, setIncludeOperator] = useState(false);
 
   const navigate = useNavigate();
@@ -96,9 +101,21 @@ const MachineDetails = () => {
 
     if (endMinutes > startMinutes) {
       const diffMinutes = endMinutes - startMinutes;
-      setHours(diffMinutes / 60);
+
+      const hrs = Math.floor(diffMinutes / 60);
+      const mins = diffMinutes % 60;
+
+      setDuration({
+        hours: hrs,
+        minutes: mins,
+        totalHoursDecimal: diffMinutes / 60, // for price
+      });
     } else {
-      setHours(0); // invalid time range
+      setDuration({
+        hours: 0,
+        minutes: 0,
+        totalHoursDecimal: 0,
+      });
     }
   }, [startTime, endTime]);
 
@@ -112,13 +129,13 @@ const MachineDetails = () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const duration = hours;
+  const durationDecimal = duration.totalHoursDecimal;
 
   const operatorTotal = includeOperator
-    ? (machine.operatorFeePerHour || 0) * duration
+    ? (machine.operatorFeePerHour || 0) * duration.totalHoursDecimal
     : 0;
 
-  const rentTotal = duration * machine.price_per_hour;
+  const rentTotal = durationDecimal * machine.price_per_hour;
 
   const grandTotal =
     Number(rentTotal || 0) +
@@ -355,8 +372,8 @@ const MachineDetails = () => {
                   </label>
                   <div className="text-sm font-medium text-[#131614] mt-1">
                     <input
-                      type="number"
-                      value={hours}
+                      type="text"
+                      value={`${duration.hours} hr ${duration.minutes} min`}
                       readOnly
                       className="w-full mt-2 text-sm bg-transparent outline-none border border-[#dee3e0] rounded-lg px-3 py-2"
                     />
@@ -429,7 +446,12 @@ const MachineDetails = () => {
 
             <button
               onClick={async () => {
-                if (!startDate || !startTime || !endTime || hours <= 0) {
+                if (
+                  !startDate ||
+                  !startTime ||
+                  !endTime ||
+                  duration.totalHoursDecimal <= 0
+                ) {
                   alert("Please select date and time range.");
                   return;
                 }
@@ -449,12 +471,13 @@ const MachineDetails = () => {
                       start_date: startDate,
                       start_time: startTime,
                       end_time: endTime,
-                      total_hours: hours,
+                      total_hours: duration.totalHoursDecimal,
+
                       total_amount: grandTotal,
                     },
                     {
                       headers: { Authorization: `Bearer ${token}` },
-                    }
+                    },
                   );
 
                   if (!res.data?.success) {
@@ -464,19 +487,22 @@ const MachineDetails = () => {
 
                   const booking = res.data.data?.booking;
                   const newBooking = {
-                    _id: booking._id,
-                    id: machine._id,
+                    bookingId: booking._id,
+                    machineId: machine._id,
+
                     name: machine.machine_name,
                     image: machine.images?.[0]?.url,
                     startDate,
-                    hours,
+                    hours: duration.totalHoursDecimal,
+
                     total: grandTotal,
                   };
 
                   const existing =
                     JSON.parse(localStorage.getItem("bookings")) || [];
                   const index = existing.findIndex(
-                    (item) => item.id === machine._id || item._id === booking._id
+                    (item) =>
+                      item.id === machine._id || item._id === booking._id,
                   );
                   let updated;
                   if (index !== -1) {
@@ -493,7 +519,7 @@ const MachineDetails = () => {
                 } catch (err) {
                   alert(
                     err.response?.data?.message ||
-                      "Failed to create booking. Please try again."
+                      "Failed to create booking. Please try again.",
                   );
                 }
               }}
@@ -522,7 +548,8 @@ const MachineDetails = () => {
                       description: machine.model,
                       start_date: startDate,
                       end_date: startDate,
-                      usage_hours: hours,
+                      usage_hours: duration.totalHoursDecimal,
+
                       image_url: machine.images?.[0]?.url,
                       price: grandTotal,
                     },
@@ -562,7 +589,8 @@ const MachineDetails = () => {
             <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
               <div className="flex justify-between">
                 <span className="underline decoration-dotted decoration-sage cursor-help">
-                  ₹{machine.price_per_hour} x {duration || 0} hour
+                  ₹{machine.price_per_hour} x {duration.hours} hr{" "}
+                  {duration.minutes} min
                 </span>
                 <span>₹{rentTotal}</span>
               </div>
@@ -570,8 +598,8 @@ const MachineDetails = () => {
               {includeOperator && (
                 <div className="flex justify-between">
                   <span className="underline decoration-dotted decoration-sage cursor-help">
-                    Operator Fee (₹{machine.operatorFeePerHour} × {duration}{" "}
-                    hour)
+                    Operator Fee (₹{machine.operatorFeePerHour} ×{" "}
+                    {duration.hours} hr {duration.minutes} min hour)
                   </span>
                   <span>₹{operatorTotal}</span>
                 </div>

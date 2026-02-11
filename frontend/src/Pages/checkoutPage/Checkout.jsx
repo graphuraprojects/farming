@@ -15,13 +15,17 @@ export default function Checkout() {
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
   if (bookings.length === 0) return <p>No booking data found</p>;
   const currentBooking = bookings[bookings.length - 1];
+  const durationText =
+    currentBooking?.durationDisplay ||
+    `${currentBooking?.hoursDecimal || 0} hr`;
 
   const subtotal = Number(currentBooking?.total || 0);
   const shipping = Number(deliveryMode === "delivery" ? 1000 : 0);
-  const totalAmount = subtotal + shipping;
+  const totalAmount = Math.round((subtotal + shipping) * 100) / 100;
 
   const handlePayment = async () => {
-    const bookingId = currentBooking?._id || currentBooking?.id;
+    const bookingId = currentBooking?.bookingId;
+
     if (!bookingId) {
       alert("Missing booking information. Please try again.");
       return;
@@ -100,7 +104,10 @@ export default function Checkout() {
               machineName: currentBooking?.name,
               machineImage: currentBooking?.image,
               bookingDate: currentBooking?.startDate,
-              hoursBooked: currentBooking?.hours,
+              hoursBooked:
+                currentBooking?.durationDisplay ||
+                `${currentBooking?.hoursDecimal} hr`,
+
               totalPrice: totalAmount,
               orderId: response.razorpay_order_id,
               paymentStatus: "paid",
@@ -203,7 +210,7 @@ export default function Checkout() {
                       Date: {currentBooking.startDate}
                     </p>
                     <p className="text-[12px] font-semibold">
-                      Hours: {currentBooking.hours}
+                      Duration: {durationText}
                     </p>
                   </div>
 

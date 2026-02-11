@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 const MachineCard = ({ item }) => {
   return (
     <div className="group bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden">
-      <div class="relative h-48 w-full overflow-hidden bg-gray-100">
+      <div className="relative h-48 w-full overflow-hidden bg-gray-100">
         <img
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           src={item.image}

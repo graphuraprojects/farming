@@ -93,10 +93,7 @@ export const createBooking = async (req, res) => {
     });
   }
 };
-
-/**
- * ACCEPT OR REJECT BOOKING (Owner/Admin)
- */
+/**ACCEPT OR REJECT BOOKING (Owner/Admin)*/
 export const decideBooking = async (req, res) => {
   try {
     const { action, rejection_reason } = req.body;

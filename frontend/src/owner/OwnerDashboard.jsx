@@ -153,18 +153,16 @@ export default function App() {
       try {
         setErrorMessage("");
         const headers = getAuthHeaders();
-        const [revenueResponse, trendResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/owner/dashboard/total-revenue`, {
-            headers,
-            params: { range: activeRange },
-          }),
+        const [earningsResponse, trendResponse] = await Promise.all([
+          axios.get(`${API_BASE_URL}/earnings`, { headers }),
+
           axios.get(`${API_BASE_URL}/owner/dashboard/earnings-trend`, {
             headers,
             params: { range: activeRange },
           }),
         ]);
 
-        const totalRevenue = revenueResponse.data?.totalRevenue || 0;
+        const totalRevenue = earningsResponse.data?.data?.owner_earnings || 0;
         setCurrentStats((prev) => ({
           ...prev,
           revenue: formatCurrency(totalRevenue),
@@ -183,18 +181,18 @@ export default function App() {
 
   const hasShownAlert = useRef(false);
 
-useEffect(() => {
-  if (hasShownAlert.current) return;
+  useEffect(() => {
+    if (hasShownAlert.current) return;
 
-  const token = localStorage.getItem("token");
-  const user = localStorage.getItem("user");
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("user");
 
-  if (!token || !user) {
-    hasShownAlert.current = true;
-    alert("Login first");
-    navigate("/404", { replace: true });
-  }
-}, []);
+    if (!token || !user) {
+      hasShownAlert.current = true;
+      alert("Login first");
+      navigate("/404", { replace: true });
+    }
+  }, []);
 
   useEffect(() => {
     setCurrentStats((prev) => ({

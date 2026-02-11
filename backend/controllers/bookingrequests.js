@@ -4,7 +4,7 @@ export const getPendingBookingRequests = async (req, res) => {
   try {
     const bookings = await Booking.find({
       owner_id: req.user.userId,
-      booking_status: "pending"
+      booking_status: "pending",
     })
       .populate("machine_id", "machine_name category images")
       .populate("farmer_id", "name address profile_pic");
@@ -18,8 +18,13 @@ export const getPendingBookingRequests = async (req, res) => {
 export const acceptBookingRequest = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.bookingId);
+
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: "Not authorized" });
     }
 
     booking.booking_status = "accepted";
@@ -34,8 +39,13 @@ export const acceptBookingRequest = async (req, res) => {
 export const rejectBookingRequest = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.bookingId);
+
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
+    }
+
+    if (booking.owner_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: "Not authorized" });
     }
 
     booking.booking_status = "rejected";
