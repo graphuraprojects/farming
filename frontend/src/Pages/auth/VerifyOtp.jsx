@@ -25,11 +25,13 @@ const VerifyOtp = () => {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post("/api/auth/verify-otp", {
-        email,  // ✅ Send email instead of userId
-        otp,
-      });
-
+      const res = await axios.post(
+        "http://localhost:5000/api/auth/verify-otp",
+        {
+          email,
+          otp,
+        },
+      );
       setMessage(res.data.message);
 
       // ✅ Store token and user from response (auto-login after verification)
@@ -68,8 +70,10 @@ const VerifyOtp = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#FAFAF7]">
         <div className="text-center">
-          <p className="text-red-500 mb-4">Invalid access. Please register again.</p>
-          <button 
+          <p className="text-red-500 mb-4">
+            Invalid access. Please register again.
+          </p>
+          <button
             onClick={() => navigate("/register")}
             className="px-6 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42]"
           >
@@ -130,9 +134,7 @@ const VerifyOtp = () => {
         <div className="w-full max-w-[480px] flex flex-col gap-4">
           {/* Header */}
           <div>
-            <h1 className="text-[32px] font-bold">
-              Verify Your Email
-            </h1>
+            <h1 className="text-[32px] font-bold">Verify Your Email</h1>
             <p className="text-[#5E5E5E] dark:text-gray-700">
               Enter the 6-digit OTP sent to <strong>{email}</strong>
             </p>
@@ -164,7 +166,9 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
 
             {/* Message */}
             {message && (
-              <p className={`text-center text-sm ${message.includes("success") ? "text-green-600" : "text-red-600"}`}>
+              <p
+                className={`text-center text-sm ${message.includes("success") ? "text-green-600" : "text-red-600"}`}
+              >
                 {message}
               </p>
             )}
