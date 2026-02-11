@@ -50,6 +50,11 @@ const userSchema = new mongoose.Schema(
       default: true  
     },
 
+    isBlocked: {
+      type: Boolean,
+      default: false
+    },
+
     pendingEmail: String,
     pendingPhone: String
   },

@@ -169,6 +169,7 @@ export const verifyOtp = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      isBlocked: user.isBlocked, // ✅ ADD THIS - Send isBlocked field
     };
 
     res.status(200).json({
@@ -259,6 +260,14 @@ export const login = async (req, res) => {
       });
     }
 
+    // ✅ ADD THIS - Check if user is blocked
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been blocked. Please contact support.",
+      });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password_hash);
 
     if (!isMatch) {
@@ -279,6 +288,7 @@ export const login = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      isBlocked: user.isBlocked,
     };
 
     res.status(200).json({

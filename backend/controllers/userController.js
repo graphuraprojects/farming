@@ -52,6 +52,14 @@ export const getMyProfile = async (req, res) => {
       });
     }
 
+    // ✅ ADD THIS - Check if user is blocked
+    if (user.isBlocked) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been blocked. Please contact support.",
+      });
+    }
+
     res.status(200).json({
       success: true,
       data: user
@@ -226,6 +234,85 @@ export const updateProfile = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to update profile",
+      error: error.message
+    });
+  }
+};
+// Block user (admin only)
+export const blockUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Prevent admin from blocking themselves
+    if (user._id.toString() === req.user.userId) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot block yourself"
+      });
+    }
+
+    user.isBlocked = true;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User blocked successfully",
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isBlocked: user.isBlocked
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message
+    });
+  }
+};
+
+// Unblock user (admin only)
+export const unblockUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    user.isBlocked = false;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "User unblocked successfully",
+      data: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        isBlocked: user.isBlocked
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({
+      success: false,
       error: error.message
     });
   }

@@ -6,12 +6,12 @@ import {
   LogOut,
   Menu,
   X,
-  Tractor,
-  DollarSign,
+  Users,
   TrendingUp,
   Package,
   Calendar,
   Home,
+  IndianRupee,
 } from "lucide-react";
 import logo from "../assets/logo1.webp";
 import {
@@ -24,6 +24,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import ApprovalList from "./ApprovalList";
+import UserManagement from "./UserManagement";
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -51,6 +52,7 @@ const AdminDashboard = () => {
   const menuItems = [
     { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
     { id: "approvals", label: "Machine Approvals", icon: CheckCircle },
+    { id: "UserManagement", label: "User Management", icon: Users },
   ];
 
   return (
@@ -62,15 +64,6 @@ const AdminDashboard = () => {
       >
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-green-800">
-            {/* <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-700 rounded-lg flex items-center justify-center">
-                <Tractor size={24} />
-              </div>
-              <div>
-                <h1 className="text-xl font-bold">AgriRent</h1>
-                <p className="text-xs text-green-300">Admin Panel</p>
-              </div>
-            </div> */}
             <img src={logo} alt="logo" />
           </div>
 
@@ -135,6 +128,7 @@ const AdminDashboard = () => {
         <main className="flex-1 p-4 sm:p-6 lg:p-8">
           {activeTab === "dashboard" && <DashboardContent />}
           {activeTab === "approvals" && <MachineApprovals />}
+          {activeTab === "UserManagement" && <UserManagement />}
         </main>
       </div>
 
@@ -153,7 +147,7 @@ const DashboardContent = () => {
     {
       label: "Total Transactions",
       value: "₹8.5L",
-      icon: DollarSign,
+      icon: IndianRupee,
       color: "from-blue-500 to-blue-600",
       bgColor: "bg-blue-50",
       iconColor: "text-blue-600",
@@ -329,10 +323,10 @@ const DashboardContent = () => {
 const MachineApprovals = () => {
   return (
     <>
-      {/* Approval List Component */}
       <ApprovalList />
     </>
   );
 };
+
 
 export default AdminDashboard;

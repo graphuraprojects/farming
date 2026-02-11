@@ -38,30 +38,11 @@ const AddMachine = () => {
     document: null,
   });
 
-  const hasShownAlert = useRef(false);
-
-  useEffect(() => {
-    if (hasShownAlert.current) return;
-
-    const token = localStorage.getItem("token");
-    const user = JSON.parse(localStorage.getItem("user"));
-
-    // Not logged in
-    if (!token || !user) {
-      hasShownAlert.current = true;
-      alert("Login first");
-      navigate("/login", { replace: true });
-      return;
-    }
-
-    // Role check (ONLY owner/admin)
-    if (user.role !== "owner" && user.role !== "admin") {
-      hasShownAlert.current = true;
-      navigate("/404", { replace: true });
-      alert("Access denied. Only Owner/Admin allowed.");
-      return;
-    }
-  }, [navigate]);
+if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
+  alert("⚠️ You are blocked. You cannot add machines. Please contact support.");
+  navigate("/404")
+  return;
+}
 
   const handleSubmit = async () => {
     try {
