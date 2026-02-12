@@ -1,4 +1,3 @@
-
 import { motion } from 'framer-motion';
 import { 
   ShieldCheck, 
@@ -8,11 +7,12 @@ import {
   FileText, 
   CheckCircle,
   Clock,
-  Banknote
+  Banknote,
+  Ban,
+  Mail
 } from 'lucide-react';
 
 const TermsAndConditions = () => {
-
 
   return (
     <div className="min-h-screen bg-[#f2fff0] font-sans text-gray-800">
@@ -54,8 +54,6 @@ const TermsAndConditions = () => {
         >
           <div className="p-8 sm:p-12 space-y-10">
             
-           
-
             {/* Section 1: Introduction */}
             <section>
               <h2 className="flex items-center text-2xl font-bold text-gray-900 mb-4">
@@ -147,6 +145,140 @@ const TermsAndConditions = () => {
                   <li><strong>Renter Responsibility:</strong> Using the machine only for its intended agricultural purpose. Any physical damage caused by negligence or misuse during the rental period is the sole liability of the Renter.</li>
                   <li><strong>Disputes:</strong> Evidence (Photos/Videos) must be uploaded to the Dispute Center within 24 hours of the incident.</li>
                 </ul>
+              </div>
+            </section>
+
+            {/* NEW SECTION 6: Account Blocking Policy */}
+            <section>
+              <h2 className="flex items-center text-2xl font-bold text-gray-900 mb-4">
+                <span className="bg-[#fff3e0] text-orange-600 p-2 rounded-lg mr-3">
+                  <Ban size={24} />
+                </span>
+                6. Account Suspension & Blocking Policy
+              </h2>
+              <div className="pl-4 border-l-2 border-orange-200 ml-4 space-y-4 text-gray-600">
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <p className="font-semibold text-orange-900 mb-2">⚠️ Warning: Violation of Platform Guidelines</p>
+                  <p className="text-sm">The platform reserves the right to suspend or permanently block user accounts that violate our terms of service.</p>
+                </div>
+
+                <div className="space-y-3">
+                  <h4 className="font-bold text-gray-800 text-lg">Grounds for Account Blocking:</h4>
+                  <ul className="list-disc pl-5 space-y-2">
+                    <li>
+                      <strong>Spam Machine Submissions:</strong> Submitting multiple machine listings with invalid, incomplete, or fraudulent information.
+                    </li>
+                    <li>
+                      <strong>Fake Documentation:</strong> Providing forged or manipulated ownership documents, registration certificates, or insurance papers.
+                    </li>
+                    <li>
+                      <strong>Repeated Rejections:</strong> Having more than <span className="text-red-600 font-bold">3 machine approval requests rejected</span> within a 30-day period due to invalid details.
+                    </li>
+                    <li>
+                      <strong>Identity Fraud:</strong> Creating multiple accounts or impersonating another individual or organization.
+                    </li>
+                    <li>
+                      <strong>Payment Fraud:</strong> Attempting to manipulate payment systems, chargebacks, or providing false payment information.
+                    </li>
+                    <li>
+                      <strong>Violation of Usage Terms:</strong> Repeated cancellations without valid reason, abuse of platform features, or harassment of other users.
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-4">
+                  <h4 className="font-bold text-red-900 mb-2 flex items-center gap-2">
+                    <Ban size={20} />
+                    Consequences of Account Blocking
+                  </h4>
+                  <ul className="text-sm space-y-1 text-red-800">
+                    <li>• Immediate suspension of all platform access</li>
+                    <li>• Removal of all active machine listings</li>
+                    <li>• Forfeiture of pending earnings (in case of severe violations)</li>
+                    <li>• Inability to create new bookings or accept rental requests</li>
+                    <li>• Potential legal action for fraudulent activities</li>
+                  </ul>
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-5 mt-4">
+                  <h4 className="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                    <Mail size={20} />
+                    Account Unblock Process
+                  </h4>
+                  <p className="text-sm text-blue-800 mb-3">
+                    If your account has been blocked and you believe it was done in error, or you wish to appeal the decision, follow these steps:
+                  </p>
+                  
+                  <div className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        1
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">Visit Contact Support</p>
+                        <p className="text-sm text-gray-600">Navigate to the <strong>Contact Us</strong> page on our platform.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        2
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">Provide Your User ID</p>
+                        <p className="text-sm text-gray-600">
+                          Include your <strong className="text-red-600">User ID (Owner ID)</strong> in the message. 
+                          You can find this in your profile settings or in the account blocked notification email.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        3
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">Explain Your Situation</p>
+                        <p className="text-sm text-gray-600">
+                          Clearly describe why you believe your account should be unblocked. Include any supporting documents or evidence if applicable.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                        4
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-800">Wait for Review</p>
+                        <p className="text-sm text-gray-600">
+                          Our support team will review your request within <strong>3-5 business days</strong> and respond via email with the final decision.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4 p-3 bg-white rounded border border-blue-300">
+                    <p className="text-xs text-gray-600">
+                      <strong>Important:</strong> Unblock requests will only be considered if the violation was unintentional or if corrective documentation is provided. 
+                      Repeated violations will result in permanent account termination.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mt-4">
+                  <h4 className="font-bold text-green-900 mb-2 flex items-center gap-2">
+                    <CheckCircle size={20} />
+                    How to Avoid Account Blocking
+                  </h4>
+                  <ul className="text-sm space-y-1 text-green-800">
+                    <li>✓ Always provide accurate and complete machine information</li>
+                    <li>✓ Upload clear, valid ownership and registration documents</li>
+                    <li>✓ Ensure all submitted images are recent and genuine</li>
+                    <li>✓ Respond promptly to admin requests for additional verification</li>
+                    <li>✓ Follow all platform guidelines and community standards</li>
+                  </ul>
+                </div>
               </div>
             </section>
 
