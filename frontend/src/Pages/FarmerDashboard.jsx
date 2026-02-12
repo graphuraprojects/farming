@@ -61,6 +61,12 @@ const FarmerDashboard = () => {
   if (error) {
     return <p className="text-center text-red-500">{error}</p>;
   }
+  const formatHoursMinutes = (totalHours) => {
+    const hours = Math.floor(totalHours);
+    const minutes = Math.round((totalHours - hours) * 60);
+
+    return `${hours}h ${minutes}m`;
+  };
 
   return (
     <div className="min-h-screen bg-background-dark dark:bg-background-dark p-6 lg:p-10 font-display text-[#1f3d2b]">
@@ -97,7 +103,9 @@ const FarmerDashboard = () => {
               <p className="text-sm text-gray-500">Hours Logged</p>
 
               <h3 className="text-3xl font-bold text-gray-900">
-                {bookings.reduce((acc, b) => acc + (b.total_hours || 0), 0)}
+                {formatHoursMinutes(
+                  bookings.reduce((acc, b) => acc + (b.total_hours || 0), 0),
+                )}
               </h3>
             </div>
           </div>

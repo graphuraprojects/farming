@@ -54,6 +54,19 @@ const FarmerNavBar = () => {
     `block py-2 font-medium transition-all duration-300
      ${isActive ? "text-[#4e8d67]" : "text-gray-700 hover:text-black"}
     `;
+  const handleDashboardNavigation = () => {
+    if (!user?.role) return;
+
+    if (user.role === "farmer") {
+      navigate("/farmer-dashboard");
+    } else if (user.role === "owner") {
+      navigate("/owner-dashboard");
+    } else if (user.role === "admin") {
+      navigate("/admin-dashboard");
+    }
+
+    setDropdownOpen(false);
+  };
 
   return (
     <nav className="w-full bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -79,12 +92,6 @@ const FarmerNavBar = () => {
             <NavLink to="/contact" className={linkClass}>
               Contact
             </NavLink>
-
-            {token && (
-              <NavLink to="/owner-dashboard" className={linkClass}>
-                Dashboard
-              </NavLink>
-            )}
           </div>
 
           {/* Desktop Auth */}
@@ -109,16 +116,15 @@ const FarmerNavBar = () => {
                 onMouseEnter={() => setDropdownOpen(true)}
                 onMouseLeave={() => setDropdownOpen(false)}
               >
+                <div className="w-9 h-9 bg-[#03a74f] text-white flex items-center justify-center rounded-full font-bold">
+                  {user?.name?.charAt(0)?.toUpperCase()}
+                </div>
                 <ChevronDown
                   size={18}
                   className={`transition-transform duration-300 ${
                     dropdownOpen ? "rotate-180" : ""
                   }`}
                 />
-
-                <div className="w-9 h-9 bg-[#03a74f] text-white flex items-center justify-center rounded-full font-bold">
-                  {user?.name?.charAt(0)?.toUpperCase()}
-                </div>
 
                 {dropdownOpen && (
                   <div className="absolute right-0 top-10 w-56 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50 animate-fade-in">
@@ -159,6 +165,30 @@ const FarmerNavBar = () => {
                           </span>
                         </div>
                       </Link>
+                    </div>
+                    <div
+                      onClick={handleDashboardNavigation}
+                      className="px-4 py-2.5 hover:bg-gray-50 cursor-pointer flex items-center gap-3 transition-colors group"
+                    >
+                      <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center group-hover:bg-blue-200 transition-colors">
+                        <svg
+                          className="w-4 h-4 text-blue-600"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 7h18M3 12h18M3 17h18"
+                          />
+                        </svg>
+                      </div>
+
+                      <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+                        Dashboard
+                      </span>
                     </div>
 
                     {/* Logout Button */}
