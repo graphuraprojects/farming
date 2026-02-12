@@ -74,17 +74,17 @@ function App() {
               </ProtectedOwner>
             }
           />
-          <Route path="/invoice/:bookingId" element={<Invoice />} />
+          <Route path="/invoice/:bookingId" element={<ProtectedFarmer  allowedRoles={["farmer","admin"]}><Invoice /></ProtectedFarmer>} />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/owner-dashboard" element={<OwnerDashboard />} />
+          <Route path="/owner-dashboard" element={<ProtectedOwner allowedRoles={["owner","admin"]}><OwnerDashboard /></ProtectedOwner>} />
           {/* <Route path="/about-us" element={<AboutUs />} /> */}
-          <Route path="/withdrawl" element={<WithdrwaEarnings />} />
+          <Route path="/withdrawl" element={<ProtectedOwner allowedRoles={["owner","admin"]}><WithdrwaEarnings /></ProtectedOwner>} />
           <Route path="/withdrawl-success" element={<WithdrwalSuccess />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/farmer-dashboard" element={<FarmerDashboard />} />
+          <Route path="/farmer-dashboard" element={<ProtectedFarmer  allowedRoles={["farmer","admin"]}><FarmerDashboard /></ProtectedFarmer>} />
         </Route>
 
         <Route path="/T&C" element={<TermsAndConditions />} />

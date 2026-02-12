@@ -143,6 +143,8 @@ const MachineDetails = () => {
     Number(machine.transport || 0) +
     Number(machine.serviceFee || 0);
 
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const isOwner = user?.role === "owner";
   return (
     <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* BREADCRUMB */}
@@ -446,6 +448,12 @@ const MachineDetails = () => {
 
             <button
               onClick={async () => {
+                // 🚫 Stop ONLY owner
+                if (isOwner) {
+                  alert("Owners cannot book their own or other machines.");
+                  return;
+                }
+
                 if (
                   !startDate ||
                   !startTime ||
@@ -457,6 +465,7 @@ const MachineDetails = () => {
                 }
 
                 const token = localStorage.getItem("token");
+
                 if (!token) {
                   alert("Please login to book a machine.");
                   navigate("/login");
@@ -472,7 +481,6 @@ const MachineDetails = () => {
                       start_time: startTime,
                       end_time: endTime,
                       total_hours: duration.totalHoursDecimal,
-
                       total_amount: grandTotal,
                     },
                     {
@@ -486,35 +494,25 @@ const MachineDetails = () => {
                   }
 
                   const booking = res.data.data?.booking;
+
                   const newBooking = {
                     bookingId: booking._id,
                     machineId: machine._id,
-
                     name: machine.machine_name,
                     image: machine.images?.[0]?.url,
                     startDate,
                     hours: duration.totalHoursDecimal,
-
                     total: grandTotal,
                   };
 
                   const existing =
                     JSON.parse(localStorage.getItem("bookings")) || [];
-                  const index = existing.findIndex(
-                    (item) =>
-                      item.id === machine._id || item._id === booking._id,
-                  );
-                  let updated;
-                  if (index !== -1) {
-                    updated = [
-                      ...existing.filter((_, i) => i !== index),
-                      newBooking,
-                    ];
-                  } else {
-                    updated = [...existing, newBooking];
-                  }
 
-                  localStorage.setItem("bookings", JSON.stringify(updated));
+                  localStorage.setItem(
+                    "bookings",
+                    JSON.stringify([...existing, newBooking]),
+                  );
+
                   navigate("/checkout");
                 } catch (err) {
                   alert(
@@ -523,12 +521,16 @@ const MachineDetails = () => {
                   );
                 }
               }}
-              className="w-full bg-[#03a74f] hover:bg-[#38864b] text-white font-bold py-3.5 px-4 rounded-xl shadow-md transform active:scale-[0.98] transition-all flex justify-center items-center gap-2 group cursor-pointer"
+              className={`w-full font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex justify-center items-center gap-2 group
+    ${
+      isOwner
+        ? "bg-gray-400 text-gray-200 cursor-not-allowed"
+        : "bg-[#03a74f] hover:bg-[#38864b] text-white active:scale-[0.98]"
+    }
+  `}
             >
-              <span className="material-symbols-outlined text-lg">
-                <Calendar size={20} />
-              </span>
-              Book Now
+              <Calendar size={20} />
+              {isOwner ? "Owners Cannot Book" : "Book Now"}
             </button>
 
             <button
