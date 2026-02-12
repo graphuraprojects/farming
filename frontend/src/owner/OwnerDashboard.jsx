@@ -102,51 +102,79 @@ export default function App() {
     };
   };
 
-  useEffect(() => {
-    const fetchOverview = async () => {
-      try {
-        setErrorMessage("");
-        const headers = getAuthHeaders();
-        const [fleetResponse, requestsResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/owner/fleet/list`, { headers }),
-          axios.get(`${API_BASE_URL}/owner/bookings/pending-requests`, {
-            headers,
-          }),
-        ]);
+ useEffect(() => {
+  const fetchOverview = async () => {
+    try {
+      setErrorMessage("");
+      const headers = getAuthHeaders();
+      
+      console.log("🔍 Fetching data for owner:", user?.email);
+      console.log("🔑 Auth headers:", headers);
+      
+      const [fleetResponse, requestsResponse] = await Promise.all([
+        axios.get(`${API_BASE_URL}/owner/fleet/list`, { headers }),
+        axios.get(`${API_BASE_URL}/owner/bookings/pending-requests`, {
+          headers,
+        }),
+      ]);
 
-        const mappedFleet = (fleetResponse.data || []).map((machine) => ({
-          id: machine._id,
-          img:
-            machine.images?.[0]?.url ||
-            "https://via.placeholder.com/64?text=Machine",
-          name: machine.machine_name || machine.model || "Machine",
-          type: machine.category || machine.model || "Machine",
-          enabled: machine.availability_status !== false,
-        }));
+      console.log("📦 Fleet Response:", fleetResponse.data);
+      console.log("📋 Requests Response:", requestsResponse.data);
+      console.log("📊 Total pending requests:", requestsResponse.data?.length || 0);
 
-        const mappedRequests = (requestsResponse.data || []).map((booking) => ({
+      // Map fleet
+      const mappedFleet = (fleetResponse.data || []).map((machine) => ({
+        id: machine._id,
+        img:
+          machine.images?.[0]?.url ||
+          "https://via.placeholder.com/64?text=Machine",
+        name: machine.machine_name || machine.model || "Machine",
+        type: machine.category || machine.model || "Machine",
+        enabled: machine.availability_status !== false,
+      }));
+
+      // Map requests
+      const mappedRequests = (requestsResponse.data || []).map((booking) => {
+        console.log("🔄 Processing booking:", {
           id: booking._id,
-          farmer: booking.farmer_id?.name || "Farmer",
-          farm: booking.farmer_id?.address?.city || "Independent",
-          machine: booking.machine_id?.machine_name || "Machine",
+          farmer: booking.farmer_id?.name,
+          machine: booking.machine_id?.machine_name,
+          status: booking.booking_status,
+          payment: booking.payment_status
+        });
+
+        return {
+          id: booking._id,
+          farmer: booking.farmer_id?.name || "Unknown Farmer",
+          farm: booking.farmer_id?.address?.city || "Unknown Location",
+          machine: booking.machine_id?.machine_name || "Unknown Machine",
           machineType: booking.machine_id?.category || "Machine",
           dates: formatDateRange(booking.start_time, booking.end_time),
           duration: formatDuration(booking.start_time, booking.end_time),
           avatar: booking.farmer_id?.profile_pic?.url,
-        }));
+          bookingStatus: booking.booking_status,
+          paymentStatus: booking.payment_status,
+        };
+      });
 
-        setFleetItems(mappedFleet);
-        setRequests(mappedRequests);
-      } catch (error) {
-        const message =
-          error?.response?.data?.message ||
-          "Failed to load owner dashboard data.";
-        setErrorMessage(message);
-      }
-    };
+      console.log("✅ Final mapped requests:", mappedRequests.length);
 
-    fetchOverview();
-  }, []);
+      setFleetItems(mappedFleet);
+      setRequests(mappedRequests);
+    } catch (error) {
+      console.error("❌ Fetch error:", error);
+      console.error("❌ Error response:", error?.response?.data);
+      console.error("❌ Error status:", error?.response?.status);
+      
+      const message =
+        error?.response?.data?.message ||
+        "Failed to load owner dashboard data.";
+      setErrorMessage(message);
+    }
+  };
+
+  fetchOverview();
+}, []);
 
   useEffect(() => {
     const fetchRangeStats = async () => {

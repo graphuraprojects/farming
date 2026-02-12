@@ -274,7 +274,7 @@ export default function ApprovalList() {
                               {machine.owner_id?.name || "Unknown"}
                             </div>
                             <div className="text-xs text-gray-500 truncate">
-                              {machine.owner_id?.phone || "N/A"}
+                              {machine.owner_id?._id || "N/A"}
                             </div>
                           </div>
 

@@ -260,3 +260,48 @@ export const rejectBookingRequest = async (req, res) => {
     res.status(500).json({ message: "Reject failed" });
   }
 };
+/**
+ * GET SINGLE BOOKING BY ID
+ */
+export const getBookingById = async (req, res) => {
+  try {
+    const bookingId = req.params.id;
+
+    const booking = await Booking.findById(bookingId)
+      .populate("machine_id", "machine_name images category price_per_hour")
+      .populate("farmer_id", "name email phone address profile_pic")
+      .populate("owner_id", "name email phone");
+
+    if (!booking) {
+      return res.status(404).json({
+        success: false,
+        message: "Booking not found"
+      });
+    }
+
+    // Authorization check - only farmer, owner, or admin can view
+    if (
+      booking.farmer_id._id.toString() !== req.user.userId &&
+      booking.owner_id._id.toString() !== req.user.userId &&
+      req.user.role !== "admin"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "Not authorized to view this booking"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: booking
+    });
+
+  } catch (error) {
+    console.error("Get booking by ID error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch booking",
+      error: error.message
+    });
+  }
+};

@@ -498,6 +498,9 @@ const MachineApproval = () => {
                     </p>
                   </div>
                 </div>
+                <p className="text-sm text-gray-600">
+                      Owner id: {machineData.owner_id?._id}
+                    </p>
               </div>
             </div>
 

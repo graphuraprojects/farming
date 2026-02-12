@@ -2,7 +2,7 @@ import express from "express";
 
 import { protect } from "../middleware/authMiddleware.js";
 import { allowOwnerOrAdmin } from "../middleware/roleMiddleware.js";
-import { createBooking, decideBooking, getBookings } from "../controllers/bookingController.js";
+import { createBooking, decideBooking, getBookingById, getBookings } from "../controllers/bookingController.js";
 
 const router = express.Router();
 
@@ -16,6 +16,8 @@ router.patch(
   allowOwnerOrAdmin,
   decideBooking
 );
+
+router.get("/:id",protect, getBookingById);
 
 // Get all bookings for logged-in user
 router.get("/", protect, getBookings);

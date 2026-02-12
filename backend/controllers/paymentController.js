@@ -1,70 +1,16 @@
-// controllers/bookingController.js
-// import Booking from "../models/booking.js";
-import Machine from "../models/Machine.model.js";
-// import { calculateTotalHours, calculatePricing } from "../utils/pricingCalc.js";
 import razorpay from "../configs/razorpay.js";
 import Booking from "../models/Booking.model.js";
 import Payment from "../models/Payment.model.js";
 import crypto from "crypto";
 
-// CREATE BOOKING
-export const createBooking = async (req, res) => {
-  try {
-    const { farmer_id, machine_id, start_time, end_time } = req.body;
-
-    const machine = await Machine.findById(machine_id);
-    if (!machine || !machine.availability_status)
-      return res.status(400).json({ message: "Machine unavailable" });
-
-    const conflict = await Booking.findOne({
-      machine_id,
-      start_time: { $lt: end_time },
-      end_time: { $gt: start_time },
-    });
-    if (conflict) return res.status(409).json({ message: "Already booked" });
-
-    const totalHours = calculateTotalHours(start_time, end_time);
-    const transportCost = 200;
-
-    const pricing = calculatePricing({
-      totalHours,
-      pricePerHour: machine.price_per_hour,
-      transportCost,
-    });
-
-    const booking = await Booking.create({
-      farmer_id,
-      machine_id,
-      start_time,
-      end_time,
-      total_hours: totalHours,
-      ...pricing,
-      booking_status: "pending",
-    });
-
-    res.status(201).json({ booking });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
-// DELETE BOOKING
-export const deleteBooking = async (req, res) => {
-  try {
-    const { booking_id } = req.params;
-
-    const booking = await Booking.findByIdAndDelete(booking_id);
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
-    res.status(200).json({ message: "Booking deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
-
+/**
+ * CREATE ORDER
+ */
 export const createOrder = async (req, res) => {
   try {
     const { booking_id, total_amount } = req.body;
+
+    console.log("Received create-order request:", { booking_id, total_amount });
 
     if (!booking_id || !total_amount) {
       return res.status(400).json({ message: "Missing booking or amount" });
@@ -76,6 +22,11 @@ export const createOrder = async (req, res) => {
       return res.status(404).json({ message: "Booking not found" });
     }
 
+    // Check if booking belongs to the logged-in user (if using auth)
+    if (req.user && booking.farmer_id.toString() !== req.user.userId) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
     const amountInPaise = Math.round(total_amount * 100);
 
     const order = await razorpay.orders.create({
@@ -84,6 +35,9 @@ export const createOrder = async (req, res) => {
       receipt: `booking_${booking_id}`,
     });
 
+    console.log("Razorpay order created:", order);
+
+    // Create payment record
     await Payment.create({
       booking_id: booking._id,
       farmer_id: booking.farmer_id,
@@ -92,6 +46,7 @@ export const createOrder = async (req, res) => {
       admin_commission: total_amount * 0.1,
       owner_amount: total_amount * 0.9,
       razorpay_order_id: order.id,
+      payment_status: "pending",
     });
 
     res.json({
@@ -101,7 +56,10 @@ export const createOrder = async (req, res) => {
     });
   } catch (err) {
     console.error("Create order error:", err);
-    res.status(500).json({ message: "Order creation failed" });
+    res.status(500).json({ 
+      message: "Order creation failed",
+      error: err.message 
+    });
   }
 };
 
@@ -117,31 +75,63 @@ export const verifyPayment = async (req, res) => {
       booking_id,
     } = req.body;
 
+    console.log("Received verify request:", req.body);
+
+    if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature || !booking_id) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Verify signature
     const generatedSignature = crypto
       .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
       .update(`${razorpay_order_id}|${razorpay_payment_id}`)
       .digest("hex");
 
     if (generatedSignature !== razorpay_signature) {
+      console.error("Invalid signature");
       return res.status(400).json({ message: "Invalid signature" });
     }
 
-    await Payment.findOneAndUpdate(
+    // Update payment record
+    const payment = await Payment.findOneAndUpdate(
       { razorpay_order_id },
       {
         razorpay_payment_id,
         razorpay_signature,
         payment_status: "paid",
       },
+      { new: true }
     );
 
-    await Booking.findByIdAndUpdate(booking_id, {
-      payment_status: "paid",
-      booking_status: "confirmed",
-    });
+    console.log("Payment updated:", payment);
 
-    res.json({ success: true });
+    // ✅ CRITICAL: Only update payment_status, NOT booking_status
+    // Booking should remain "pending" until owner accepts
+    const booking = await Booking.findByIdAndUpdate(
+      booking_id,
+      {
+        payment_status: "paid",
+        // booking_status stays "pending" - owner must approve
+      },
+      { new: true }
+    );
+
+    console.log("Booking payment status updated:", booking);
+
+    res.json({ 
+      success: true,
+      message: "Payment verified successfully",
+      booking: {
+        id: booking._id,
+        booking_status: booking.booking_status,
+        payment_status: booking.payment_status
+      }
+    });
   } catch (err) {
-    res.status(500).json({ message: "Verification failed" });
+    console.error("Verification error:", err);
+    res.status(500).json({ 
+      message: "Verification failed",
+      error: err.message 
+    });
   }
 };
