@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import BasicInfo from "./BasicInfo";
 import Specs from "./Specs";
 import Location from "./Location";

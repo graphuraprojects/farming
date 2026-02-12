@@ -458,7 +458,7 @@ const FarmerHome = () => {
       </section>
 
       {/* start monetizing section */}
-      <section className="bg-green-900 mb-15">
+      <section className="bg-green-900">
         <div className="py-10 flex flex-col items-center gap-3">
           <h1 className="text-white text-2xl md:text-3xl lg:text-5xl font-bold text-center">
             Ready to monetize <br /> your machinery?
