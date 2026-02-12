@@ -1,6 +1,6 @@
 import User from "../models/User.model.js";
 import cloudinary from "../configs/cloudinary.js";
-
+import { sendEmail } from "../configs/sendEmail.js"
 
 // create user
 export const createUser = async (req, res) => {
@@ -238,20 +238,21 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
+
+
 // Block user (admin only)
 export const blockUser = async (req, res) => {
   try {
     const userId = req.params.id;
-
     const user = await User.findById(userId);
-
+    
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found"
       });
     }
-
+    
     // Prevent admin from blocking themselves
     if (user._id.toString() === req.user.userId) {
       return res.status(400).json({
@@ -259,13 +260,136 @@ export const blockUser = async (req, res) => {
         message: "You cannot block yourself"
       });
     }
-
+    
     user.isBlocked = true;
     await user.save();
 
+    // Send block notification email
+    if (user.email) {
+      const blockEmailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f7f6; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                  
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%); padding: 40px 30px; text-align: center;">
+                      <div style="width: 80px; height: 80px; background-color: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 48px;">🚫</span>
+                      </div>
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Account Suspended</h1>
+                      <p style="margin: 10px 0 0 0; color: #fecaca; font-size: 16px;">Your AgriRent account has been temporarily blocked</p>
+                    </td>
+                  </tr>
+
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 40px 30px;">
+                      <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">Dear <strong>${user.name}</strong>,</p>
+                      
+                      <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">We regret to inform you that your AgriRent account has been temporarily suspended by our administration team.</p>
+
+                      <!-- User Details -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #fef2f2; border-radius: 8px; margin: 30px 0; border: 1px solid #fecaca;">
+                        <tr>
+                          <td style="padding: 20px;">
+                            <h3 style="margin: 0 0 15px 0; color: #dc2626; font-size: 18px;">Account Information</h3>
+                            <table width="100%" cellpadding="8" cellspacing="0">
+                              <tr>
+                                <td style="color: #666; font-size: 14px; width: 30%;">User ID:</td>
+                                <td style="color: #333; font-size: 13px; font-family: monospace; font-weight: 600;">${user._id}</td>
+                              </tr>
+                              <tr>
+                                <td style="color: #666; font-size: 14px;">Email:</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600;">${user.email}</td>
+                              </tr>
+                              <tr>
+                                <td style="color: #666; font-size: 14px;">Role:</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600; text-transform: capitalize;">${user.role}</td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <!-- Reasons -->
+                      <div style="background-color: #fef3c7; border-left: 4px solid #f59e0b; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                        <p style="margin: 0 0 10px 0; color: #92400e; font-weight: 600; font-size: 14px;">⚠️ Possible Reasons:</p>
+                        <ul style="margin: 0; padding-left: 20px; color: #92400e; font-size: 13px; line-height: 1.6;">
+                          <li>Multiple machine approval rejections</li>
+                          <li>Submission of fake documents</li>
+                          <li>Violation of platform terms</li>
+                          <li>Suspicious activity or spam</li>
+                          <li>Payment fraud</li>
+                        </ul>
+                      </div>
+
+                      <p style="margin: 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">During suspension, you cannot:</p>
+                      <ul style="margin: 0 0 20px 20px; color: #666; font-size: 15px; line-height: 1.8;">
+                        <li>Access your dashboard</li>
+                        <li>Manage machine listings</li>
+                        <li>Make or accept bookings</li>
+                        <li>Process payments</li>
+                      </ul>
+
+                      <!-- CTA -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${process.env.FRONTEND_URL || "http://localhost:5173"}/contact" style="display: inline-block; padding: 14px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Contact Support</a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <div style="background-color: #fff1f2; border: 1px solid #fecaca; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                        <p style="margin: 0; color: #991b1b; font-size: 13px; line-height: 1.6;"><strong>⚠️ Important:</strong> Repeated violations may result in permanent account termination.</p>
+                      </div>
+
+                      <p style="margin: 25px 0 0 0; color: #666666; font-size: 14px; line-height: 1.6;">Best regards,<br><strong style="color: #dc2626;">The AgriRent Team</strong></p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #fef2f2; padding: 25px 30px; text-align: center; border-top: 1px solid #fecaca;">
+                      <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">Need help? <a href="mailto:support@agrirent.com" style="color: #dc2626; text-decoration: none;">support@agrirent.com</a></p>
+                      <p style="margin: 0; color: #999999; font-size: 12px;">© 2026 AgriRent. All rights reserved.</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `;
+
+      console.log("📧 Sending block email to:", user.email);
+      
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: "⚠️ Account Suspended - Action Required",
+        html: blockEmailHtml,
+      });
+
+      if (emailSent) {
+        console.log("✅ Block notification email sent successfully");
+      } else {
+        console.log("⚠️ Block email failed to send");
+      }
+    }
+    
     res.status(200).json({
       success: true,
-      message: "User blocked successfully",
+      message: "User blocked successfully. Notification email sent.",
       data: {
         id: user._id,
         name: user.name,
@@ -273,8 +397,9 @@ export const blockUser = async (req, res) => {
         isBlocked: user.isBlocked
       }
     });
-
+    
   } catch (error) {
+    console.error("❌ Block user error:", error);
     res.status(500).json({
       success: false,
       error: error.message
@@ -286,22 +411,143 @@ export const blockUser = async (req, res) => {
 export const unblockUser = async (req, res) => {
   try {
     const userId = req.params.id;
-
     const user = await User.findById(userId);
-
+    
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found"
       });
     }
-
+    
     user.isBlocked = false;
     await user.save();
 
+    // Send unblock notification email
+    if (user.email) {
+      const unblockEmailHtml = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        </head>
+        <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6;">
+          <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f4f7f6; padding: 40px 20px;">
+            <tr>
+              <td align="center">
+                <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                  
+                  <!-- Header -->
+                  <tr>
+                    <td style="background: linear-gradient(135deg, #03a74f 0%, #038a42 100%); padding: 40px 30px; text-align: center;">
+                      <div style="width: 80px; height: 80px; background-color: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center;">
+                        <span style="font-size: 48px;">✅</span>
+                      </div>
+                      <h1 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 700;">Account Restored!</h1>
+                      <p style="margin: 10px 0 0 0; color: #e6f7ed; font-size: 16px;">Welcome back to AgriRent</p>
+                    </td>
+                  </tr>
+
+                  <!-- Content -->
+                  <tr>
+                    <td style="padding: 40px 30px;">
+                      <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">Dear <strong>${user.name}</strong>,</p>
+                      
+                      <p style="margin: 0 0 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">Great news! Your AgriRent account has been successfully <strong style="color: #03a74f;">unblocked</strong> and restored to full access.</p>
+
+                      <!-- Success Card -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f0fdf4; border-radius: 8px; margin: 30px 0; border: 1px solid #86efac;">
+                        <tr>
+                          <td style="padding: 20px;">
+                            <h3 style="margin: 0 0 15px 0; color: #03a74f; font-size: 18px;">✓ Account Information</h3>
+                            <table width="100%" cellpadding="8" cellspacing="0">
+                              <tr>
+                                <td style="color: #666; font-size: 14px; width: 30%;">User ID:</td>
+                                <td style="color: #333; font-size: 13px; font-family: monospace; font-weight: 600;">${user._id}</td>
+                              </tr>
+                              <tr>
+                                <td style="color: #666; font-size: 14px;">Email:</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600;">${user.email}</td>
+                              </tr>
+                              <tr>
+                                <td style="color: #666; font-size: 14px;">Status:</td>
+                                <td style="color: #03a74f; font-size: 14px; font-weight: 700;">ACTIVE ✓</td>
+                              </tr>
+                            </table>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <p style="margin: 20px 0; color: #333333; font-size: 16px; line-height: 1.6;">You now have full access to all platform features:</p>
+                      <ul style="margin: 0 0 20px 20px; color: #15803d; font-size: 15px; line-height: 1.8;">
+                        <li>Access your dashboard</li>
+                        <li>Create and manage machine listings</li>
+                        <li>Make and accept bookings</li>
+                        <li>Process payments</li>
+                      </ul>
+
+                      <!-- CTA -->
+                      <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
+                        <tr>
+                          <td align="center">
+                            <a href="${process.env.FRONTEND_URL || "http://localhost:5173"}/${user.role === 'owner' ? 'owner-dashboard' : 'farmer-dashboard'}" style="display: inline-block; padding: 14px 32px; background-color: #03a74f; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Access Dashboard</a>
+                          </td>
+                        </tr>
+                      </table>
+
+                      <div style="background-color: #fff9e6; border-left: 4px solid #ffc107; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                        <p style="margin: 0 0 10px 0; color: #856404; font-weight: 600; font-size: 14px;">📌 Please Remember:</p>
+                        <ul style="margin: 0; padding-left: 20px; color: #856404; font-size: 13px; line-height: 1.6;">
+                          <li>Always provide accurate information</li>
+                          <li>Upload genuine documents</li>
+                          <li>Follow all platform terms</li>
+                          <li>Maintain respectful communication</li>
+                        </ul>
+                      </div>
+
+                      <div style="background-color: #e0f2fe; border: 1px solid #7dd3fc; padding: 15px; margin: 25px 0; border-radius: 4px;">
+                        <p style="margin: 0; color: #0c4a6e; font-size: 13px; line-height: 1.6;"><strong>💡 Tip:</strong> Future violations may result in permanent account termination. Please ensure you comply with all platform guidelines.</p>
+                      </div>
+
+                      <p style="margin: 25px 0 0 0; color: #666666; font-size: 14px; line-height: 1.6;">Thank you for your patience and cooperation!</p>
+                      <p style="margin: 15px 0 0 0; color: #666666; font-size: 14px; line-height: 1.6;">Best regards,<br><strong style="color: #03a74f;">The AgriRent Team</strong></p>
+                    </td>
+                  </tr>
+
+                  <!-- Footer -->
+                  <tr>
+                    <td style="background-color: #f0fdf4; padding: 25px 30px; text-align: center; border-top: 1px solid #86efac;">
+                      <p style="margin: 0 0 10px 0; color: #999999; font-size: 12px;">Questions? <a href="mailto:support@agrirent.com" style="color: #03a74f; text-decoration: none;">support@agrirent.com</a></p>
+                      <p style="margin: 0; color: #999999; font-size: 12px;">© 2026 AgriRent. All rights reserved.</p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </body>
+        </html>
+      `;
+
+      console.log("📧 Sending unblock email to:", user.email);
+      
+      const emailSent = await sendEmail({
+        to: user.email,
+        subject: "✅ Account Restored - Welcome Back to AgriRent!",
+        html: unblockEmailHtml,
+      });
+
+      if (emailSent) {
+        console.log("✅ Unblock notification email sent successfully");
+      } else {
+        console.log("⚠️ Unblock email failed to send");
+      }
+    }
+    
     res.status(200).json({
       success: true,
-      message: "User unblocked successfully",
+      message: "User unblocked successfully. Notification email sent.",
       data: {
         id: user._id,
         name: user.name,
@@ -309,8 +555,9 @@ export const unblockUser = async (req, res) => {
         isBlocked: user.isBlocked
       }
     });
-
+    
   } catch (error) {
+    console.error("❌ Unblock user error:", error);
     res.status(500).json({
       success: false,
       error: error.message
