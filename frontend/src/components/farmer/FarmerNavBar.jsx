@@ -62,7 +62,7 @@ const FarmerNavBar = () => {
     } else if (user.role === "owner") {
       navigate("/owner-dashboard");
     } else if (user.role === "admin") {
-      navigate("/admin-dashboard");
+      navigate("/admin/dashboard");
     }
 
     setDropdownOpen(false);
