@@ -18,9 +18,8 @@ export default function Checkout() {
   const durationText =
     currentBooking?.durationDisplay ||
     `${currentBooking?.hoursDecimal || 0} hr`;
-
   const subtotal = Number(currentBooking?.total || 0);
-  const shipping = Number(deliveryMode === "delivery" ? 1000 : 0);
+  const shipping = Number(deliveryMode === "delivery" ? 0 : 0);
   const totalAmount = Math.round((subtotal + shipping) * 100) / 100;
 
   const handlePayment = async () => {

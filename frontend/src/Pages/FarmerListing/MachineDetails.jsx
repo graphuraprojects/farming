@@ -177,20 +177,20 @@ const MachineDetails = () => {
               <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-[#131614]">
                 {machine.machine_name} - {machine.model} Model
               </h1>
-              <div className="flex gap-5 text-[#131614]">
+              {/* <div className="flex gap-5 text-[#131614]">
                 <Share2 />
                 <Heart />
-              </div>
+              </div> */}
             </div>
 
             <div className="flex flex-wrap items-center gap-2 mt-2 text-sm text-[#131614]">
-              <Star size={16} className="fill-[#1f3d2b]" />
-              <span className="font-bold">{machine.rating}</span>
-              <span className="underline decoration-1 underline-offset-2 cursor-pointer">
+              {/* <Star size={16} className="fill-[#1f3d2b]" /> */}
+              {/* <span className="font-bold">{machine.rating}</span> */}
+              {/* <span className="underline decoration-1 underline-offset-2 cursor-pointer">
                 ({machine.reviews} reviews)
-              </span>
+              </span> */}
 
-              <span className="text-[#6d7e74]">•</span>
+              {/* <span className="text-[#6d7e74]">•</span> */}
 
               <div className="flex items-center gap-1 text-[#6d7e74]">
                 <MapPin size={16} />

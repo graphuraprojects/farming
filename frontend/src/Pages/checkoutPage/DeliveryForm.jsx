@@ -5,9 +5,17 @@ import { Building2 } from 'lucide-react';
 // import { useState } from "react";
 
 
-const DeliveryForm = ({ deliveryMode, setDeliveryMode }) => {
+const DeliveryForm = ({ deliveryMode, setDeliveryMode, formData, setFormData, errors }) => {
   // Inside your Checkout component:
 // const [deliveryMode, setDeliveryMode] = useState("delivery"); // default delivery
+const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -76,10 +84,17 @@ const DeliveryForm = ({ deliveryMode, setDeliveryMode }) => {
             Street Address
           </label>
           <input
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
             className="w-full h-12 px-4 rounded-xl border border-[#6d7e74] bg-white focus:border-[#6d7e74] focus:ring-1 focus:ring-[#6d7e74] outline-none transition-all placeholder:text-gray-400 text-[#6d7e74]-main"
             type="text"
             placeholder="Enter Your Address"
           />
+
+          {errors.address && (
+          <p className="text-red-500 text-xs">{errors.address}</p>
+        )}
         </div>
 
         <div className="space-y-1.5">
@@ -87,10 +102,16 @@ const DeliveryForm = ({ deliveryMode, setDeliveryMode }) => {
             City
           </label>
           <input
+            name="city"
+            value={formData.city}
+            onChange={handleChange}
             className="w-full h-12 px-4 rounded-xl border border-[#6d7e74] bg-white focus:border-[#6d7e74] focus:ring-1 focus:ring-[#6d7e74] outline-none transition-all placeholder:text-gray-400 text-[#6d7e74]-main"
             type="text"
             placeholder="Enter Your City"
           />
+          {errors.city && (
+          <p className="text-red-500 text-xs">{errors.city}</p>
+        )}
         </div>
 
         <div className="space-y-1.5">
@@ -98,10 +119,16 @@ const DeliveryForm = ({ deliveryMode, setDeliveryMode }) => {
             Zip Code
           </label>
           <input
+            name="zipCode"
+            value={formData.zipCode}
+            onChange={handleChange}
             className="w-full h-12 px-4 rounded-xl border border-[#6d7e74] bg-white focus:border-[#6d7e74] focus:ring-1 focus:ring-[#6d7e74] outline-none transition-all placeholder:text-gray-400 text-[#6d7e74]-main"
             type="text"
             placeholder="Enter ZIP Code"
           />
+          {errors.zipCode && (
+          <p className="text-red-500 text-xs">{errors.zipCode}</p>
+        )}
         </div>
 
         {/* <div className="md:col-span-2 space-y-1.5">
