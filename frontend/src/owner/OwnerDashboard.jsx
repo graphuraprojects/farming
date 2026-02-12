@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 const API_BASE_URL = "http://localhost:5000/api";
 
 export default function App() {
+  const [selectedBooking, setSelectedBooking] = useState(null);
   const navigate = useNavigate();
   const [activeRange, setActiveRange] = useState("month");
   const [requests, setRequests] = useState([]);
@@ -104,50 +105,45 @@ export default function App() {
     };
   };
 
- useEffect(() => {
-  const fetchOverview = async () => {
-    try {
-      setErrorMessage("");
-      const headers = getAuthHeaders();
-      
-      console.log("🔍 Fetching data for owner:", user?.email);
-      console.log("🔑 Auth headers:", headers);
-      
-      const [fleetResponse, requestsResponse] = await Promise.all([
-        axios.get(`${API_BASE_URL}/owner/fleet/list`, { headers }),
-        axios.get(`${API_BASE_URL}/owner/bookings/pending-requests`, {
-          headers,
-        }),
-      ]);
+  useEffect(() => {
+    const fetchOverview = async () => {
+      try {
+        setErrorMessage("");
+        const headers = getAuthHeaders();
 
-      console.log("📦 Fleet Response:", fleetResponse.data);
-      console.log("📋 Requests Response:", requestsResponse.data);
-      console.log("📊 Total pending requests:", requestsResponse.data?.length || 0);
+        console.log("🔍 Fetching data for owner:", user?.email);
+        console.log("🔑 Auth headers:", headers);
 
-      // Map fleet
-      const mappedFleet = (fleetResponse.data || []).map((machine) => ({
-        id: machine._id,
-        img:
-          machine.images?.[0]?.url ||
-          "https://via.placeholder.com/64?text=Machine",
-        name: machine.machine_name || machine.model || "Machine",
-        type: machine.category || machine.model || "Machine",
-        enabled: machine.availability_status !== false,
-        machineData: machine, // Store full machine data for editing
-      }));
+        const [fleetResponse, requestsResponse] = await Promise.all([
+          axios.get(`${API_BASE_URL}/owner/fleet/list`, { headers }),
+          axios.get(`${API_BASE_URL}/owner/bookings/pending-requests`, {
+            headers,
+          }),
+        ]);
 
-      // Map requests
-      const mappedRequests = (requestsResponse.data || []).map((booking) => {
-        console.log("🔄 Processing booking:", {
+        console.log("📦 Fleet Response:", fleetResponse.data);
+        console.log("📋 Requests Response:", requestsResponse.data);
+        console.log(
+          "📊 Total pending requests:",
+          requestsResponse.data?.length || 0,
+        );
+
+        // Map fleet
+        const mappedFleet = (fleetResponse.data || []).map((machine) => ({
+          id: machine._id,
+          img:
+            machine.images?.[0]?.url ||
+            "https://via.placeholder.com/64?text=Machine",
+          name: machine.machine_name || machine.model || "Machine",
+          type: machine.category || machine.model || "Machine",
+          enabled: machine.availability_status !== false,
+          machineData: machine, // Store full machine data for editing
+        }));
+
+        // Map requests
+        const mappedRequests = (requestsResponse.data || []).map((booking) => ({
           id: booking._id,
-          farmer: booking.farmer_id?.name,
-          machine: booking.machine_id?.machine_name,
-          status: booking.booking_status,
-          payment: booking.payment_status
-        });
-
-        return {
-          id: booking._id,
+          bookingData: booking, // ⭐ Store full booking
           farmer: booking.farmer_id?.name || "Unknown Farmer",
           farm: booking.farmer_id?.address?.city || "Unknown Location",
           machine: booking.machine_id?.machine_name || "Unknown Machine",
@@ -155,29 +151,26 @@ export default function App() {
           dates: formatDateRange(booking.start_time, booking.end_time),
           duration: formatDuration(booking.start_time, booking.end_time),
           avatar: booking.farmer_id?.profile_pic?.url,
-          bookingStatus: booking.booking_status,
-          paymentStatus: booking.payment_status,
-        };
-      });
+        }));
 
-      console.log("✅ Final mapped requests:", mappedRequests.length);
+        console.log("✅ Final mapped requests:", mappedRequests.length);
 
-      setFleetItems(mappedFleet);
-      setRequests(mappedRequests);
-    } catch (error) {
-      console.error("❌ Fetch error:", error);
-      console.error("❌ Error response:", error?.response?.data);
-      console.error("❌ Error status:", error?.response?.status);
-      
-      const message =
-        error?.response?.data?.message ||
-        "Failed to load owner dashboard data.";
-      setErrorMessage(message);
-    }
-  };
+        setFleetItems(mappedFleet);
+        setRequests(mappedRequests);
+      } catch (error) {
+        console.error("❌ Fetch error:", error);
+        console.error("❌ Error response:", error?.response?.data);
+        console.error("❌ Error status:", error?.response?.status);
 
-  fetchOverview();
-}, []);
+        const message =
+          error?.response?.data?.message ||
+          "Failed to load owner dashboard data.";
+        setErrorMessage(message);
+      }
+    };
+
+    fetchOverview();
+  }, []);
 
   useEffect(() => {
     const fetchRangeStats = async () => {
@@ -667,7 +660,10 @@ export default function App() {
                       return (
                         <div
                           key={request.id}
-                          className="rounded-xl border border-gray-100 p-4 shadow-sm"
+                          onClick={() =>
+                            setSelectedBooking(request.bookingData)
+                          }
+                          className="rounded-xl border border-gray-100 p-4 shadow-sm cursor-pointer"
                         >
                           <div className="flex items-center gap-3">
                             {request.avatar ? (
@@ -771,7 +767,10 @@ export default function App() {
                         return (
                           <tr
                             key={request.id}
-                            className="group hover:bg-gray-50 transition-colors"
+                            onClick={() =>
+                              setSelectedBooking(request.bookingData)
+                            }
+                            className="group hover:bg-gray-50 transition-colors cursor-pointer"
                           >
                             <td className="px-8 py-5">
                               <div className="flex items-center gap-3">
@@ -907,8 +906,8 @@ export default function App() {
                               type: updatedMachine.category || item.type,
                               machineData: updatedMachine,
                             }
-                          : item
-                      )
+                          : item,
+                      ),
                     );
                   }
                 }}
@@ -916,6 +915,14 @@ export default function App() {
             )}
           </div>
         </div>
+        {selectedBooking && (
+          <BookingDetailsModal
+            booking={selectedBooking}
+            onClose={() => setSelectedBooking(null)}
+            onAccept={(id) => handleRequestAction(id, "accept")}
+            onReject={(id) => handleRequestAction(id, "reject")}
+          />
+        )}
       </main>
     </div>
   );
@@ -1072,7 +1079,9 @@ function Fleet({ img, name, type, extra, enabled, onToggle, onEdit, id }) {
                 type="button"
                 onClick={onToggle}
                 className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-                  enabled ? "bg-[#03a74f]" : "bg-gray-200 border border-gray-200"
+                  enabled
+                    ? "bg-[#03a74f]"
+                    : "bg-gray-200 border border-gray-200"
                 }`}
                 aria-pressed={enabled}
                 aria-label={`Set ${name} as ${enabled ? "Unavailable" : "Available"}`}
@@ -1159,7 +1168,7 @@ function EditMachineModal({ machine, onClose, onSave }) {
       const response = await axios.put(
         `http://localhost:5000/api/machines/${machine._id}`,
         formData,
-        { headers }
+        { headers },
       );
 
       console.log("Update response:", response.data);
@@ -1170,10 +1179,10 @@ function EditMachineModal({ machine, onClose, onSave }) {
       }, 1500);
     } catch (err) {
       console.error("Update error:", err);
-      const errorMessage = 
-        err.response?.data?.message || 
-        err.response?.data?.error || 
-        err.message || 
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
         "Failed to update machine";
       setError(errorMessage);
     } finally {
@@ -1185,7 +1194,9 @@ function EditMachineModal({ machine, onClose, onSave }) {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-[#131614]">Edit Machine Details</h2>
+          <h2 className="text-lg font-bold text-[#131614]">
+            Edit Machine Details
+          </h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -1311,9 +1322,25 @@ function EditMachineModal({ machine, onClose, onSave }) {
             >
               {loading ? (
                 <>
-                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="w-4 h-4 animate-spin"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Saving...
                 </>
@@ -1323,6 +1350,70 @@ function EditMachineModal({ machine, onClose, onSave }) {
             </button>
           </div>
         </form>
+      </div>
+    </div>
+  );
+}
+function BookingDetailsModal({ booking, onClose, onAccept, onReject }) {
+  if (!booking) return null;
+
+  const farmer = booking.farmer_id;
+
+  return (
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-semibold text-[#131614]">
+            Farmer Details
+          </h2>
+
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="space-y-2 text-sm">
+          <p>
+            <strong>Name:</strong> {farmer?.name}
+          </p>
+          <p>
+            <strong>Email:</strong> {farmer?.email}
+          </p>
+          <p>
+            <strong>Phone:</strong> {farmer?.phone}
+          </p>
+
+          <p>
+            <strong>Address:</strong> {farmer?.address?.street},{" "}
+            {farmer?.address?.city}, {farmer?.address?.state},{" "}
+            {farmer?.address?.zip}
+          </p>
+        </div>
+
+        <div className="flex gap-3 mt-6">
+          <button
+            onClick={() => {
+              onReject(booking._id);
+              onClose();
+            }}
+            className="flex-1 px-4 py-2 text-sm font-medium text-red-600 border border-red-100 rounded-lg hover:text-red-700"
+          >
+            Reject
+          </button>
+
+          <button
+            onClick={() => {
+              onAccept(booking._id);
+              onClose();
+            }}
+            className="flex-1 px-4 py-2 rounded-lg bg-[#03a74f] hover:bg-[#38864b] text-white text-sm font-medium"
+          >
+            Accept
+          </button>
+        </div>
       </div>
     </div>
   );

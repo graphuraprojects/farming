@@ -18,6 +18,41 @@ const FarmerFooter = () => {
             </p>
           </div>
 
+          <div>
+            <h4 className="text-sm font-semibold text-white mb-4">
+              Quick Links
+            </h4>
+            <ul className="space-y-2 text-sm text-gray-300">
+
+              <li>
+                <Link
+                  to="/"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Home
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/machine-listing"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Machines
+                </Link>
+              </li>
+
+              <li>
+                <Link
+                  to="/about-us"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  About Us
+                </Link>
+              </li>
+
+            </ul>
+          </div>
           {/* Farmer Links */}
           <div>
             <h4 className="text-sm font-semibold text-white mb-4">
@@ -27,10 +62,10 @@ const FarmerFooter = () => {
 
               <li>
                 <Link
-                  to="/machine-listing"
+                  to="/profile"
                   className="hover:text-[#4e8d67] transition"
                 >
-                  Browse Machines
+                  Profile
                 </Link>
               </li>
 
@@ -43,51 +78,14 @@ const FarmerFooter = () => {
                 </Link>
               </li>
 
-              <li>
+              {/* <li>
                 <Link
                   to="/invoice"
                   className="hover:text-[#4e8d67] transition"
                 >
                   Payments
                 </Link>
-              </li>
-
-            </ul>
-          </div>
-
-          {/* Machine Owner Links */}
-          <div>
-            <h4 className="text-sm font-semibold text-white mb-4">
-              Machine Owner
-            </h4>
-            <ul className="space-y-2 text-sm text-gray-300">
-
-              <li>
-                <Link
-                  to="/add-machine"
-                  className="hover:text-[#4e8d67] transition"
-                >
-                  List Machine
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/owner-dashboard"
-                  className="hover:text-[#4e8d67] transition"
-                >
-                  My Machines
-                </Link>
-              </li>
-
-              <li>
-                <Link
-                  to="/withdrawl"
-                  className="hover:text-[#4e8d67] transition"
-                >
-                  Earnings
-                </Link>
-              </li>
+              </li> */}
 
             </ul>
           </div>
@@ -114,6 +112,14 @@ const FarmerFooter = () => {
                   className="hover:text-[#4e8d67] transition"
                 >
                   Terms & Conditions
+                </Link>
+              </li>
+              <li>
+                <Link 
+                  to="/contact"
+                  className="hover:text-[#4e8d67] transition"
+                >
+                  Contact
                 </Link>
               </li>
 

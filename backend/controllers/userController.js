@@ -1,7 +1,6 @@
 import User from "../models/User.model.js";
 import cloudinary from "../configs/cloudinary.js";
 
-
 // create user
 export const createUser = async (req, res) => {
   try {
@@ -13,7 +12,7 @@ export const createUser = async (req, res) => {
     if (exist) {
       return res.status(400).json({
         success: false,
-        message: "Email already registered"
+        message: "Email already registered",
       });
     }
 
@@ -21,34 +20,32 @@ export const createUser = async (req, res) => {
       name,
       email,
       password_hash,
-      phone
+      phone,
     });
 
     res.status(201).json({
       success: true,
       message: "User created successfully",
-      data: user
+      data: user,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
 // get user profile
 export const getMyProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId)
-      .select("-password_hash -otp -otpExpiry");
+    const user = await User.findById(req.user.userId).select(
+      "-password_hash -otp -otpExpiry",
+    );
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -62,63 +59,55 @@ export const getMyProfile = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
-
 // get partcular user by id (for admin)
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
-      .select("-password_hash");
+    const user = await User.findById(req.params.id).select("-password_hash");
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: user
+      data: user,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
-
 // get All users
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find()
-      .select("-password_hash");
+    const users = await User.find().select("-password_hash");
 
     res.status(200).json({
       success: true,
       count: users.length,
-      data: users
+      data: users,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
-
 // delete user (for admin)
 export const deleteUser = async (req, res) => {
   try {
@@ -129,36 +118,29 @@ export const deleteUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
     // Delete profile image
     if (user.profile_pic?.public_id) {
-      await cloudinary.uploader.destroy(
-        user.profile_pic.public_id
-      );
+      await cloudinary.uploader.destroy(user.profile_pic.public_id);
     }
 
     await user.deleteOne();
 
     res.status(200).json({
       success: true,
-      message: "User deleted successfully"
+      message: "User deleted successfully",
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
-
-
-/**
- * UPDATE PROFILE (Cloudinary)
- */
+/** UPDATE PROFILE (Cloudinary) */
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -169,7 +151,7 @@ export const updateProfile = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -180,7 +162,8 @@ export const updateProfile = async (req, res) => {
     // Handle address - it comes as a JSON string from FormData
     if (address) {
       try {
-        const parsedAddress = typeof address === 'string' ? JSON.parse(address) : address;
+        const parsedAddress =
+          typeof address === "string" ? JSON.parse(address) : address;
         user.address = {
           street: parsedAddress.street || user.address?.street || "",
           city: parsedAddress.city || user.address?.city || "",
@@ -193,7 +176,7 @@ export const updateProfile = async (req, res) => {
         return res.status(400).json({
           success: false,
           message: "Invalid address format",
-          error: parseError.message
+          error: parseError.message,
         });
       }
     }
@@ -202,14 +185,12 @@ export const updateProfile = async (req, res) => {
     if (req.file) {
       // Delete old image from Cloudinary (if exists)
       if (user.profile_pic?.public_id) {
-        await cloudinary.uploader.destroy(
-          user.profile_pic.public_id
-        );
+        await cloudinary.uploader.destroy(user.profile_pic.public_id);
       }
 
       user.profile_pic = {
         url: req.file.path,
-        public_id: req.file.filename
+        public_id: req.file.filename,
       };
     }
 
@@ -225,16 +206,15 @@ export const updateProfile = async (req, res) => {
         role: user.role,
         phone: user.phone,
         address: user.address,
-        profile_pic: user.profile_pic
-      }
+        profile_pic: user.profile_pic,
+      },
     });
-
   } catch (error) {
     console.error("Update profile error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to update profile",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -248,7 +228,7 @@ export const blockUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -256,7 +236,7 @@ export const blockUser = async (req, res) => {
     if (user._id.toString() === req.user.userId) {
       return res.status(400).json({
         success: false,
-        message: "You cannot block yourself"
+        message: "You cannot block yourself",
       });
     }
 
@@ -270,18 +250,16 @@ export const blockUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        isBlocked: user.isBlocked
-      }
+        isBlocked: user.isBlocked,
+      },
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
     });
   }
 };
-
 // Unblock user (admin only)
 export const unblockUser = async (req, res) => {
   try {
@@ -292,7 +270,7 @@ export const unblockUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found"
+        message: "User not found",
       });
     }
 
@@ -306,14 +284,88 @@ export const unblockUser = async (req, res) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        isBlocked: user.isBlocked
-      }
+        isBlocked: user.isBlocked,
+      },
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message,
+    });
+  }
+};
+// add user address
+export const updateUserAddress = async (req, res) => {
+  try {
+    const userId = req.user.userId; // ⭐ FIXED
+
+    const { street, city, state, zip, country } = req.body;
+
+    if (!street && !city && !state && !zip && !country) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide at least one address field",
+      });
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        address: {
+          street,
+          city,
+          state,
+          zip,
+          country,
+        },
+      },
+      { new: true },
+    ).select("-password_hash");
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Address updated successfully",
+      data: updatedUser.address,
+    });
+  } catch (error) {
+    console.error("Update Address Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while updating address",
+    });
+  }
+};
+
+// get user address
+export const getUserAddress = async (req, res) => {
+  try {
+    const userId = req.user.userId; // ⭐ FIXED
+
+    const user = await User.findById(userId).select("address");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: user.address || {},
+    });
+  } catch (error) {
+    console.error("Get Address Error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error while fetching address",
     });
   }
 };
