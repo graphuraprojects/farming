@@ -100,7 +100,7 @@ export default function App() {
     }
 
     return {
-      revenue: trimmed,
+      revenue: trimmed.length ? trimmed : [0, 0, 0, 0],
       projected: trimmed.map((value) => Math.round(value * 1.1)),
     };
   };
@@ -296,22 +296,29 @@ export default function App() {
   const chartHeight = 280;
   const chartPaddingX = 24;
   const chartPaddingY = 24;
-  const chartValues = [...chartSeries.revenue, ...chartSeries.projected];
-  const chartMin = Math.min(...chartValues);
-  const chartMax = Math.max(...chartValues);
-  const chartRange = chartMax - chartMin || 1;
+  const revenueValues = chartSeries.revenue || [0, 0, 0, 0];
+  const chartMin = Math.min(...revenueValues);
+  const chartMax = Math.max(...revenueValues);
+  // Prevent flat graph
+  const chartRange = chartMax - chartMin === 0 ? 1 : chartMax - chartMin;
 
-  const buildPoints = (values) =>
-    values.map((value, index) => {
-      const x =
-        chartPaddingX +
-        (index * (chartWidth - chartPaddingX * 2)) / (values.length - 1 || 1);
+  const buildPoints = (values) => {
+    const stepX =
+      (chartWidth - chartPaddingX * 2) / Math.max(values.length - 1, 1);
+
+    return values.map((value, index) => {
+      const x = chartPaddingX + index * stepX;
+
+      const normalized = (value - chartMin) / chartRange;
+
       const y =
         chartHeight -
         chartPaddingY -
-        ((value - chartMin) / chartRange) * (chartHeight - chartPaddingY * 2);
+        normalized * (chartHeight - chartPaddingY * 2);
+
       return { x, y, value, index };
     });
+  };
 
   const buildSmoothPath = (points) => {
     if (points.length < 2) {
