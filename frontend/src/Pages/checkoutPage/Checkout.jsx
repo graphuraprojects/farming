@@ -222,7 +222,7 @@ export default function Checkout() {
             {/* Pricing */}
             <div className="border-t mt-4 pt-4 space-y-2 text-sm">
               <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
-              <Row label="Shipping" value={`₹${Number(shipping).toFixed(2)}`} />
+              {/* <Row label="Shipping" value={`₹${Number(shipping).toFixed(2)}`} /> */}
             </div>
 
             {/* <div className="border-t mt-4 pt-4 flex justify-between font-bold text-lg">

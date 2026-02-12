@@ -533,7 +533,7 @@ const MachineDetails = () => {
               {isOwner ? "Owners Cannot Book" : "Book Now"}
             </button>
 
-            <button
+            {/* <button
               onClick={() => {
                 const codOrder = {
                   order_id: `COD-${Date.now()}`,
@@ -582,11 +582,11 @@ const MachineDetails = () => {
                 <Calendar size={20} />
               </span>
               Cash on Delivery
-            </button>
+            </button> */}
 
-            <p className="text-center text-xs text-[#6d7e74]">
+            {/* <p className="text-center text-xs text-[#6d7e74]">
               You won't be charged yet
-            </p>
+            </p> */}
 
             <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
               <div className="flex justify-between">

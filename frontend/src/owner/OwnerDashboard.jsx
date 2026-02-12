@@ -616,13 +616,13 @@ export default function App() {
                 <h3 className="text-lg font-semibold text-[#131614]">
                   Booking Requests
                 </h3>
-                <button
+                {/* <button
                   type="button"
                   className="text-sm font-semibold text-[#1E3D2B] hover:underline"
                   onClick={() => navigate("/booking-history")}
                 >
                   View All
-                </button>
+                </button> */}
               </div>
               <div className="md:hidden p-5">
                 {requests.length === 0 ? (
@@ -849,13 +849,13 @@ export default function App() {
               ))}
             </div>
 
-            <button
+            {/* <button
               className="w-full py-2.5 text-sm font-medium text-gray-600 border border-dashed border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               type="button"
               onClick={() => navigate("/machine-listing")}
             >
               View All Machines
-            </button>
+            </button> */}
           </div>
         </div>
       </main>
