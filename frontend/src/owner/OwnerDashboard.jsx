@@ -11,6 +11,8 @@ export default function App() {
   const [requests, setRequests] = useState([]);
   const [fleetItems, setFleetItems] = useState([]);
   const [hoveredPoint, setHoveredPoint] = useState(null);
+  const [editingMachine, setEditingMachine] = useState(null);
+  const [editFormOpen, setEditFormOpen] = useState(false);
   const [currentStats, setCurrentStats] = useState({
     revenue: "₹0",
     revenueTrend: "+0.0%",
@@ -102,82 +104,80 @@ export default function App() {
     };
   };
 
-  useEffect(() => {
-    const fetchOverview = async () => {
-      try {
-        setErrorMessage("");
-        const headers = getAuthHeaders();
+ useEffect(() => {
+  const fetchOverview = async () => {
+    try {
+      setErrorMessage("");
+      const headers = getAuthHeaders();
+      
+      console.log("🔍 Fetching data for owner:", user?.email);
+      console.log("🔑 Auth headers:", headers);
+      
+      const [fleetResponse, requestsResponse] = await Promise.all([
+        axios.get(`${API_BASE_URL}/owner/fleet/list`, { headers }),
+        axios.get(`${API_BASE_URL}/owner/bookings/pending-requests`, {
+          headers,
+        }),
+      ]);
 
-        console.log("🔍 Fetching data for owner:", user?.email);
-        console.log("🔑 Auth headers:", headers);
+      console.log("📦 Fleet Response:", fleetResponse.data);
+      console.log("📋 Requests Response:", requestsResponse.data);
+      console.log("📊 Total pending requests:", requestsResponse.data?.length || 0);
 
-        const [fleetResponse, requestsResponse] = await Promise.all([
-          axios.get(`${API_BASE_URL}/owner/fleet/list`, { headers }),
-          axios.get(`${API_BASE_URL}/owner/bookings/pending-requests`, {
-            headers,
-          }),
-        ]);
+      // Map fleet
+      const mappedFleet = (fleetResponse.data || []).map((machine) => ({
+        id: machine._id,
+        img:
+          machine.images?.[0]?.url ||
+          "https://via.placeholder.com/64?text=Machine",
+        name: machine.machine_name || machine.model || "Machine",
+        type: machine.category || machine.model || "Machine",
+        enabled: machine.availability_status !== false,
+        machineData: machine, // Store full machine data for editing
+      }));
 
-        console.log("📦 Fleet Response:", fleetResponse.data);
-        console.log("📋 Requests Response:", requestsResponse.data);
-        console.log(
-          "📊 Total pending requests:",
-          requestsResponse.data?.length || 0,
-        );
-
-        // Map fleet
-        const mappedFleet = (fleetResponse.data || []).map((machine) => ({
-          id: machine._id,
-          img:
-            machine.images?.[0]?.url ||
-            "https://via.placeholder.com/64?text=Machine",
-          name: machine.machine_name || machine.model || "Machine",
-          type: machine.category || machine.model || "Machine",
-          enabled: machine.availability_status !== false,
-        }));
-
-        // Map requests
-        const mappedRequests = (requestsResponse.data || []).map((booking) => {
-          console.log("🔄 Processing booking:", {
-            id: booking._id,
-            farmer: booking.farmer_id?.name,
-            machine: booking.machine_id?.machine_name,
-            status: booking.booking_status,
-            payment: booking.payment_status,
-          });
-
-          return {
-            id: booking._id,
-            farmer: booking.farmer_id?.name || "Unknown Farmer",
-            farm: booking.farmer_id?.address?.city || "Unknown Location",
-            machine: booking.machine_id?.machine_name || "Unknown Machine",
-            machineType: booking.machine_id?.category || "Machine",
-            dates: formatDateRange(booking.start_time, booking.end_time),
-            duration: formatDuration(booking.start_time, booking.end_time),
-            avatar: booking.farmer_id?.profile_pic?.url,
-            bookingStatus: booking.booking_status,
-            paymentStatus: booking.payment_status,
-          };
+      // Map requests
+      const mappedRequests = (requestsResponse.data || []).map((booking) => {
+        console.log("🔄 Processing booking:", {
+          id: booking._id,
+          farmer: booking.farmer_id?.name,
+          machine: booking.machine_id?.machine_name,
+          status: booking.booking_status,
+          payment: booking.payment_status
         });
 
-        console.log("✅ Final mapped requests:", mappedRequests.length);
+        return {
+          id: booking._id,
+          farmer: booking.farmer_id?.name || "Unknown Farmer",
+          farm: booking.farmer_id?.address?.city || "Unknown Location",
+          machine: booking.machine_id?.machine_name || "Unknown Machine",
+          machineType: booking.machine_id?.category || "Machine",
+          dates: formatDateRange(booking.start_time, booking.end_time),
+          duration: formatDuration(booking.start_time, booking.end_time),
+          avatar: booking.farmer_id?.profile_pic?.url,
+          bookingStatus: booking.booking_status,
+          paymentStatus: booking.payment_status,
+        };
+      });
 
-        setFleetItems(mappedFleet);
-        setRequests(mappedRequests);
-      } catch (error) {
-        console.error("❌ Fetch error:", error);
-        console.error("❌ Error response:", error?.response?.data);
-        console.error("❌ Error status:", error?.response?.status);
+      console.log("✅ Final mapped requests:", mappedRequests.length);
 
-        const message =
-          error?.response?.data?.message ||
-          "Failed to load owner dashboard data.";
-        setErrorMessage(message);
-      }
-    };
+      setFleetItems(mappedFleet);
+      setRequests(mappedRequests);
+    } catch (error) {
+      console.error("❌ Fetch error:", error);
+      console.error("❌ Error response:", error?.response?.data);
+      console.error("❌ Error status:", error?.response?.status);
+      
+      const message =
+        error?.response?.data?.message ||
+        "Failed to load owner dashboard data.";
+      setErrorMessage(message);
+    }
+  };
 
-    fetchOverview();
-  }, []);
+  fetchOverview();
+}, []);
 
   useEffect(() => {
     const fetchRangeStats = async () => {
@@ -359,6 +359,29 @@ export default function App() {
             <p className="text-gray-500 mt-1">
               Here's what's happening with your fleet today.
             </p>
+          </div>
+          <div className="flex gap-2">
+            {/* <Link to="/farmer-dashboard">
+              <button
+                className={rangeButtonClass("month")}
+                onClick={() => setActiveRange("month")}
+              >
+                Farmer Dashboard
+              </button>
+            </Link> */}
+
+            {/* <button
+              className={rangeButtonClass("last")}
+              onClick={() => setActiveRange("last")}
+            >
+              Last Month
+            </button>
+            <button
+              className={rangeButtonClass("ytd")}
+              onClick={() => setActiveRange("ytd")}
+            >
+              Year to Date
+            </button> */}
           </div>
         </div>
 
@@ -840,11 +863,17 @@ export default function App() {
               {fleetItems.map((item) => (
                 <Fleet
                   key={item.id}
+                  id={item.id}
                   img={item.img}
                   name={item.name}
                   type={item.type}
                   enabled={item.enabled}
+                  machineData={item.machineData}
                   onToggle={() => handleToggleFleet(item.id)}
+                  onEdit={() => {
+                    setEditingMachine(item.machineData);
+                    setEditFormOpen(true);
+                  }}
                 />
               ))}
             </div>
@@ -856,6 +885,35 @@ export default function App() {
             >
               View All Machines
             </button> */}
+
+            {editFormOpen && editingMachine && (
+              <EditMachineModal
+                machine={editingMachine}
+                onClose={() => {
+                  setEditFormOpen(false);
+                  setEditingMachine(null);
+                }}
+                onSave={(updatedMachine) => {
+                  setEditFormOpen(false);
+                  setEditingMachine(null);
+                  // Update the fleet items with the updated machine data
+                  if (updatedMachine) {
+                    setFleetItems((prevItems) =>
+                      prevItems.map((item) =>
+                        item.id === updatedMachine._id
+                          ? {
+                              ...item,
+                              name: updatedMachine.machine_name || item.name,
+                              type: updatedMachine.category || item.type,
+                              machineData: updatedMachine,
+                            }
+                          : item
+                      )
+                    );
+                  }
+                }}
+              />
+            )}
           </div>
         </div>
       </main>
@@ -971,7 +1029,7 @@ function Stat({
   );
 }
 
-function Fleet({ img, name, type, extra, enabled, onToggle }) {
+function Fleet({ img, name, type, extra, enabled, onToggle, onEdit, id }) {
   const colors = {
     Available: "bg-[#e8f5e9] text-[#16a34a]",
     Unavailable: "bg-[#f7f7f7] text-[#8a9089]",
@@ -989,22 +1047,44 @@ function Fleet({ img, name, type, extra, enabled, onToggle }) {
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-1">
             <p className="font-bold text-[#131614] truncate">{name}</p>
-            <button
-              type="button"
-              onClick={onToggle}
-              className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
-                enabled ? "bg-[#03a74f]" : "bg-gray-200 border border-gray-200"
-              }`}
-              aria-pressed={enabled}
-              aria-label={`Set ${name} as ${enabled ? "Unavailable" : "Available"}`}
-            >
-              <span className="sr-only">Toggle availability</span>
-              <span
-                className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
-                  enabled ? "translate-x-4" : "translate-x-0"
+            <div className="flex gap-2 items-center">
+              <button
+                type="button"
+                onClick={onEdit}
+                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-600 hover:text-[#03a74f]"
+                aria-label="Edit machine"
+                title="Edit machine details"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                onClick={onToggle}
+                className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors ${
+                  enabled ? "bg-[#03a74f]" : "bg-gray-200 border border-gray-200"
                 }`}
-              />
-            </button>
+                aria-pressed={enabled}
+                aria-label={`Set ${name} as ${enabled ? "Unavailable" : "Available"}`}
+              >
+                <span className="sr-only">Toggle availability</span>
+                <span
+                  className={`pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow transition duration-200 ease-in-out ${
+                    enabled ? "translate-x-4" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </div>
           </div>
           <p className="text-xs text-gray-400 mb-2">{type}</p>
           <span
@@ -1034,6 +1114,215 @@ function Fleet({ img, name, type, extra, enabled, onToggle }) {
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+function EditMachineModal({ machine, onClose, onSave }) {
+  const [formData, setFormData] = useState({
+    machine_name: machine.machine_name || "",
+    model: machine.model || "",
+    category: machine.category || "",
+    price_per_hour: machine.price_per_hour || "",
+    description: machine.description || "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (error) setError("");
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSuccess(false);
+
+    try {
+      const token = localStorage.getItem("token");
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        setLoading(false);
+        return;
+      }
+
+      console.log("Updating machine with ID:", machine._id);
+      console.log("Form data:", formData);
+
+      const response = await axios.put(
+        `http://localhost:5000/api/machines/${machine._id}`,
+        formData,
+        { headers }
+      );
+
+      console.log("Update response:", response.data);
+
+      setSuccess(true);
+      setTimeout(() => {
+        onSave(response.data.data);
+      }, 1500);
+    } catch (err) {
+      console.error("Update error:", err);
+      const errorMessage = 
+        err.response?.data?.message || 
+        err.response?.data?.error || 
+        err.message || 
+        "Failed to update machine";
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
+          <h2 className="text-lg font-bold text-[#131614]">Edit Machine Details</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600"
+            aria-label="Close"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              className="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          {error && (
+            <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded text-sm">
+              ❌ {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-50 border border-green-200 text-green-600 px-3 py-2 rounded text-sm animate-pulse">
+              ✅ Machine updated successfully!
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Machine Name *
+            </label>
+            <input
+              type="text"
+              name="machine_name"
+              value={formData.machine_name}
+              onChange={handleChange}
+              required
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              placeholder="e.g., Tractor A"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Model
+            </label>
+            <input
+              type="text"
+              name="model"
+              value={formData.model}
+              onChange={handleChange}
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              placeholder="e.g., MF 8600"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
+            <input
+              type="text"
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              placeholder="e.g., Tractor"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Price Per Hour (₹)
+            </label>
+            <input
+              type="number"
+              name="price_per_hour"
+              value={formData.price_per_hour}
+              onChange={handleChange}
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              placeholder="e.g., 500"
+              step="0.01"
+              min="0"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Description
+            </label>
+            <textarea
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              disabled={loading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              placeholder="Enter machine description..."
+              rows="3"
+            />
+          </div>
+
+          <div className="flex gap-2 pt-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={loading}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="flex-1 px-4 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              disabled={loading}
+            >
+              {loading ? (
+                <>
+                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
+              )}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );
