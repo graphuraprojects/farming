@@ -1,5 +1,17 @@
 import React, { useState } from "react";
-import { Search, User, Mail, Phone, MapPin, Calendar, Shield, Loader, X, Ban, Unlock } from "lucide-react";
+import {
+  Search,
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Calendar,
+  Shield,
+  Loader,
+  X,
+  Ban,
+  Unlock,
+} from "lucide-react";
 import axios from "axios";
 
 const UserManagement = () => {
@@ -21,14 +33,11 @@ const UserManagement = () => {
       setUser(null);
 
       const token = localStorage.getItem("token");
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/users/${searchId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axios.get(`/api/users/${searchId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (response.data.success) {
         setUser(response.data.data);
@@ -36,7 +45,7 @@ const UserManagement = () => {
     } catch (err) {
       console.error("Search error:", err);
       setError(
-        err.response?.data?.message || "User not found. Please check the ID."
+        err.response?.data?.message || "User not found. Please check the ID.",
       );
       setUser(null);
     } finally {
@@ -48,7 +57,7 @@ const UserManagement = () => {
     if (!user) return;
 
     const confirmBlock = window.confirm(
-      `Are you sure you want to block user "${user.name}"? They will not be able to login.`
+      `Are you sure you want to block user "${user.name}"? They will not be able to login.`,
     );
 
     if (!confirmBlock) return;
@@ -58,13 +67,13 @@ const UserManagement = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/users/${user._id}/block`,
+        `/api/users/${user._id}/block`,
         {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -84,7 +93,7 @@ const UserManagement = () => {
     if (!user) return;
 
     const confirmUnblock = window.confirm(
-      `Are you sure you want to unblock user "${user.name}"? They will be able to login again.`
+      `Are you sure you want to unblock user "${user.name}"? They will be able to login again.`,
     );
 
     if (!confirmUnblock) return;
@@ -94,13 +103,13 @@ const UserManagement = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/users/${user._id}/unblock`,
+        `/api/users/${user._id}/unblock`,
         {},
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -359,7 +368,9 @@ const UserManagement = () => {
                             .join(", ")}
                         </p>
                         {user.address.country && (
-                          <p className="text-gray-700">{user.address.country}</p>
+                          <p className="text-gray-700">
+                            {user.address.country}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -373,7 +384,9 @@ const UserManagement = () => {
                   <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
                     <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
                     <div>
-                      <p className="font-semibold text-red-900">User is currently blocked</p>
+                      <p className="font-semibold text-red-900">
+                        User is currently blocked
+                      </p>
                       <p className="text-sm text-red-700 mt-1">
                         This user cannot login or access their account.
                       </p>
@@ -422,10 +435,9 @@ const UserManagement = () => {
                   </button>
                 )}
                 <p className="text-xs text-gray-500 mt-2">
-                  {user.isBlocked 
+                  {user.isBlocked
                     ? "⚠️ Unblocking will allow this user to login and access their account again."
-                    : "⚠️ Blocking will prevent this user from logging in and accessing their account."
-                  }
+                    : "⚠️ Blocking will prevent this user from logging in and accessing their account."}
                 </p>
               </div>
             </div>

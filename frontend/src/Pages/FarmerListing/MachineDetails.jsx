@@ -70,7 +70,7 @@ const MachineDetails = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/machines`, {
+        const res = await axios.get(`/api/machines`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -237,9 +237,7 @@ const MachineDetails = () => {
               </div>
 
               <div>
-                <h3 className="font-bold text-lg text-[#131614]">
-                  Owner
-                </h3>
+                <h3 className="font-bold text-lg text-[#131614]">Owner</h3>
                 <div className="flex items-center gap-2 text-sm text-[#6d7e74]">
                   <span>{machine.owner_id.name}</span>
                 </div>
@@ -472,7 +470,7 @@ const MachineDetails = () => {
 
                 try {
                   const res = await axios.post(
-                    `${import.meta.env.VITE_API_URL}/api/bookings/create`,
+                    `/api/bookings/create`,
                     {
                       machine_id: machine._id,
                       start_date: startDate,

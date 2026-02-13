@@ -3,7 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+const API_BASE_URL = `/api`;
 
 export default function App() {
   const [selectedBooking, setSelectedBooking] = useState(null);
@@ -1173,7 +1173,7 @@ function EditMachineModal({ machine, onClose, onSave }) {
       console.log("Form data:", formData);
 
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/api/machines/${machine._id}`,
+        `/api/machines/${machine._id}`,
         formData,
         { headers },
       );

@@ -86,15 +86,11 @@ const AddMachine = () => {
 
       const token = localStorage.getItem("token");
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/machines`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const res = await axios.post(`/api/machines`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (res.data.success) {
         alert("Machine Added Successfully!");

@@ -22,10 +22,10 @@ const ResetPassword = () => {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/verify-reset-otp`,
-        { email, otp }
-      );
+      const res = await axios.post(`/api/auth/verify-reset-otp`, {
+        email,
+        otp,
+      });
 
       if (res.data.success) {
         setStep(2);
@@ -44,13 +44,15 @@ const ResetPassword = () => {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/reset-password`,
-        { email, newPassword }
-      );
+      const res = await axios.post(`/api/auth/reset-password`, {
+        email,
+        newPassword,
+      });
 
       if (res.data.success) {
-        alert("Password reset successfully! Please login with your new password.");
+        alert(
+          "Password reset successfully! Please login with your new password.",
+        );
         navigate("/login");
       }
     } catch (err) {

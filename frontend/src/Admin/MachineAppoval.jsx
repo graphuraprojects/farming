@@ -24,7 +24,7 @@ const MachineApproval = () => {
     { id: 4, label: "Rental pricing within market range", checked: false },
   ]);
 
-  const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+  const API_BASE_URL = `/api`;
 
   useEffect(() => {
     fetchMachineDetails();
@@ -499,8 +499,8 @@ const MachineApproval = () => {
                   </div>
                 </div>
                 <p className="text-sm text-gray-600">
-                      Owner id: {machineData.owner_id?._id}
-                    </p>
+                  Owner id: {machineData.owner_id?._id}
+                </p>
               </div>
             </div>
 

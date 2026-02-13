@@ -39,44 +39,40 @@ const Register = () => {
   // SUBMIT LOG
   // =====================
   const handleSubmit = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (!form.terms) {
-    return setMessage("Please accept terms & conditions");
-  }
+    if (!form.terms) {
+      return setMessage("Please accept terms & conditions");
+    }
 
-  try {
-    setLoading(true);
-    setMessage("");
+    try {
+      setLoading(true);
+      setMessage("");
 
-    const payload = {
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      password: form.password,
-      role: form.role,
-    };
+      const payload = {
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        password: form.password,
+        role: form.role,
+      };
 
-    const res = await axios.post(
-      `${import.meta.env.VITE_API_URL}/api/auth/register`,
-      payload,
-    );
+      const res = await axios.post(`/api/auth/register`, payload);
 
-    // ✅ Remove the userId extraction - just use form.email directly
-    navigate("/verify-otp", {
-      state: { 
-        email: form.email,  // Use form data, not response data
-        name: form.name 
-      },
-    });
-
-  } catch (err) {
-    console.error("REGISTER ERROR:", err);
-    setMessage(err.response?.data?.message || "Registration failed");
-  } finally {
-    setLoading(false);
-  }
-};
+      // ✅ Remove the userId extraction - just use form.email directly
+      navigate("/verify-otp", {
+        state: {
+          email: form.email, // Use form data, not response data
+          name: form.name,
+        },
+      });
+    } catch (err) {
+      console.error("REGISTER ERROR:", err);
+      setMessage(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen w-full flex-row overflow-hidden bg-[#FAFAF7] dark:bg-[#161c18]">
@@ -282,17 +278,11 @@ const Register = () => {
 
           {/* Additional Links */}
           <div className="flex items-center justify-center gap-3 text-xs text-gray-600">
-            <Link
-              to="/T&C"
-              className="hover:text-[#03a74f] transition-colors"
-            >
+            <Link to="/T&C" className="hover:text-[#03a74f] transition-colors">
               Terms & Conditions
             </Link>
             <span>•</span>
-            <Link
-              to="/P"
-              className="hover:text-[#03a74f] transition-colors"
-            >
+            <Link to="/P" className="hover:text-[#03a74f] transition-colors">
               Privacy Policy
             </Link>
           </div>

@@ -10,7 +10,7 @@ import { Link, useParams } from "react-router-dom";
  * 2. If backend field names change, update them in the 'cleanedData' mapping below.
  */
 const IS_LIVE = false;
-const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/bookings`;
+const API_BASE_URL = `/api/bookings`;
 
 const BookingConfirmation = () => {
   const { id, orderId: orderIdParam } = useParams();

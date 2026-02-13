@@ -25,13 +25,10 @@ const VerifyOtp = () => {
       setLoading(true);
       setMessage("");
 
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/auth/verify-otp`,
-        {
-          email,
-          otp,
-        },
-      );
+      const res = await axios.post(`/api/auth/verify-otp`, {
+        email,
+        otp,
+      });
       setMessage(res.data.message);
 
       // ✅ Store token and user from response (auto-login after verification)

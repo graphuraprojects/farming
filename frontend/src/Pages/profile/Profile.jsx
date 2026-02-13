@@ -50,14 +50,11 @@ const Profile = () => {
       setLoading(true);
       const token = localStorage.getItem("token");
 
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/users/my-profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+      const response = await axios.get(`/api/users/my-profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
         },
-      );
+      });
 
       if (response.data.success) {
         const userData = response.data.data;
@@ -159,16 +156,12 @@ const Profile = () => {
         hasImage: !!selectedImage,
       });
 
-      const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/api/users/profile`,
-        formDataToSend,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
-          },
+      const response = await axios.patch(`/api/users/profile`, formDataToSend, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
         },
-      );
+      });
 
       if (response.data.success) {
         alert("Profile updated successfully!");

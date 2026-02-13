@@ -8,10 +8,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { CreditCard } from "lucide-react";
 import axios from "axios";
 
-const API_BASE = `${import.meta.env.VITE_API_URL}`;
+const API_BASE = ``;
 
 export default function Checkout() {
-
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -47,12 +46,9 @@ export default function Checkout() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(
-          `${API_BASE}/api/users/my-profile`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
-        );
+        const res = await axios.get(`${API_BASE}/api/users/my-profile`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
 
         const user = res.data.data;
 
@@ -68,7 +64,6 @@ export default function Checkout() {
           city: user.address?.city || "",
           zipCode: user.address?.zip || "",
         }));
-
       } catch (error) {
         console.log("Profile fetch error:", error);
       }
@@ -80,7 +75,6 @@ export default function Checkout() {
   /* ================= VALIDATION ================= */
 
   const validateForm = () => {
-
     const newErrors = {};
 
     if (!formData.firstName) newErrors.firstName = "First name required";
@@ -98,9 +92,7 @@ export default function Checkout() {
   /* ================= SAVE ADDRESS ================= */
 
   const saveAddress = async () => {
-
     try {
-
       const token = localStorage.getItem("token");
 
       await axios.put(
@@ -114,9 +106,8 @@ export default function Checkout() {
         },
         {
           headers: { Authorization: `Bearer ${token}` },
-        }
+        },
       );
-
     } catch (error) {
       console.log("Address save error:", error);
       throw error;
@@ -126,7 +117,6 @@ export default function Checkout() {
   /* ================= PAYMENT ================= */
 
   const handlePayment = async () => {
-
     const bookingId = currentBooking?.bookingId;
 
     if (!bookingId) {
@@ -149,7 +139,6 @@ export default function Checkout() {
     if (!validateForm()) return;
 
     try {
-
       /* ⭐ SAVE ADDRESS FIRST */
       await saveAddress();
 
@@ -170,7 +159,7 @@ export default function Checkout() {
             booking_id: bookingId,
             total_amount: totalAmount,
           }),
-        }
+        },
       );
 
       const data = await createRes.json();
@@ -195,9 +184,7 @@ export default function Checkout() {
         },
 
         handler: async function (response) {
-
           try {
-
             const verifyRes = await fetch(
               `${API_BASE}/api/admin/payments/verify`,
               {
@@ -210,7 +197,7 @@ export default function Checkout() {
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                 }),
-              }
+              },
             );
 
             const verifyData = await verifyRes.json();
@@ -232,11 +219,10 @@ export default function Checkout() {
 
             localStorage.setItem(
               "paymentConfirmationData",
-              JSON.stringify(confirmationData)
+              JSON.stringify(confirmationData),
             );
 
             navigate(`/booking-confirmation/${response.razorpay_order_id}`);
-
           } catch (verifyErr) {
             alert("Verification failed. Please contact support.");
           }
@@ -252,7 +238,6 @@ export default function Checkout() {
       });
 
       rzp.open();
-
     } catch (err) {
       alert(err?.message || "Payment error. Please try again.");
     }
@@ -263,7 +248,6 @@ export default function Checkout() {
   return (
     <div className="w-full mx-auto px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto px-4 py-5 sm:px-6 lg:px-10">
-
         <div className="mb-8 sm:mb-12">
           <Link
             to="/"
@@ -283,9 +267,7 @@ export default function Checkout() {
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
-
           <div className="lg:col-span-2 space-y-6">
-
             <Section title="Contact Information" value="1">
               <InputGrid
                 formData={formData}
@@ -303,11 +285,9 @@ export default function Checkout() {
                 errors={errors}
               />
             </Section>
-
           </div>
 
           <div className="bg-white rounded-xl shadow p-5 h-fit sticky top-10 overflow-hidden">
-
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#e6e8e6]">
               <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#131614]">
                 Order Summary
@@ -316,10 +296,8 @@ export default function Checkout() {
             </div>
 
             <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2">
-
               {currentBooking && (
                 <div key={currentBooking.id} className="flex gap-3">
-
                   <img
                     src={currentBooking.image}
                     alt={currentBooking.name}
@@ -341,10 +319,8 @@ export default function Checkout() {
                   </div>
 
                   <p className="font-bold">₹{currentBooking.total}</p>
-
                 </div>
               )}
-
             </div>
 
             <div className="border-t mt-4 pt-4 space-y-2 text-sm">
@@ -363,9 +339,7 @@ export default function Checkout() {
               <CreditCard className="text-white w-5 h-5" />
               Proceed to Payment →
             </button>
-
           </div>
-
         </div>
       </div>
     </div>

@@ -15,17 +15,17 @@ const Listing = () => {
     distance: 100,
     type: [],
   });
-const location = useLocation();
-const queryParams = new URLSearchParams(location.search);
-const categoryFromURL = queryParams.get("category");
-useEffect(() => {
-  if (categoryFromURL) {
-    setFilters((prev) => ({
-      ...prev,
-      type: [categoryFromURL],
-    }));
-  }
-}, [categoryFromURL]);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const categoryFromURL = queryParams.get("category");
+  useEffect(() => {
+    if (categoryFromURL) {
+      setFilters((prev) => ({
+        ...prev,
+        type: [categoryFromURL],
+      }));
+    }
+  }, [categoryFromURL]);
 
   const [sort, setSort] = useState("recommended");
   const [currentPage, setCurrentPage] = useState(1);
@@ -38,7 +38,7 @@ useEffect(() => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/machines`, {
+        const res = await axios.get(`/api/machines`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

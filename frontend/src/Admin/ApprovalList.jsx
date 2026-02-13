@@ -12,7 +12,7 @@ export default function ApprovalList() {
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
 
-  const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
+  const API_BASE_URL = `/api`;
   const ITEMS_PER_PAGE = 7;
 
   const fetchMachines = async (sort = "newest", status = "all") => {
@@ -105,20 +105,20 @@ export default function ApprovalList() {
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   const goToPage = (pageNumber) => {
     setCurrentPage(pageNumber);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
@@ -375,7 +375,9 @@ export default function ApprovalList() {
               <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="text-xs sm:text-sm text-gray-600">
-                    Showing {startIndex + 1} to {Math.min(endIndex, machines.length)} of {machines.length} machine{machines.length !== 1 ? 's' : ''}
+                    Showing {startIndex + 1} to{" "}
+                    {Math.min(endIndex, machines.length)} of {machines.length}{" "}
+                    machine{machines.length !== 1 ? "s" : ""}
                   </div>
 
                   {totalPages > 1 && (
@@ -395,7 +397,8 @@ export default function ApprovalList() {
                           if (
                             pageNumber === 1 ||
                             pageNumber === totalPages ||
-                            (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                            (pageNumber >= currentPage - 1 &&
+                              pageNumber <= currentPage + 1)
                           ) {
                             return (
                               <button
@@ -414,7 +417,14 @@ export default function ApprovalList() {
                             pageNumber === currentPage - 2 ||
                             pageNumber === currentPage + 2
                           ) {
-                            return <span key={pageNumber} className="px-1 text-gray-400">...</span>;
+                            return (
+                              <span
+                                key={pageNumber}
+                                className="px-1 text-gray-400"
+                              >
+                                ...
+                              </span>
+                            );
                           }
                           return null;
                         })}
