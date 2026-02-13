@@ -2,7 +2,7 @@ import ScrollToTop from "./components/ScrollToTop.jsx";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import FarmerLayout from "./layouts/FarmerLayout";
-import Register from "./pages/auth/Register";
+import Register from "./Pages/auth/Register.jsx";
 import Login from "./Pages/auth/Login.jsx";
 import VerifyOtp from "./Pages/auth/VerifyOtp.jsx";
 import MachineApproval from "./Admin/MachineAppoval.jsx";
