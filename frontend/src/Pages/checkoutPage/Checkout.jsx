@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import InputGrid from "./InputGrid";
 import DeliveryForm from "./DeliveryForm";
-import Section from "./section";
+import Section from "./Section";
 import Row from "./Row";
 import { MoveLeft } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
