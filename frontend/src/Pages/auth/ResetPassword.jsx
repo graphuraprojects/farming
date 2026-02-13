@@ -23,7 +23,7 @@ const ResetPassword = () => {
       setMessage("");
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/verify-reset-otp",
+        `${import.meta.env.VITE_API_URL}/api/auth/verify-reset-otp`,
         { email, otp }
       );
 
@@ -45,7 +45,7 @@ const ResetPassword = () => {
       setMessage("");
 
       const res = await axios.post(
-        "http://localhost:5000/api/auth/reset-password",
+        `${import.meta.env.VITE_API_URL}/api/auth/reset-password`,
         { email, newPassword }
       );
 

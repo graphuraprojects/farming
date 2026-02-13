@@ -22,7 +22,7 @@ const UserManagement = () => {
 
       const token = localStorage.getItem("token");
       const response = await axios.get(
-        `http://localhost:5000/api/users/${searchId}`,
+        `${import.meta.env.VITE_API_URL}/api/users/${searchId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -58,7 +58,7 @@ const UserManagement = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.patch(
-        `http://localhost:5000/api/users/${user._id}/block`,
+        `${import.meta.env.VITE_API_URL}/api/users/${user._id}/block`,
         {},
         {
           headers: {
@@ -94,7 +94,7 @@ const UserManagement = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.patch(
-        `http://localhost:5000/api/users/${user._id}/unblock`,
+        `${import.meta.env.VITE_API_URL}/api/users/${user._id}/unblock`,
         {},
         {
           headers: {

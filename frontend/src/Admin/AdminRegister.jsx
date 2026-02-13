@@ -31,7 +31,7 @@ export default function AdminRegister() {
       console.log("Sending request to backend...");
 
       const res = await fetch(
-        "http://localhost:5000/api/adminAuth/register-admin",
+        `${import.meta.env.VITE_API_URL}/api/adminAuth/register-admin`,
         {
           method: "POST",
           headers: {

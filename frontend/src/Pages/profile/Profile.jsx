@@ -51,7 +51,7 @@ const Profile = () => {
       const token = localStorage.getItem("token");
 
       const response = await axios.get(
-        "http://localhost:5000/api/users/my-profile",
+        `${import.meta.env.VITE_API_URL}/api/users/my-profile`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -160,7 +160,7 @@ const Profile = () => {
       });
 
       const response = await axios.patch(
-        "http://localhost:5000/api/users/profile",
+        `${import.meta.env.VITE_API_URL}/api/users/profile`,
         formDataToSend,
         {
           headers: {

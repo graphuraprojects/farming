@@ -70,7 +70,7 @@ const MachineDetails = () => {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get("http://localhost:5000/api/machines", {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/machines`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -472,7 +472,7 @@ const MachineDetails = () => {
 
                 try {
                   const res = await axios.post(
-                    "http://localhost:5000/api/bookings/create",
+                    `${import.meta.env.VITE_API_URL}/api/bookings/create`,
                     {
                       machine_id: machine._id,
                       start_date: startDate,

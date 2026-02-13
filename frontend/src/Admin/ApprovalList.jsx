@@ -12,7 +12,7 @@ export default function ApprovalList() {
   const [showFilter, setShowFilter] = useState(false);
   const navigate = useNavigate();
 
-  const API_BASE_URL = "http://localhost:5000/api";
+  const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api`;
   const ITEMS_PER_PAGE = 7;
 
   const fetchMachines = async (sort = "newest", status = "all") => {
