@@ -38,11 +38,13 @@ const AddMachine = () => {
     document: null,
   });
 
-if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
-  alert("⚠️ You are blocked. You cannot add machines. Please contact support.");
-  navigate("/404")
-  return;
-}
+  if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
+    alert(
+      "⚠️ You are blocked. You cannot add machines. Please contact support.",
+    );
+    navigate("/404");
+    return;
+  }
 
   const handleSubmit = async () => {
     try {
@@ -105,10 +107,16 @@ if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
   };
 
   return (
-    <div className="bg-[#e9fbf1cc] pb-10 min-h-screen">
-      <div className="pt-6 w-full flex justify-center px-4">
+    <div className="bg-[#e9fbf1cc] pb-10 min-h-screen overflow-x-hidden">
+      {/* ADDED: overflow-x-hidden to prevent horizontal scroll */}
+
+      <div className="pt-6 w-full flex justify-center px-2 sm:px-4">
+        {/* CHANGED: px-4 to px-2 sm:px-4 for better mobile spacing */}
+
         {/* Step Bar */}
-        <div className="flex items-center justify-center gap-6">
+        <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 max-w-full overflow-x-auto">
+          {/* ADDED: gap responsive + max-w-full + overflow-x-auto */}
+
           {steps.map((title, index) => {
             const stepNumber = index + 1;
 
@@ -117,29 +125,35 @@ if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
 
             return (
               <React.Fragment key={index}>
-                <div className="flex flex-col items-center min-w-[70px]">
+                <div className="flex flex-col items-center min-w-[60px] sm:min-w-[70px]">
+                  {/* CHANGED: min-w-[70px] to min-w-[60px] sm:min-w-[70px] */}
+
                   <div
                     className={`
-                  w-8 h-8 flex items-center justify-center rounded-full text-sm font-semibold
-                  ${
-                    isCompleted || isActive
-                      ? "bg-[#03a74f] text-white"
-                      : "bg-gray-200 text-gray-500"
-                  }
-                `}
+                      w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xs sm:text-sm font-semibold
+                      ${
+                        isCompleted || isActive
+                          ? "bg-[#03a74f] text-white"
+                          : "bg-gray-200 text-gray-500"
+                      }
+                    `}
                   >
+                    {/* CHANGED: w-8 h-8 to w-7 h-7 sm:w-8 sm:h-8 for smaller mobile */}
                     {isCompleted ? "✓" : stepNumber}
                   </div>
 
                   {/* title */}
                   <span
                     className={`
-                  mt-2 text-xs font-medium text-center
-                  ${
-                    isActive || isCompleted ? "text-[#03a74f]" : "text-gray-400"
-                  }
-                `}
+                      mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium text-center leading-tight
+                      ${
+                        isActive || isCompleted
+                          ? "text-[#03a74f]"
+                          : "text-gray-400"
+                      }
+                    `}
                   >
+                    {/* CHANGED: mt-2 to mt-1 sm:mt-2, text-xs to text-[10px] sm:text-xs */}
                     {title}
                   </span>
                 </div>
@@ -148,10 +162,12 @@ if (JSON.parse(localStorage.getItem("user") || "{}").isBlocked) {
                 {index !== steps.length - 1 && (
                   <div
                     className={`
-                  w-16 h-[2px]
-                  ${step > stepNumber ? "bg-[#03a74f]" : "bg-gray-300"}
-                `}
-                  ></div>
+                      w-8 sm:w-12 md:w-16 h-[2px] flex-shrink-0
+                      ${step > stepNumber ? "bg-[#03a74f]" : "bg-gray-300"}
+                    `}
+                  >
+                    {/* CHANGED: w-16 to w-8 sm:w-12 md:w-16 + added flex-shrink-0 */}
+                  </div>
                 )}
               </React.Fragment>
             );

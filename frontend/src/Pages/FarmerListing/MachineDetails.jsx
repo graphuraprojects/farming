@@ -238,12 +238,10 @@ const MachineDetails = () => {
 
               <div>
                 <h3 className="font-bold text-lg text-[#131614]">
-                  Hosted by {machine.host}
+                  Owner
                 </h3>
                 <div className="flex items-center gap-2 text-sm text-[#6d7e74]">
-                  <span>Joined {machine.join}</span>
-                  <span>•</span>
-                  <span>Response rate: {machine.responseRate}%</span>
+                  <span>{machine.owner_id.name}</span>
                 </div>
               </div>
             </div>

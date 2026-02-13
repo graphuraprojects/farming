@@ -145,7 +145,6 @@ pl-4 py-3
  placeholder-gray-400 border-[1.5px]
 focus:border-[#03a74f] focus:ring-[#1f3d2b] bg-white outline-none"
             />
-
             {/* Password Input with Eye Toggle */}
             <div className="relative">
               <input
@@ -169,7 +168,14 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
-
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-sm text-[#03a74f] hover:text-[#028a42] font-semibold"
+              >
+                Forgot Password?
+              </Link>
+            </div>
             {/* BUTTON */}
             <button
               disabled={loading}
@@ -186,6 +192,15 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
               Register here
             </Link>
           </p>
+        </div>
+        <div className="flex items-center justify-center gap-3 text-xs text-gray-600 mt-5">
+          <Link to="/T&C" className="hover:text-[#03a74f] transition-colors">
+            Terms & Conditions
+          </Link>
+          <span>•</span>
+          <Link to="/P" className="hover:text-[#03a74f] transition-colors">
+            Privacy Policy
+          </Link>
         </div>
       </div>
     </div>

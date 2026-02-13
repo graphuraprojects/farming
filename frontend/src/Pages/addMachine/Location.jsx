@@ -214,17 +214,19 @@ const Location = ({ data, setData, prev, submit }) => {
     submit();
   };
 
-  return (
-    <div className="min-h-screen flex justify-center px-4 py-8">
-      <div className="w-full max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Location & Documents
-          </h1>
-          <p className="text-gray-600">
-            Set your machine location and upload ownership documents
-          </p>
-        </div>
+
+return (
+  <div className="min-h-screen flex justify-center px-2 sm:px-4 py-8">
+    
+    <div className="w-full max-w-5xl">
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+          Location & Documents
+        </h1>
+        <p className="text-sm sm:text-base text-gray-600">
+          Set your machine location and upload ownership documents
+        </p>
+      </div>
 
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

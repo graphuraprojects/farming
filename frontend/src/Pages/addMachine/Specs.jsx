@@ -31,17 +31,19 @@ const Specs = ({ data, setData, next, prev }) => {
     next();
   };
 
-  return (
-    <div className="min-h-screen flex justify-center px-4 py-8">
-      <div className="w-full max-w-5xl">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            Specifications & Pricing
-          </h1>
-          <p className="text-gray-600">
-            Define your machine details and rental price
-          </p>
-        </div>
+
+return (
+  <div className="min-h-screen flex justify-center px-2 sm:px-4 py-8">
+    
+    <div className="w-full max-w-5xl">
+      <div className="mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+          Specifications & Pricing
+        </h1>
+        <p className="text-sm sm:text-base text-gray-600">
+          Define your machine details and rental price
+        </p>
+      </div>
 
         <div className="space-y-6">
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">

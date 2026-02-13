@@ -35,6 +35,8 @@ import Checkout from "./Pages/checkoutPage/Checkout.jsx";
 import FarmerDashboard from "./Pages/FarmerDashboard.jsx";
 import ProtectedOwner from "./components/ProtectedOwner.jsx";
 import ProtectedFarmer from "./components/ProtectedFarmer.jsx";
+import ForgotPassword from "./Pages/auth/ForgotPassword.jsx";
+import ResetPassword from "./Pages/auth/ResetPassword.jsx";
 
 function App() {
   return (
@@ -59,7 +61,15 @@ function App() {
           <Route path="machine-details/:id" element={<MachineDetails />} />
           <Route path="rate-experience" element={<RateExperience />} />
           <Route path="rent-review" element={<ReviewSuccessPage />} />
-          <Route path="booking-history" element={<ProtectedFarmer allowedRoles={["farmer","admin"]}> <BookingHistory /></ProtectedFarmer>} />
+          <Route
+            path="booking-history"
+            element={
+              <ProtectedFarmer allowedRoles={["farmer", "admin"]}>
+                {" "}
+                <BookingHistory />
+              </ProtectedFarmer>
+            }
+          />
           <Route path="booking-conform" element={<BookingConfirmation />} />
           <Route
             path="booking-confirmation/:orderId"
@@ -74,22 +84,52 @@ function App() {
               </ProtectedOwner>
             }
           />
-          <Route path="/invoice/:bookingId" element={<ProtectedFarmer  allowedRoles={["farmer","admin"]}><Invoice /></ProtectedFarmer>} />
+          <Route
+            path="/invoice/:bookingId"
+            element={
+              <ProtectedFarmer allowedRoles={["farmer", "admin"]}>
+                <Invoice />
+              </ProtectedFarmer>
+            }
+          />
           <Route path="/about-us" element={<AboutUs />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/contact" element={<Contact />} />
-          <Route path="/owner-dashboard" element={<ProtectedOwner allowedRoles={["owner","admin"]}><OwnerDashboard /></ProtectedOwner>} />
+          <Route
+            path="/owner-dashboard"
+            element={
+              <ProtectedOwner allowedRoles={["owner", "admin"]}>
+                <OwnerDashboard />
+              </ProtectedOwner>
+            }
+          />
           {/* <Route path="/about-us" element={<AboutUs />} /> */}
-          <Route path="/withdrawl" element={<ProtectedOwner allowedRoles={["owner","admin"]}><WithdrwaEarnings /></ProtectedOwner>} />
+          <Route
+            path="/withdrawl"
+            element={
+              <ProtectedOwner allowedRoles={["owner", "admin"]}>
+                <WithdrwaEarnings />
+              </ProtectedOwner>
+            }
+          />
           <Route path="/withdrawl-success" element={<WithdrwalSuccess />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/checkout" element={<Checkout />} />
-          <Route path="/farmer-dashboard" element={<ProtectedFarmer  allowedRoles={["farmer","admin"]}><FarmerDashboard /></ProtectedFarmer>} />
+          <Route
+            path="/farmer-dashboard"
+            element={
+              <ProtectedFarmer allowedRoles={["farmer", "admin"]}>
+                <FarmerDashboard />
+              </ProtectedFarmer>
+            }
+          />
         </Route>
 
         <Route path="/T&C" element={<TermsAndConditions />} />
         <Route path="/P" element={<PrivacyPolicy />} />
 
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         {/* NOT FOUND */}
         <Route path="*" element={<NotFound />} />
       </Routes>
