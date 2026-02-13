@@ -6,21 +6,21 @@ import Register from "./Pages/auth/Register.jsx";
 import Login from "./Pages/auth/Login.jsx";
 import VerifyOtp from "./Pages/auth/VerifyOtp.jsx";
 import MachineApproval from "./Admin/MachineAppoval.jsx";
-import NotFound from "./pages/NotFound";
+import NotFound from "./Pages/NotFound";
 import AdminRegister from "./Admin/AdminRegister.jsx";
 
 // ✅ Admin Dashboard
 import AdminDashboard from "./Admin/AdminDashboard.jsx";
 
 // Farmer Pages
-import FarmerHome from "./pages/FarmerHome";
-import Listing from "./pages/FarmerListing/Listing.jsx";
-import RateExperience from "./pages/RateExperience.jsx";
-import ReviewSuccessPage from "./pages/RentReview.jsx";
-import MachineDetails from "./pages/FarmerListing/MachineDetails.jsx";
-import BookingHistory from "./pages/bookngHistory/BookingHistory.jsx";
-import BookingConfirmation from "./pages/bookingConform/BookingConfirmation.jsx";
-import AddMachine from "./pages/addMachine/AddMachine.jsx";
+import FarmerHome from "./Pages/FarmerHome";
+import Listing from "./Pages/FarmerListing/Listing.jsx";
+import RateExperience from "./Pages/RateExperience.jsx";
+import ReviewSuccessPage from "./Pages/RentReview.jsx";
+import MachineDetails from "./Pages/FarmerListing/MachineDetails.jsx";
+import BookingHistory from "./Pages/bookngHistory/BookingHistory.jsx";
+import BookingConfirmation from "./Pages/bookingConform/BookingConfirmation.jsx";
+import AddMachine from "./Pages/addMachine/AddMachine.jsx";
 import Invoice from "./Pages/bookngHistory/Invoice.jsx";
 // import ApprovalList from "./Admin/ApprovalList.jsx";
 import TermsAndConditions from "./Pages/Terns&Condition.jsx";
