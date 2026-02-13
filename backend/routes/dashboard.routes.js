@@ -1,5 +1,5 @@
 import express from "express";
-import { getTotalRevenue } from "../controllers/totalrevenue.js";
+import { getTotalRevenue } from "../controllers/totalRevenue.js";
 import { getEarningsTrend } from "../controllers/earningTrends.js";
 import { protect } from "../middleware/authMiddleware.js";
 
