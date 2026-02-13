@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import FarmerNavbar from "../components/farmer/FarmerNavbar";
+import FarmerNavbar from "../components/farmer/FarmerNavBar";
 import FarmerFooter from "../components/farmer/FarmerFooter";
 
 const FarmerLayout = () => {
