@@ -162,8 +162,20 @@ const Profile = () => {
           setFormData((prev) => ({
             ...prev,
             address: {
-              street: address.road || "",
-              city: address.city || address.town || address.village || "",
+              street:
+                address.road ||
+                address.residential ||
+                address.neighbourhood ||
+                address.suburb ||
+                address.hamlet ||
+                address.pedestrian ||
+                "",
+              city:
+                address.city ||
+                address.town ||
+                address.village ||
+                address.county ||
+                "",
               state: address.state || "",
               zip: address.postcode || "",
               country: address.country || "",
