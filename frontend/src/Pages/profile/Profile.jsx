@@ -169,7 +169,9 @@ const Profile = () => {
                 address.suburb ||
                 address.hamlet ||
                 address.pedestrian ||
+                res.data.display_name ||
                 "",
+
               city:
                 address.city ||
                 address.town ||
@@ -239,30 +241,30 @@ const Profile = () => {
       });
 
       if (response.data.success) {
+        if (locationCoords.latitude && locationCoords.longitude) {
+          await axios.put(
+            `/api/users/address`,
+            {
+              street: formData.address.street,
+              city: formData.address.city,
+              state: formData.address.state,
+              zip: formData.address.zip,
+              country: formData.address.country,
+              latitude: locationCoords.latitude,
+              longitude: locationCoords.longitude,
+            },
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            },
+          );
+        }
         alert("Profile updated successfully!");
         setIsEditing(false);
         setImagePreview(null);
         setSelectedImage(null);
         await fetchProfile();
-      }
-      if (locationCoords.latitude && locationCoords.longitude) {
-        await axios.put(
-          `/api/users/address`,
-          {
-            street: formData.address.street,
-            city: formData.address.city,
-            state: formData.address.state,
-            zip: formData.address.zip,
-            country: formData.address.country,
-            latitude: locationCoords.latitude,
-            longitude: locationCoords.longitude,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          },
-        );
       }
     } catch (err) {
       console.error("Error updating profile:", err);

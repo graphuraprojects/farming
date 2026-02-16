@@ -549,7 +549,7 @@ export const updateUserAddress = async (req, res) => {
     const { street, city, state, zip, country, latitude, longitude } = req.body;
 
     // Basic validation
-    if (!street || !city || !state || !country) {
+    if (!city || !state || !country) {
       return res.status(400).json({
         success: false,
         message: "Street, city, state and country are required",
