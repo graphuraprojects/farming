@@ -477,7 +477,7 @@ const MachineDetails = () => {
                       start_time: startTime,
                       end_time: endTime,
                       total_hours: duration.totalHoursDecimal,
-                      total_amount: grandTotal,
+                      // total_amount: grandTotal,
                     },
                     {
                       headers: { Authorization: `Bearer ${token}` },
@@ -489,7 +489,7 @@ const MachineDetails = () => {
                     return;
                   }
 
-                  const booking = res.data.data?.booking;
+                  const { booking, breakdown } = res.data.data;
 
                   const newBooking = {
                     bookingId: booking._id,
@@ -498,7 +498,7 @@ const MachineDetails = () => {
                     image: machine.images?.[0]?.url,
                     startDate,
                     hours: duration.totalHoursDecimal,
-                    total: grandTotal,
+                    total: breakdown.total,
                   };
 
                   const existing =

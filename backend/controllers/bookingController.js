@@ -1,98 +1,201 @@
 import Booking from "../models/Booking.model.js";
 import Machine from "../models/Machine.model.js";
-
+import User from "../models/User.model.js";
 /**
  * CREATE BOOKING (Farmer)
  */
+function getDistanceInKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in KM
+  const dLat = (lat2 - lat1) * (Math.PI / 180);
+  const dLon = (lon2 - lon1) * (Math.PI / 180);
+
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * (Math.PI / 180)) *
+      Math.cos(lat2 * (Math.PI / 180)) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
+
 export const createBooking = async (req, res) => {
   try {
-    const {
+    console.log("\n========== CREATE BOOKING START ==========");
+
+    // 1️⃣ Log Request
+    console.log("Full req.body:", req.body);
+    console.log("Logged user:", req.user);
+
+    if (!req.user || !req.user.userId) {
+      console.log("❌ No authenticated user found");
+      return res.status(401).json({
+        success: false,
+        message: "Unauthorized user",
+      });
+    }
+
+    // 2️⃣ Destructure Fields
+    const { machine_id, start_date, start_time, end_time, total_hours } =
+      req.body;
+
+    console.log("Parsed fields:", {
       machine_id,
       start_date,
       start_time,
       end_time,
       total_hours,
-      total_amount,
-    } = req.body;
+    });
 
-    if (!machine_id || !start_date || !start_time || !end_time || total_hours == null || !total_amount) {
+    // 3️⃣ Validate Required Fields
+    if (
+      !machine_id ||
+      !start_date ||
+      !start_time ||
+      !end_time ||
+      total_hours == null
+    ) {
+      console.log("❌ Missing required fields");
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: machine_id, start_date, start_time, end_time, total_hours, total_amount",
+        message: "Missing required fields",
       });
     }
 
+    // 4️⃣ Fetch Machine
     const machine = await Machine.findById(machine_id);
+    console.log("Machine found:", machine?._id);
+
     if (!machine) {
+      console.log("❌ Machine not found");
       return res.status(404).json({
         success: false,
         message: "Machine not found",
       });
     }
 
-    if (!machine.availability_status || !machine.isApproved) {
+    // 5️⃣ Fetch Farmer
+    const farmer = await User.findById(req.user.userId);
+    console.log("Farmer found:", farmer?._id);
+    console.log("Farmer location:", farmer?.location);
+
+    if (!farmer) {
+      console.log("❌ Farmer not found");
+      return res.status(404).json({
+        success: false,
+        message: "Farmer not found",
+      });
+    }
+
+    // 6️⃣ Validate Locations
+    if (
+      farmer?.location?.latitude == null ||
+      farmer?.location?.longitude == null
+    ) {
+      console.log("❌ Farmer location missing");
       return res.status(400).json({
         success: false,
-        message: "Machine is not available for booking",
+        message: "Farmer location not set. Please update your address.",
       });
     }
 
-    const farmerId = req.user?.userId;
-    if (!farmerId) {
-      return res.status(401).json({
+    if (
+      machine?.location?.latitude == null ||
+      machine?.location?.longitude == null
+    ) {
+      console.log("❌ Machine location missing");
+      return res.status(400).json({
         success: false,
-        message: "Please login to create a booking",
+        message: "Machine location not available.",
       });
     }
 
-    const ownerId = machine.owner_id?._id || machine.owner_id;
+    // 7️⃣ Convert total_hours safely
+    const hours = Number(total_hours);
 
+    if (isNaN(hours) || hours <= 0) {
+      console.log("❌ Invalid total hours:", total_hours);
+      return res.status(400).json({
+        success: false,
+        message: "Invalid total hours",
+      });
+    }
+
+    // 8️⃣ Calculate Rent
+    const rentAmount = hours * machine.price_per_hour;
+    console.log("Rent amount:", rentAmount);
+
+    // 9️⃣ Calculate Distance
+    const distanceKm = getDistanceInKm(
+      machine.location.latitude,
+      machine.location.longitude,
+      farmer.location.latitude,
+      farmer.location.longitude,
+    );
+
+    console.log("Distance KM:", distanceKm);
+
+    // 🔟 Calculate Transport (rate per KM)
+    const transportRate = machine.transport || 0;
+    const transportFee = Math.round(distanceKm * transportRate);
+
+    console.log("Transport rate:", transportRate);
+    console.log("Transport fee:", transportFee);
+
+    // 1️⃣1️⃣ Final Amount
+    const finalAmount = rentAmount + transportFee;
+    console.log("Final amount:", finalAmount);
+
+    // 1️⃣2️⃣ Create Date Objects
     const startDateTime = new Date(`${start_date}T${start_time}:00`);
     const endDateTime = new Date(`${start_date}T${end_time}:00`);
 
-    if (isNaN(startDateTime.getTime()) || isNaN(endDateTime.getTime())) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid date or time format",
-      });
-    }
+    console.log("Start DateTime:", startDateTime);
+    console.log("End DateTime:", endDateTime);
 
+    // 1️⃣3️⃣ Create Booking
     const booking = await Booking.create({
-      farmer_id: farmerId,
+      farmer_id: farmer._id,
       machine_id: machine._id,
-      owner_id: ownerId,
+      owner_id: machine.owner_id,
       start_time: startDateTime,
       end_time: endDateTime,
-      total_hours: Number(total_hours),
-      total_amount: Number(total_amount),
+      total_hours: hours,
+      rent_amount: rentAmount,
+      transport_fee: transportFee,
+      total_amount: finalAmount,
       booking_status: "pending",
       payment_status: "pending",
     });
 
-    res.status(201).json({
+    console.log("✅ Booking created:", booking._id);
+    console.log("========== CREATE BOOKING END ==========\n");
+
+    return res.status(201).json({
       success: true,
       message: "Booking created successfully",
       data: {
-        booking: {
-          _id: booking._id,
-          machine_id: booking.machine_id,
-          start_time: booking.start_time,
-          end_time: booking.end_time,
-          total_hours: booking.total_hours,
-          total_amount: booking.total_amount,
-          booking_status: booking.booking_status,
+        booking,
+        breakdown: {
+          rent: rentAmount,
+          transport: transportFee,
+          distance_km: distanceKm.toFixed(2),
+          total: finalAmount,
         },
       },
     });
   } catch (error) {
-    console.error("Create booking error:", error);
-    res.status(500).json({
+    console.error("❌ CREATE BOOKING ERROR:", error);
+    return res.status(500).json({
       success: false,
       message: "Failed to create booking",
       error: error.message,
     });
   }
 };
+
 /**ACCEPT OR REJECT BOOKING (Owner/Admin)*/
 export const decideBooking = async (req, res) => {
   try {
@@ -102,7 +205,7 @@ export const decideBooking = async (req, res) => {
     if (!["accept", "reject"].includes(action)) {
       return res.status(400).json({
         success: false,
-        message: "Action must be accept or reject"
+        message: "Action must be accept or reject",
       });
     }
 
@@ -111,7 +214,7 @@ export const decideBooking = async (req, res) => {
     if (!booking) {
       return res.status(404).json({
         success: false,
-        message: "Booking not found"
+        message: "Booking not found",
       });
     }
 
@@ -119,7 +222,7 @@ export const decideBooking = async (req, res) => {
     if (booking.booking_status !== "pending") {
       return res.status(400).json({
         success: false,
-        message: "Booking already processed"
+        message: "Booking already processed",
       });
     }
 
@@ -130,7 +233,7 @@ export const decideBooking = async (req, res) => {
     ) {
       return res.status(403).json({
         success: false,
-        message: "You can decide only your machine bookings"
+        message: "You can decide only your machine bookings",
       });
     }
 
@@ -143,7 +246,7 @@ export const decideBooking = async (req, res) => {
       if (!rejection_reason) {
         return res.status(400).json({
           success: false,
-          message: "Rejection reason is required"
+          message: "Rejection reason is required",
         });
       }
 
@@ -157,14 +260,13 @@ export const decideBooking = async (req, res) => {
     res.status(200).json({
       success: true,
       message: `Booking ${action}ed successfully`,
-      data: booking
+      data: booking,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to process booking",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -202,14 +304,13 @@ export const getBookings = async (req, res) => {
     res.status(200).json({
       success: true,
       count: bookings.length,
-      data: bookings
+      data: bookings,
     });
-
   } catch (error) {
     res.status(500).json({
       success: false,
       message: "Failed to fetch bookings",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -218,7 +319,7 @@ export const getPendingBookingRequests = async (req, res) => {
   try {
     const bookings = await Booking.find({
       owner_id: req.user.userId,
-      booking_status: "pending"
+      booking_status: "pending",
     })
       .populate("machine_id", "machine_name category images")
       .populate("farmer_id", "name address profile_pic");
@@ -275,7 +376,7 @@ export const getBookingById = async (req, res) => {
     if (!booking) {
       return res.status(404).json({
         success: false,
-        message: "Booking not found"
+        message: "Booking not found",
       });
     }
 
@@ -287,21 +388,20 @@ export const getBookingById = async (req, res) => {
     ) {
       return res.status(403).json({
         success: false,
-        message: "Not authorized to view this booking"
+        message: "Not authorized to view this booking",
       });
     }
 
     res.status(200).json({
       success: true,
-      data: booking
+      data: booking,
     });
-
   } catch (error) {
     console.error("Get booking by ID error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch booking",
-      error: error.message
+      error: error.message,
     });
   }
 };

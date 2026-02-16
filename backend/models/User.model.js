@@ -5,31 +5,31 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
 
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true
+      lowercase: true,
     },
 
     phone: {
       type: String,
       unique: true,
-      sparse: true
+      sparse: true,
     },
 
     role: {
       type: String,
       enum: ["farmer", "owner", "admin"],
-      default: "farmer"
+      default: "farmer",
     },
 
     password_hash: {
       type: String,
-      required: true
+      required: true,
     },
 
     address: {
@@ -37,28 +37,33 @@ const userSchema = new mongoose.Schema(
       city: String,
       state: String,
       zip: String,
-      country: String
+      country: String,
+    },
+
+    location: {
+      latitude: Number,
+      longitude: Number,
     },
 
     profile_pic: {
       url: String,
-      public_id: String
+      public_id: String,
     },
 
     isVerified: {
       type: Boolean,
-      default: true  
+      default: true,
     },
 
     isBlocked: {
       type: Boolean,
-      default: false
+      default: false,
     },
 
     pendingEmail: String,
-    pendingPhone: String
+    pendingPhone: String,
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("User", userSchema);

@@ -95,6 +95,32 @@ export default function Checkout() {
     try {
       const token = localStorage.getItem("token");
 
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      // Wrap geolocation in Promise so we can await it
+      const getLocation = () =>
+        new Promise((resolve, reject) => {
+          navigator.geolocation.getCurrentPosition(
+            (position) => {
+              resolve({
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              });
+            },
+            (error) => {
+              reject(error);
+            },
+          );
+        });
+
+      const { latitude, longitude } = await getLocation();
+
+      console.log("Latitude:", latitude);
+      console.log("Longitude:", longitude);
+
       await axios.put(
         `${API_BASE}/api/users/address`,
         {
@@ -103,13 +129,18 @@ export default function Checkout() {
           zip: formData.zipCode,
           state: "Delhi",
           country: "India",
+          latitude,
+          longitude,
         },
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
+
+      console.log("Address + location saved successfully");
     } catch (error) {
       console.log("Address save error:", error);
+      alert("Please allow location access to continue.");
       throw error;
     }
   };
@@ -157,7 +188,7 @@ export default function Checkout() {
           credentials: "include",
           body: JSON.stringify({
             booking_id: bookingId,
-            total_amount: totalAmount,
+            // total_amount: totalAmount,
           }),
         },
       );

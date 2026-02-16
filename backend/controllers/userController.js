@@ -1,6 +1,6 @@
 import User from "../models/User.model.js";
 import cloudinary from "../configs/cloudinary.js";
-import { sendEmail } from "../configs/sendEmail.js"
+import { sendEmail } from "../configs/sendEmail.js";
 
 // create user
 export const createUser = async (req, res) => {
@@ -220,20 +220,19 @@ export const updateProfile = async (req, res) => {
   }
 };
 
-
 // Block user (admin only)
 export const blockUser = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-    
+
     // Prevent admin from blocking themselves
     if (user._id.toString() === req.user.userId) {
       return res.status(400).json({
@@ -241,7 +240,7 @@ export const blockUser = async (req, res) => {
         message: "You cannot block yourself",
       });
     }
-    
+
     user.isBlocked = true;
     await user.save();
 
@@ -354,7 +353,7 @@ export const blockUser = async (req, res) => {
       `;
 
       console.log("📧 Sending block email to:", user.email);
-      
+
       const emailSent = await sendEmail({
         to: user.email,
         subject: "⚠️ Account Suspended - Action Required",
@@ -367,7 +366,7 @@ export const blockUser = async (req, res) => {
         console.log("⚠️ Block email failed to send");
       }
     }
-    
+
     res.status(200).json({
       success: true,
       message: "User blocked successfully. Notification email sent.",
@@ -378,7 +377,6 @@ export const blockUser = async (req, res) => {
         isBlocked: user.isBlocked,
       },
     });
-    
   } catch (error) {
     console.error("❌ Block user error:", error);
     res.status(500).json({
@@ -392,14 +390,14 @@ export const unblockUser = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
-    
+
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-    
+
     user.isBlocked = false;
     await user.save();
 
@@ -471,7 +469,7 @@ export const unblockUser = async (req, res) => {
                       <table width="100%" cellpadding="0" cellspacing="0" style="margin: 30px 0;">
                         <tr>
                           <td align="center">
-                            <a href="${process.env.FRONTEND_URL || "http://localhost:5173"}/${user.role === 'owner' ? 'owner-dashboard' : 'farmer-dashboard'}" style="display: inline-block; padding: 14px 32px; background-color: #03a74f; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Access Dashboard</a>
+                            <a href="${process.env.FRONTEND_URL || "http://localhost:5173"}/${user.role === "owner" ? "owner-dashboard" : "farmer-dashboard"}" style="display: inline-block; padding: 14px 32px; background-color: #03a74f; color: #ffffff; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">Access Dashboard</a>
                           </td>
                         </tr>
                       </table>
@@ -511,7 +509,7 @@ export const unblockUser = async (req, res) => {
       `;
 
       console.log("📧 Sending unblock email to:", user.email);
-      
+
       const emailSent = await sendEmail({
         to: user.email,
         subject: "✅ Account Restored - Welcome Back to AgriRent!",
@@ -524,7 +522,7 @@ export const unblockUser = async (req, res) => {
         console.log("⚠️ Unblock email failed to send");
       }
     }
-    
+
     res.status(200).json({
       success: true,
       message: "User unblocked successfully. Notification email sent.",
@@ -535,7 +533,6 @@ export const unblockUser = async (req, res) => {
         isBlocked: user.isBlocked,
       },
     });
-    
   } catch (error) {
     console.error("❌ Unblock user error:", error);
     res.status(500).json({
@@ -547,14 +544,36 @@ export const unblockUser = async (req, res) => {
 // add user address
 export const updateUserAddress = async (req, res) => {
   try {
-    const userId = req.user.userId; // ⭐ FIXED
+    const userId = req.user.userId;
 
-    const { street, city, state, zip, country } = req.body;
+    const { street, city, state, zip, country, latitude, longitude } = req.body;
 
-    if (!street && !city && !state && !zip && !country) {
+    // Basic validation
+    if (!street || !city || !state || !country) {
       return res.status(400).json({
         success: false,
-        message: "Please provide at least one address field",
+        message: "Street, city, state and country are required",
+      });
+    }
+
+    // Validate coordinates (if provided)
+    if (
+      latitude !== undefined &&
+      (isNaN(latitude) || latitude < -90 || latitude > 90)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid latitude value",
+      });
+    }
+
+    if (
+      longitude !== undefined &&
+      (isNaN(longitude) || longitude < -180 || longitude > 180)
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid longitude value",
       });
     }
 
@@ -568,8 +587,12 @@ export const updateUserAddress = async (req, res) => {
           zip,
           country,
         },
+        location: {
+          latitude: latitude || null,
+          longitude: longitude || null,
+        },
       },
-      { new: true },
+      { new: true, runValidators: true },
     ).select("-password_hash");
 
     if (!updatedUser) {
@@ -579,16 +602,20 @@ export const updateUserAddress = async (req, res) => {
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Address updated successfully",
-      data: updatedUser.address,
+      message: "Address and location updated successfully",
+      data: {
+        address: updatedUser.address,
+        location: updatedUser.location,
+      },
     });
   } catch (error) {
     console.error("Update Address Error:", error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: "Server error while updating address",
+      error: error.message,
     });
   }
 };

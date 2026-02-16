@@ -40,6 +40,10 @@ const Profile = () => {
   });
 
   const [originalData, setOriginalData] = useState(null);
+  const [locationCoords, setLocationCoords] = useState({
+    latitude: null,
+    longitude: null,
+  });
 
   useEffect(() => {
     fetchProfile();
@@ -123,6 +127,61 @@ const Profile = () => {
     }
   };
 
+  const handleDetectLocation = async () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationCoords({
+          latitude,
+          longitude,
+        });
+
+        console.log("Lat:", latitude);
+        console.log("Lng:", longitude);
+
+        try {
+          // Reverse geocoding using OpenStreetMap
+          const res = await axios.get(
+            `https://nominatim.openstreetmap.org/reverse`,
+            {
+              params: {
+                lat: latitude,
+                lon: longitude,
+                format: "json",
+              },
+            },
+          );
+
+          const address = res.data.address;
+
+          setFormData((prev) => ({
+            ...prev,
+            address: {
+              street: address.road || "",
+              city: address.city || address.town || address.village || "",
+              state: address.state || "",
+              zip: address.postcode || "",
+              country: address.country || "",
+            },
+          }));
+
+          alert("Location detected successfully!");
+        } catch (error) {
+          console.error("Reverse geocode error:", error);
+          alert("Failed to fetch address");
+        }
+      },
+      (error) => {
+        alert("Location permission denied or unavailable");
+      },
+    );
+  };
+
   const handleSave = async () => {
     try {
       setSaving(true);
@@ -135,6 +194,10 @@ const Profile = () => {
       if (formData.phone) {
         formDataToSend.append("phone", formData.phone);
       }
+      // if (locationCoords.latitude && locationCoords.longitude) {
+      //   formDataToSend.append("latitude", locationCoords.latitude);
+      //   formDataToSend.append("longitude", locationCoords.longitude);
+      // }
 
       const addressData = {
         street: formData.address.street || "",
@@ -169,6 +232,25 @@ const Profile = () => {
         setImagePreview(null);
         setSelectedImage(null);
         await fetchProfile();
+      }
+      if (locationCoords.latitude && locationCoords.longitude) {
+        await axios.put(
+          `/api/users/address`,
+          {
+            street: formData.address.street,
+            city: formData.address.city,
+            state: formData.address.state,
+            zip: formData.address.zip,
+            country: formData.address.country,
+            latitude: locationCoords.latitude,
+            longitude: locationCoords.longitude,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
       }
     } catch (err) {
       console.error("Error updating profile:", err);
@@ -287,6 +369,15 @@ const Profile = () => {
                 </button>
               ) : (
                 <div className="flex gap-3">
+                  {isEditing && (
+                    <button
+                      type="button"
+                      onClick={handleDetectLocation}
+                      className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                    >
+                      📍 Use My Current Location
+                    </button>
+                  )}
                   <button
                     onClick={handleCancel}
                     disabled={saving}

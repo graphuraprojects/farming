@@ -116,6 +116,10 @@ export const verifyOtp = async (req, res) => {
         message: "Email and OTP are required",
       });
     }
+    console.log("EMAIL:", email);
+    console.log("OTP:", otp);
+    console.log("PENDING USER:", pendingUsers.get(email));
+    console.log("JWT SECRET:", process.env.JWT_SECRET);
 
     // 2️⃣ Get pending user
     const pendingUser = pendingUsers.get(email);
@@ -708,7 +712,8 @@ export const resetPassword = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Password reset successfully. You can now log in with your new password.",
+      message:
+        "Password reset successfully. You can now log in with your new password.",
     });
   } catch (error) {
     console.error("Reset password error:", error);

@@ -65,6 +65,7 @@ const Register = () => {
           email: form.email, // Use form data, not response data
           name: form.name,
         },
+        
       });
     } catch (err) {
       console.error("REGISTER ERROR:", err);
