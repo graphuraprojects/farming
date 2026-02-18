@@ -628,7 +628,17 @@ export const addAddress = async (req, res) => {
     console.log("📦 Request Body:", req.body);
 
     const userId = req.user.userId;
-    const { label, street, city, state, zip, country, isDefault } = req.body;
+    const {
+      label,
+      street,
+      city,
+      state,
+      zip,
+      country,
+      latitude,
+      longitude,
+      isDefault,
+    } = req.body;
 
     const user = await User.findById(userId);
 
@@ -654,6 +664,8 @@ export const addAddress = async (req, res) => {
       state,
       zip,
       country,
+      latitude,
+      longitude,
       isDefault: isDefault || user.addresses.length === 0,
     });
 
@@ -715,11 +727,14 @@ export const updateAddress = async (req, res) => {
 
     const user = await User.findById(req.user.userId);
 
-    console.log("👤 Found User:", !!user);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
 
     const address = user.addresses.id(req.params.addressId);
-
-    console.log("🔎 Found Address:", address);
 
     if (!address) {
       return res.status(404).json({
@@ -728,7 +743,19 @@ export const updateAddress = async (req, res) => {
       });
     }
 
-    Object.assign(address, req.body);
+    // ✅ ADD THIS HERE
+    const { label, street, city, state, zip, country, latitude, longitude } =
+      req.body;
+
+    // ✅ Update fields safely
+    if (label !== undefined) address.label = label;
+    if (street !== undefined) address.street = street;
+    if (city !== undefined) address.city = city;
+    if (state !== undefined) address.state = state;
+    if (zip !== undefined) address.zip = zip;
+    if (country !== undefined) address.country = country;
+    if (latitude !== undefined) address.latitude = latitude;
+    if (longitude !== undefined) address.longitude = longitude;
 
     console.log("📝 Updated Address Before Save:", address);
 

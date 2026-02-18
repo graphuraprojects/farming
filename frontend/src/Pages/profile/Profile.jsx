@@ -161,6 +161,7 @@ const Profile = () => {
             label:
               formData.addresses[selectedAddressIndex]?.label ||
               `Address ${selectedAddressIndex + 1}`,
+
             street:
               address.road ||
               address.residential ||
@@ -170,15 +171,20 @@ const Profile = () => {
               address.pedestrian ||
               res.data.display_name ||
               "",
+
             city:
               address.city ||
               address.town ||
               address.village ||
               address.county ||
               "",
+
             state: address.state || "",
             zip: address.postcode || "",
             country: address.country || "",
+
+            latitude: latitude,
+            longitude: longitude,
           };
 
           console.log("📝 Updated Address Data:", updatedAddressData);

@@ -34,6 +34,14 @@ const addressSchema = new mongoose.Schema(
       required: true,
     },
 
+    latitude: {
+      type: Number,
+    },
+
+    longitude: {
+      type: Number,
+    },
+
     isDefault: {
       type: Boolean,
       default: false,
@@ -80,11 +88,6 @@ const userSchema = new mongoose.Schema(
     addresses: {
       type: [addressSchema],
       default: [],
-    },
-
-    location: {
-      latitude: Number,
-      longitude: Number,
     },
 
     profile_pic: {
