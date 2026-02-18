@@ -623,17 +623,17 @@ export const unblockUser = async (req, res) => {
 // Add a new address
 export const addAddress = async (req, res) => {
   try {
+    console.log("📥 Incoming addAddress request");
+    console.log("👤 User ID:", req.user.userId);
+    console.log("📦 Request Body:", req.body);
+
     const userId = req.user.userId;
     const { label, street, city, state, zip, country, isDefault } = req.body;
 
-    if (!label || !street || !city || !state || !zip || !country) {
-      return res.status(400).json({
-        success: false,
-        message: "All address fields are required",
-      });
-    }
-
     const user = await User.findById(userId);
+
+    console.log("👤 Found User:", !!user);
+    console.log("📍 Existing Addresses:", user?.addresses);
 
     if (!user) {
       return res.status(404).json({
@@ -642,8 +642,8 @@ export const addAddress = async (req, res) => {
       });
     }
 
-    // If first address OR marked default
     if (isDefault || user.addresses.length === 0) {
+      console.log("⭐ Setting as default address");
       user.addresses.forEach((addr) => (addr.isDefault = false));
     }
 
@@ -657,7 +657,12 @@ export const addAddress = async (req, res) => {
       isDefault: isDefault || user.addresses.length === 0,
     });
 
+    console.log("📌 Addresses Before Save:", user.addresses);
+
     await user.save();
+
+    console.log("✅ Address Saved Successfully");
+    console.log("📌 Updated Addresses:", user.addresses);
 
     res.status(201).json({
       success: true,
@@ -665,6 +670,7 @@ export const addAddress = async (req, res) => {
       data: user.addresses,
     });
   } catch (error) {
+    console.error("❌ Add Address Error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to add address",
@@ -702,19 +708,19 @@ export const getAllAddresses = async (req, res) => {
 // Update an address
 export const updateAddress = async (req, res) => {
   try {
-    const userId = req.user.userId;
-    const { addressId } = req.params;
-    const { label, street, city, state, zip, country } = req.body;
+    console.log("📥 Incoming updateAddress request");
+    console.log("👤 User ID:", req.user.userId);
+    console.log("🆔 Address ID:", req.params.addressId);
+    console.log("📦 Request Body:", req.body);
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
+    const user = await User.findById(req.user.userId);
 
-    const address = user.addresses.id(addressId);
+    console.log("👤 Found User:", !!user);
+
+    const address = user.addresses.id(req.params.addressId);
+
+    console.log("🔎 Found Address:", address);
+
     if (!address) {
       return res.status(404).json({
         success: false,
@@ -722,14 +728,13 @@ export const updateAddress = async (req, res) => {
       });
     }
 
-    if (label) address.label = label;
-    if (street) address.street = street;
-    if (city) address.city = city;
-    if (state) address.state = state;
-    if (zip) address.zip = zip;
-    if (country) address.country = country;
+    Object.assign(address, req.body);
+
+    console.log("📝 Updated Address Before Save:", address);
 
     await user.save();
+
+    console.log("✅ Address Updated Successfully");
 
     res.status(200).json({
       success: true,
@@ -737,6 +742,7 @@ export const updateAddress = async (req, res) => {
       data: user.addresses,
     });
   } catch (error) {
+    console.error("❌ Update Address Error:", error);
     res.status(500).json({
       success: false,
       error: error.message,

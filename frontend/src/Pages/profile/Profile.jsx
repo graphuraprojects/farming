@@ -122,7 +122,12 @@ const Profile = () => {
   };
 
   const handleDetectLocation = async () => {
+    console.log("📍 Detect location clicked");
+    console.log("Selected Address Index:", selectedAddressIndex);
+    console.log("Current Addresses State:", formData.addresses);
+
     if (!navigator.geolocation) {
+      console.log("❌ Geolocation not supported");
       alert("Geolocation is not supported by your browser");
       return;
     }
@@ -131,9 +136,12 @@ const Profile = () => {
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          const token = localStorage.getItem("token");
+          console.log("📌 Latitude:", latitude);
+          console.log("📌 Longitude:", longitude);
 
-          // Reverse geocoding
+          const token = localStorage.getItem("token");
+          console.log("🔐 Token exists:", !!token);
+
           const res = await axios.get(
             "https://nominatim.openstreetmap.org/reverse",
             {
@@ -144,6 +152,8 @@ const Profile = () => {
               },
             },
           );
+
+          console.log("🌍 Reverse geocode response:", res.data);
 
           const address = res.data.address;
 
@@ -171,14 +181,17 @@ const Profile = () => {
             country: address.country || "",
           };
 
+          console.log("📝 Updated Address Data:", updatedAddressData);
+
           const currentAddress =
             formData.addresses?.[selectedAddressIndex] || null;
 
-          // ===============================
-          // 1️⃣ UPDATE EXISTING ADDRESS
-          // ===============================
+          console.log("🔎 Current Address Object:", currentAddress);
+
           if (currentAddress?._id) {
-            await axios.patch(
+            console.log("🔄 Updating existing address:", currentAddress._id);
+
+            const response = await axios.patch(
               `/api/users/addresses/${currentAddress._id}`,
               updatedAddressData,
               {
@@ -187,17 +200,16 @@ const Profile = () => {
                 },
               },
             );
-          }
 
-          // ===============================
-          // 2️⃣ CREATE NEW ADDRESS
-          // ===============================
-          else {
-            await axios.post(
+            console.log("✅ PATCH Response:", response.data);
+          } else {
+            console.log("➕ Creating NEW address");
+
+            const response = await axios.post(
               `/api/users/addresses`,
               {
                 ...updatedAddressData,
-                isDefault: formData.addresses.length === 0 ? true : false,
+                isDefault: formData.addresses.length === 0,
               },
               {
                 headers: {
@@ -205,20 +217,23 @@ const Profile = () => {
                 },
               },
             );
+
+            console.log("✅ POST Response:", response.data);
           }
 
-          // ===============================
-          // 3️⃣ REFRESH PROFILE
-          // ===============================
+          console.log("🔄 Refetching profile...");
           await fetchProfile();
 
+          console.log("✅ Location + Address Saved Successfully");
           alert("Location detected and address saved successfully!");
         } catch (error) {
-          console.error("Reverse geocode or save error:", error);
+          console.error("❌ Detect Location Error:", error);
+          console.error("❌ Error Response:", error.response?.data);
           alert("Failed to detect and save address");
         }
       },
       (error) => {
+        console.error("❌ Geolocation error:", error);
         alert("Location permission denied or unavailable");
       },
     );
