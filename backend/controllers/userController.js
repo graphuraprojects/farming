@@ -145,7 +145,7 @@ export const deleteUser = async (req, res) => {
 export const updateProfile = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const { name, address, phone } = req.body;
+    const { name, phone } = req.body;
 
     const user = await User.findById(userId);
 
@@ -156,35 +156,11 @@ export const updateProfile = async (req, res) => {
       });
     }
 
-    // Update basic fields
     if (name) user.name = name;
     if (phone) user.phone = phone;
 
-    // Handle address - it comes as a JSON string from FormData
-    if (address) {
-      try {
-        const parsedAddress =
-          typeof address === "string" ? JSON.parse(address) : address;
-        user.address = {
-          street: parsedAddress.street || user.address?.street || "",
-          city: parsedAddress.city || user.address?.city || "",
-          state: parsedAddress.state || user.address?.state || "",
-          zip: parsedAddress.zip || user.address?.zip || "",
-          country: parsedAddress.country || user.address?.country || "",
-        };
-      } catch (parseError) {
-        console.error("Error parsing address:", parseError);
-        return res.status(400).json({
-          success: false,
-          message: "Invalid address format",
-          error: parseError.message,
-        });
-      }
-    }
-
     // Handle profile image
     if (req.file) {
-      // Delete old image from Cloudinary (if exists)
       if (user.profile_pic?.public_id) {
         await cloudinary.uploader.destroy(user.profile_pic.public_id);
       }
@@ -206,12 +182,11 @@ export const updateProfile = async (req, res) => {
         email: user.email,
         role: user.role,
         phone: user.phone,
-        address: user.address,
+        addresses: user.addresses, // ✅ FIXED
         profile_pic: user.profile_pic,
       },
     });
   } catch (error) {
-    console.error("Update profile error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to update profile",
@@ -541,91 +516,169 @@ export const unblockUser = async (req, res) => {
     });
   }
 };
-// add user address
-export const updateUserAddress = async (req, res) => {
+// // add user address
+// export const updateUserAddress = async (req, res) => {
+//   try {
+//     const userId = req.user.userId;
+
+//     const { street, city, state, zip, country, latitude, longitude } = req.body;
+
+//     // Basic validation
+//     if (!city || !state || !country) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Street, city, state and country are required",
+//       });
+//     }
+
+//     // Validate coordinates (if provided)
+//     if (
+//       latitude !== undefined &&
+//       (isNaN(latitude) || latitude < -90 || latitude > 90)
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid latitude value",
+//       });
+//     }
+
+//     if (
+//       longitude !== undefined &&
+//       (isNaN(longitude) || longitude < -180 || longitude > 180)
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid longitude value",
+//       });
+//     }
+
+//     const updatedUser = await User.findByIdAndUpdate(
+//       userId,
+//       {
+//         address: {
+//           street,
+//           city,
+//           state,
+//           zip,
+//           country,
+//         },
+//         location: {
+//           latitude: latitude || null,
+//           longitude: longitude || null,
+//         },
+//       },
+//       { new: true, runValidators: true },
+//     ).select("-password_hash");
+
+//     if (!updatedUser) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     return res.status(200).json({
+//       success: true,
+//       message: "Address and location updated successfully",
+//       data: {
+//         address: updatedUser.address,
+//         location: updatedUser.location,
+//       },
+//     });
+//   } catch (error) {
+//     console.error("Update Address Error:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Server error while updating address",
+//       error: error.message,
+//     });
+//   }
+// };
+// // get user address
+// export const getUserAddress = async (req, res) => {
+//   try {
+//     const userId = req.user.userId; // ⭐ FIXED
+
+//     const user = await User.findById(userId).select("address");
+
+//     if (!user) {
+//       return res.status(404).json({
+//         success: false,
+//         message: "User not found",
+//       });
+//     }
+
+//     res.status(200).json({
+//       success: true,
+//       data: user.address || {},
+//     });
+//   } catch (error) {
+//     console.error("Get Address Error:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Server error while fetching address",
+//     });
+//   }
+// };
+// Add a new address
+export const addAddress = async (req, res) => {
   try {
     const userId = req.user.userId;
+    const { label, street, city, state, zip, country, isDefault } = req.body;
 
-    const { street, city, state, zip, country, latitude, longitude } = req.body;
-
-    // Basic validation
-    if (!city || !state || !country) {
+    if (!label || !street || !city || !state || !zip || !country) {
       return res.status(400).json({
         success: false,
-        message: "Street, city, state and country are required",
+        message: "All address fields are required",
       });
     }
 
-    // Validate coordinates (if provided)
-    if (
-      latitude !== undefined &&
-      (isNaN(latitude) || latitude < -90 || latitude > 90)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid latitude value",
-      });
-    }
+    const user = await User.findById(userId);
 
-    if (
-      longitude !== undefined &&
-      (isNaN(longitude) || longitude < -180 || longitude > 180)
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid longitude value",
-      });
-    }
-
-    const updatedUser = await User.findByIdAndUpdate(
-      userId,
-      {
-        address: {
-          street,
-          city,
-          state,
-          zip,
-          country,
-        },
-        location: {
-          latitude: latitude || null,
-          longitude: longitude || null,
-        },
-      },
-      { new: true, runValidators: true },
-    ).select("-password_hash");
-
-    if (!updatedUser) {
+    if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
 
-    return res.status(200).json({
+    // If first address OR marked default
+    if (isDefault || user.addresses.length === 0) {
+      user.addresses.forEach((addr) => (addr.isDefault = false));
+    }
+
+    user.addresses.push({
+      label,
+      street,
+      city,
+      state,
+      zip,
+      country,
+      isDefault: isDefault || user.addresses.length === 0,
+    });
+
+    await user.save();
+
+    res.status(201).json({
       success: true,
-      message: "Address and location updated successfully",
-      data: {
-        address: updatedUser.address,
-        location: updatedUser.location,
-      },
+      message: "Address added successfully",
+      data: user.addresses,
     });
   } catch (error) {
-    console.error("Update Address Error:", error);
-    return res.status(500).json({
+    res.status(500).json({
       success: false,
-      message: "Server error while updating address",
+      message: "Failed to add address",
       error: error.message,
     });
   }
 };
 
-// get user address
-export const getUserAddress = async (req, res) => {
+// Get all addresses
+export const getAllAddresses = async (req, res) => {
   try {
-    const userId = req.user.userId; // ⭐ FIXED
+    const userId = req.user.userId;
 
-    const user = await User.findById(userId).select("address");
+    const user = await User.findById(userId).select("addresses");
 
     if (!user) {
       return res.status(404).json({
@@ -636,13 +689,169 @@ export const getUserAddress = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      data: user.address || {},
+      data: user.addresses,
     });
   } catch (error) {
-    console.error("Get Address Error:", error);
     res.status(500).json({
       success: false,
-      message: "Server error while fetching address",
+      error: error.message,
+    });
+  }
+};
+
+// Update an address
+export const updateAddress = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { addressId } = req.params;
+    const { label, street, city, state, zip, country } = req.body;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const address = user.addresses.id(addressId);
+    if (!address) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found",
+      });
+    }
+
+    if (label) address.label = label;
+    if (street) address.street = street;
+    if (city) address.city = city;
+    if (state) address.state = state;
+    if (zip) address.zip = zip;
+    if (country) address.country = country;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Address updated successfully",
+      data: user.addresses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Delete an address
+export const deleteAddress = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { addressId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const address = user.addresses.id(addressId);
+    if (!address) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found",
+      });
+    }
+
+    const wasDefault = address.isDefault;
+    address.deleteOne();
+
+    if (wasDefault && user.addresses.length > 0) {
+      user.addresses[0].isDefault = true;
+    }
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Address deleted successfully",
+      data: user.addresses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Set default address
+export const setDefaultAddress = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { addressId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const address = user.addresses.id(addressId);
+    if (!address) {
+      return res.status(404).json({
+        success: false,
+        message: "Address not found",
+      });
+    }
+
+    user.addresses.forEach((addr) => (addr.isDefault = false));
+    address.isDefault = true;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Default address updated successfully",
+      data: user.addresses,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
+// Get default address
+export const getDefaultAddress = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const user = await User.findById(userId).select("addresses");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const defaultAddress = user.getDefaultAddress();
+
+    res.status(200).json({
+      success: true,
+      data: defaultAddress,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
     });
   }
 };

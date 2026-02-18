@@ -1,5 +1,49 @@
 import mongoose from "mongoose";
 
+/* ---------------- ADDRESS SUB-SCHEMA ---------------- */
+
+const addressSchema = new mongoose.Schema(
+  {
+    label: {
+      type: String,
+      required: true,
+    },
+
+    street: {
+      type: String,
+      required: true,
+    },
+
+    city: {
+      type: String,
+      required: true,
+    },
+
+    state: {
+      type: String,
+      required: true,
+    },
+
+    zip: {
+      type: String,
+      required: true,
+    },
+
+    country: {
+      type: String,
+      required: true,
+    },
+
+    isDefault: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  { _id: true },
+);
+
+/* ---------------- USER SCHEMA ---------------- */
+
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -32,12 +76,10 @@ const userSchema = new mongoose.Schema(
       required: true,
     },
 
-    address: {
-      street: String,
-      city: String,
-      state: String,
-      zip: String,
-      country: String,
+    // ✅ MUST MATCH CONTROLLERS
+    addresses: {
+      type: [addressSchema],
+      default: [],
     },
 
     location: {
@@ -65,5 +107,11 @@ const userSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+/* ---------------- METHODS ---------------- */
+
+userSchema.methods.getDefaultAddress = function () {
+  return this.addresses.find((addr) => addr.isDefault) || null;
+};
 
 export default mongoose.model("User", userSchema);

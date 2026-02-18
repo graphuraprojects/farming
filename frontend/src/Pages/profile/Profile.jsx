@@ -27,18 +27,12 @@ const Profile = () => {
     email: "",
     phone: "",
     role: "",
-    address: {
-      street: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "",
-    },
+    addresses: [],
     profile_pic: {
       url: "",
     },
   });
-
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   const [originalData, setOriginalData] = useState(null);
   const [locationCoords, setLocationCoords] = useState({
     latitude: null,
@@ -67,13 +61,7 @@ const Profile = () => {
           email: userData.email || "",
           phone: userData.phone || "",
           role: userData.role || "",
-          address: {
-            street: userData.address?.street || "",
-            city: userData.address?.city || "",
-            state: userData.address?.state || "",
-            zip: userData.address?.zip || "",
-            country: userData.address?.country || "",
-          },
+          addresses: userData.addresses || [],
           profile_pic: {
             url: userData.profile_pic?.url || "",
           },
@@ -111,14 +99,20 @@ const Profile = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     if (name.startsWith("address.")) {
-      const addressField = name.split(".")[1];
-      setFormData((prev) => ({
-        ...prev,
-        address: {
-          ...prev.address,
-          [addressField]: value,
-        },
-      }));
+      const field = name.split(".")[1];
+
+      setFormData((prev) => {
+        const updatedAddresses = [...prev.addresses];
+        updatedAddresses[selectedAddressIndex] = {
+          ...updatedAddresses[selectedAddressIndex],
+          [field]: value,
+        };
+
+        return {
+          ...prev,
+          addresses: updatedAddresses,
+        };
+      });
     } else {
       setFormData((prev) => ({
         ...prev,
@@ -159,9 +153,11 @@ const Profile = () => {
 
           const address = res.data.address;
 
-          setFormData((prev) => ({
-            ...prev,
-            address: {
+          setFormData((prev) => {
+            const updatedAddresses = [...prev.addresses];
+
+            updatedAddresses[selectedAddressIndex] = {
+              ...updatedAddresses[selectedAddressIndex],
               street:
                 address.road ||
                 address.residential ||
@@ -181,8 +177,13 @@ const Profile = () => {
               state: address.state || "",
               zip: address.postcode || "",
               country: address.country || "",
-            },
-          }));
+            };
+
+            return {
+              ...prev,
+              addresses: updatedAddresses,
+            };
+          });
 
           alert("Location detected successfully!");
         } catch (error) {
@@ -202,36 +203,15 @@ const Profile = () => {
       const token = localStorage.getItem("token");
 
       const formDataToSend = new FormData();
-
       formDataToSend.append("name", formData.name);
 
       if (formData.phone) {
         formDataToSend.append("phone", formData.phone);
       }
-      // if (locationCoords.latitude && locationCoords.longitude) {
-      //   formDataToSend.append("latitude", locationCoords.latitude);
-      //   formDataToSend.append("longitude", locationCoords.longitude);
-      // }
-
-      const addressData = {
-        street: formData.address.street || "",
-        city: formData.address.city || "",
-        state: formData.address.state || "",
-        zip: formData.address.zip || "",
-        country: formData.address.country || "",
-      };
-      formDataToSend.append("address", JSON.stringify(addressData));
 
       if (selectedImage) {
         formDataToSend.append("profile_pic", selectedImage);
       }
-
-      console.log("Sending data:", {
-        name: formData.name,
-        phone: formData.phone,
-        address: addressData,
-        hasImage: !!selectedImage,
-      });
 
       const response = await axios.patch(`/api/users/profile`, formDataToSend, {
         headers: {
@@ -241,34 +221,16 @@ const Profile = () => {
       });
 
       if (response.data.success) {
-        if (locationCoords.latitude && locationCoords.longitude) {
-          await axios.put(
-            `/api/users/address`,
-            {
-              street: formData.address.street,
-              city: formData.address.city,
-              state: formData.address.state,
-              zip: formData.address.zip,
-              country: formData.address.country,
-              latitude: locationCoords.latitude,
-              longitude: locationCoords.longitude,
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            },
-          );
-        }
         alert("Profile updated successfully!");
+
         setIsEditing(false);
         setImagePreview(null);
         setSelectedImage(null);
-        await fetchProfile();
+
+        await fetchProfile(); // refresh data
       }
     } catch (err) {
       console.error("Error updating profile:", err);
-      console.error("Error response:", err.response?.data);
       alert(
         err.response?.data?.message ||
           err.response?.data?.error ||
@@ -283,23 +245,20 @@ const Profile = () => {
     setIsEditing(false);
     setImagePreview(null);
     setSelectedImage(null);
+
     if (originalData) {
       setFormData({
         name: originalData.name || "",
         email: originalData.email || "",
         phone: originalData.phone || "",
         role: originalData.role || "",
-        address: {
-          street: originalData.address?.street || "",
-          city: originalData.address?.city || "",
-          state: originalData.address?.state || "",
-          zip: originalData.address?.zip || "",
-          country: originalData.address?.country || "",
-        },
+        addresses: originalData.addresses || [],
         profile_pic: {
           url: originalData.profile_pic?.url || "",
         },
       });
+
+      setSelectedAddressIndex(0);
     }
   };
 
@@ -484,6 +443,25 @@ const Profile = () => {
                 <h2 className="text-lg font-semibold text-gray-800 mb-4">
                   Address Details
                 </h2>
+                {formData.addresses.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {formData.addresses.map((addr, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedAddressIndex(index)}
+                        className={`px-4 py-1 rounded-full text-sm font-medium border ${
+                          index === selectedAddressIndex
+                            ? "bg-[#03a74f] text-white border-[#03a74f]"
+                            : "bg-white text-gray-700 border-gray-300"
+                        }`}
+                      >
+                        {addr.label || `Address ${index + 1}`}
+                        {addr.isDefault && " ⭐"}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-sm font-medium text-gray-700">
@@ -493,13 +471,14 @@ const Profile = () => {
                       <input
                         type="text"
                         name="address.street"
-                        value={formData.address.street}
+                        value={formData.addresses[selectedAddressIndex]?.street}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
                       />
                     ) : (
                       <p className="text-gray-800 font-medium px-4 py-3 bg-white rounded-lg border border-gray-200">
-                        {formData.address.street || "Not provided"}
+                        {formData.addresses[selectedAddressIndex]?.street ||
+                          "Not provided"}
                       </p>
                     )}
                   </div>
@@ -512,13 +491,14 @@ const Profile = () => {
                       <input
                         type="text"
                         name="address.city"
-                        value={formData.address.city}
+                        value={formData.addresses[selectedAddressIndex]?.city}
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
                       />
                     ) : (
                       <p className="text-gray-800 font-medium px-4 py-3 bg-white rounded-lg border border-gray-200">
-                        {formData.address.city || "Not provided"}
+                        {formData.addresses[selectedAddressIndex]?.city ||
+                          "Not provided"}
                       </p>
                     )}
                   </div>
@@ -531,13 +511,17 @@ const Profile = () => {
                       <input
                         type="text"
                         name="address.state"
-                        value={formData.address.state}
+                        value={
+                          formData.addresses[selectedAddressIndex]?.state || ""
+                        }
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
                       />
                     ) : (
                       <p className="text-gray-800 font-medium px-4 py-3 bg-white rounded-lg border border-gray-200">
-                        {formData.address.state || "Not provided"}
+                        {formData.addresses[selectedAddressIndex]?.state ||
+                          "" ||
+                          "Not provided"}
                       </p>
                     )}
                   </div>
@@ -550,13 +534,17 @@ const Profile = () => {
                       <input
                         type="text"
                         name="address.zip"
-                        value={formData.address.zip}
+                        value={
+                          formData.addresses[selectedAddressIndex]?.zip || ""
+                        }
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
                       />
                     ) : (
                       <p className="text-gray-800 font-medium px-4 py-3 bg-white rounded-lg border border-gray-200">
-                        {formData.address.zip || "Not provided"}
+                        {formData.addresses[selectedAddressIndex]?.zip ||
+                          "" ||
+                          "Not provided"}
                       </p>
                     )}
                   </div>
@@ -569,17 +557,47 @@ const Profile = () => {
                       <input
                         type="text"
                         name="address.country"
-                        value={formData.address.country}
+                        value={
+                          formData.addresses[selectedAddressIndex]?.country ||
+                          ""
+                        }
                         onChange={handleInputChange}
                         className="w-full px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
                       />
                     ) : (
                       <p className="text-gray-800 font-medium px-4 py-3 bg-white rounded-lg border border-gray-200">
-                        {formData.address.country || "Not provided"}
+                        {formData.addresses[selectedAddressIndex]?.country ||
+                          "" ||
+                          "Not provided"}
                       </p>
                     )}
                   </div>
                 </div>
+                {isEditing && (
+                  <button
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        addresses: [
+                          ...prev.addresses,
+                          {
+                            label: `Address ${prev.addresses.length + 1}`,
+                            street: "",
+                            city: "",
+                            state: "",
+                            zip: "",
+                            country: "",
+                            isDefault: false,
+                          },
+                        ],
+                      }));
+                      setSelectedAddressIndex(formData.addresses.length);
+                    }}
+                    className="mt-4 px-4 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42] transition"
+                  >
+                    + Add New Address
+                  </button>
+                )}
               </div>
             </div>
           </div>
