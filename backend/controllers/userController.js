@@ -194,7 +194,6 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
-
 // Block user (admin only)
 export const blockUser = async (req, res) => {
   try {

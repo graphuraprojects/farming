@@ -90,14 +90,17 @@ export const createBooking = async (req, res) => {
     }
 
     // 6️⃣ Validate Locations
+    // Get farmer default address
+    const defaultAddress = farmer.addresses?.find((a) => a.isDefault);
+
     if (
-      farmer?.location?.latitude == null ||
-      farmer?.location?.longitude == null
+      !defaultAddress ||
+      defaultAddress.latitude == null ||
+      defaultAddress.longitude == null
     ) {
-      console.log("❌ Farmer location missing");
       return res.status(400).json({
         success: false,
-        message: "Farmer location not set. Please update your address.",
+        message: "Please set your default address with location.",
       });
     }
 
@@ -131,8 +134,8 @@ export const createBooking = async (req, res) => {
     const distanceKm = getDistanceInKm(
       machine.location.latitude,
       machine.location.longitude,
-      farmer.location.latitude,
-      farmer.location.longitude,
+      defaultAddress.latitude,
+      defaultAddress.longitude,
     );
 
     console.log("Distance KM:", distanceKm);
