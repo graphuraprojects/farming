@@ -129,19 +129,13 @@ const Profile = () => {
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
-        const { latitude, longitude } = position.coords;
-        setLocationCoords({
-          latitude,
-          longitude,
-        });
-
-        console.log("Lat:", latitude);
-        console.log("Lng:", longitude);
-
         try {
-          // Reverse geocoding using OpenStreetMap
+          const { latitude, longitude } = position.coords;
+          const token = localStorage.getItem("token");
+
+          // Reverse geocoding
           const res = await axios.get(
-            `https://nominatim.openstreetmap.org/reverse`,
+            "https://nominatim.openstreetmap.org/reverse",
             {
               params: {
                 lat: latitude,
@@ -153,42 +147,74 @@ const Profile = () => {
 
           const address = res.data.address;
 
-          setFormData((prev) => {
-            const updatedAddresses = [...prev.addresses];
+          const updatedAddressData = {
+            label:
+              formData.addresses[selectedAddressIndex]?.label ||
+              `Address ${selectedAddressIndex + 1}`,
+            street:
+              address.road ||
+              address.residential ||
+              address.neighbourhood ||
+              address.suburb ||
+              address.hamlet ||
+              address.pedestrian ||
+              res.data.display_name ||
+              "",
+            city:
+              address.city ||
+              address.town ||
+              address.village ||
+              address.county ||
+              "",
+            state: address.state || "",
+            zip: address.postcode || "",
+            country: address.country || "",
+          };
 
-            updatedAddresses[selectedAddressIndex] = {
-              ...updatedAddresses[selectedAddressIndex],
-              street:
-                address.road ||
-                address.residential ||
-                address.neighbourhood ||
-                address.suburb ||
-                address.hamlet ||
-                address.pedestrian ||
-                res.data.display_name ||
-                "",
+          const currentAddress = formData.addresses[selectedAddressIndex];
 
-              city:
-                address.city ||
-                address.town ||
-                address.village ||
-                address.county ||
-                "",
-              state: address.state || "",
-              zip: address.postcode || "",
-              country: address.country || "",
-            };
+          // ===============================
+          // 1️⃣ UPDATE EXISTING ADDRESS
+          // ===============================
+          if (currentAddress?._id) {
+            await axios.patch(
+              `/api/users/addresses/${currentAddress._id}`,
+              updatedAddressData,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+            );
+          }
 
-            return {
-              ...prev,
-              addresses: updatedAddresses,
-            };
-          });
+          // ===============================
+          // 2️⃣ CREATE NEW ADDRESS
+          // ===============================
+          else {
+            await axios.post(
+              `/api/users/addresses`,
+              {
+                ...updatedAddressData,
+                isDefault: formData.addresses.length === 0 ? true : false,
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              },
+            );
+          }
 
-          alert("Location detected successfully!");
+          // ===============================
+          // 3️⃣ REFRESH PROFILE
+          // ===============================
+          await fetchProfile();
+
+          alert("Location detected and address saved successfully!");
         } catch (error) {
-          console.error("Reverse geocode error:", error);
-          alert("Failed to fetch address");
+          console.error("Reverse geocode or save error:", error);
+          alert("Failed to detect and save address");
         }
       },
       (error) => {
