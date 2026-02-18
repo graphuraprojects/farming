@@ -171,7 +171,8 @@ const Profile = () => {
             country: address.country || "",
           };
 
-          const currentAddress = formData.addresses[selectedAddressIndex];
+          const currentAddress =
+            formData.addresses?.[selectedAddressIndex] || null;
 
           // ===============================
           // 1️⃣ UPDATE EXISTING ADDRESS
@@ -602,9 +603,8 @@ const Profile = () => {
                 {isEditing && (
                   <button
                     onClick={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        addresses: [
+                      setFormData((prev) => {
+                        const newAddresses = [
                           ...prev.addresses,
                           {
                             label: `Address ${prev.addresses.length + 1}`,
@@ -615,9 +615,16 @@ const Profile = () => {
                             country: "",
                             isDefault: false,
                           },
-                        ],
-                      }));
-                      setSelectedAddressIndex(formData.addresses.length);
+                        ];
+
+                        // ✅ Set index AFTER computing new array
+                        setSelectedAddressIndex(newAddresses.length - 1);
+
+                        return {
+                          ...prev,
+                          addresses: newAddresses,
+                        };
+                      });
                     }}
                     className="mt-4 px-4 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42] transition"
                   >
