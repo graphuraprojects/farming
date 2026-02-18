@@ -190,6 +190,9 @@ const Profile = () => {
 
           if (currentAddress?._id) {
             console.log("🔄 Updating existing address:", currentAddress._id);
+            console.log("Selected Index:", selectedAddressIndex);
+            console.log("Addresses Array:", formData.addresses);
+            console.log("Current Address:", currentAddress);
 
             const response = await axios.patch(
               `/api/users/addresses/${currentAddress._id}`,
@@ -619,21 +622,23 @@ const Profile = () => {
                   <button
                     onClick={() => {
                       setFormData((prev) => {
-                        const newAddresses = [
-                          ...prev.addresses,
-                          {
-                            label: `Address ${prev.addresses.length + 1}`,
-                            street: "",
-                            city: "",
-                            state: "",
-                            zip: "",
-                            country: "",
-                            isDefault: false,
-                          },
-                        ];
+                        const newAddress = {
+                          label: `Address ${prev.addresses.length + 1}`,
+                          street: "",
+                          city: "",
+                          state: "",
+                          zip: "",
+                          country: "",
+                          isDefault: false,
+                        };
 
-                        // ✅ Set index AFTER computing new array
+                        const newAddresses = [...prev.addresses, newAddress];
+
+                        // VERY IMPORTANT
                         setSelectedAddressIndex(newAddresses.length - 1);
+
+                        console.log("➕ New Address Added");
+                        console.log("New Index:", newAddresses.length - 1);
 
                         return {
                           ...prev,
