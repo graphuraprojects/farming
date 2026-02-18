@@ -622,27 +622,7 @@ export const unblockUser = async (req, res) => {
 // Add a new address
 export const addAddress = async (req, res) => {
   try {
-    console.log("📥 Incoming addAddress request");
-    console.log("👤 User ID:", req.user.userId);
-    console.log("📦 Request Body:", req.body);
-
-    const userId = req.user.userId;
-    const {
-      label,
-      street,
-      city,
-      state,
-      zip,
-      country,
-      latitude,
-      longitude,
-      isDefault,
-    } = req.body;
-
-    const user = await User.findById(userId);
-
-    console.log("👤 Found User:", !!user);
-    console.log("📍 Existing Addresses:", user?.addresses);
+    const user = await User.findById(req.user.userId);
 
     if (!user) {
       return res.status(404).json({
@@ -651,29 +631,13 @@ export const addAddress = async (req, res) => {
       });
     }
 
-    if (isDefault || user.addresses.length === 0) {
-      console.log("⭐ Setting as default address");
-      user.addresses.forEach((addr) => (addr.isDefault = false));
-    }
+    const newAddress = {
+      ...req.body,
+      isDefault: user.addresses.length === 0, // 👈 First address becomes default
+    };
 
-    user.addresses.push({
-      label,
-      street,
-      city,
-      state,
-      zip,
-      country,
-      latitude,
-      longitude,
-      isDefault: isDefault || user.addresses.length === 0,
-    });
-
-    console.log("📌 Addresses Before Save:", user.addresses);
-
+    user.addresses.push(newAddress);
     await user.save();
-
-    console.log("✅ Address Saved Successfully");
-    console.log("📌 Updated Addresses:", user.addresses);
 
     res.status(201).json({
       success: true,
@@ -681,7 +645,6 @@ export const addAddress = async (req, res) => {
       data: user.addresses,
     });
   } catch (error) {
-    console.error("❌ Add Address Error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to add address",
