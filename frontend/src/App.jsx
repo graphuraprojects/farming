@@ -125,8 +125,8 @@ function App() {
           />
         </Route>
 
-        <Route path="/T&C" element={<TermsAndConditions />} />
-        <Route path="/P" element={<PrivacyPolicy />} />
+        <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
