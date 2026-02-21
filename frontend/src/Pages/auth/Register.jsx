@@ -276,17 +276,14 @@ const Register = () => {
               Login here
             </Link>
           </p>
+          <Link
+          to="/admin/register"
+          className="block text-[#1f3d2b] font-semibold hover:underline"
+          >
+            Admin register
+          </Link>
 
-          {/* Additional Links */}
-          <div className="flex items-center justify-center gap-3 text-xs text-gray-600">
-            <Link to="/T&C" className="hover:text-[#03a74f] transition-colors">
-              Terms & Conditions
-            </Link>
-            <span>•</span>
-            <Link to="/P" className="hover:text-[#03a74f] transition-colors">
-              Privacy Policy
-            </Link>
-          </div>
+
         </div>
       </div>
     </div>
