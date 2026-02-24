@@ -54,6 +54,9 @@ const MachineDetails = () => {
   const [machine, setMachine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
+
+/*
+    Old Hour State Logic Commented
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
@@ -61,7 +64,11 @@ const MachineDetails = () => {
     hours: 0,
     minutes: 0,
     totalHoursDecimal: 0, // needed for price calculation
-  });
+  });*/
+  const [endDate,setEndDate]=useState("");
+  const[durationDays,setDurationDays]=useState(0);
+
+
   const [includeOperator, setIncludeOperator] = useState(false);
 
   const navigate = useNavigate();
@@ -90,6 +97,7 @@ const MachineDetails = () => {
     fetchMachine();
   }, [id]);
 
+  /*Old Hourly logic Commented
   useEffect(() => {
     if (!startTime || !endTime) return;
 
@@ -117,7 +125,23 @@ const MachineDetails = () => {
         totalHoursDecimal: 0,
       });
     }
-  }, [startTime, endTime]);
+  }, [startTime, endTime]);*/
+
+  useEffect(() => {
+  if (!startDate || !endDate) return;
+
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  const diffTime = end - start;
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+  if (diffDays > 0) {
+    setDurationDays(diffDays);
+  } else {
+    setDurationDays(0);
+  }
+}, [startDate, endDate]);
 
   if (loading) {
     return <p className="text-center py-20">Loading machine details...</p>;
@@ -129,13 +153,12 @@ const MachineDetails = () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const durationDecimal = duration.totalHoursDecimal;
-
+const total_hours=durationDays*24;
   const operatorTotal = includeOperator
-    ? (machine.operatorFeePerHour || 0) * duration.totalHoursDecimal
+    ? (machine.operatorFeePerHour || 0) * total_hours
     : 0;
 
-  const rentTotal = durationDecimal * machine.price_per_hour;
+  const rentTotal = total_hours*machine.price_per_hour;
 
   const grandTotal =
     Number(rentTotal || 0) +
@@ -335,50 +358,25 @@ const MachineDetails = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 divide-x divide-[#dee3e0] border-b border-[#dee3e0]">
-                {/* START TIME */}
-                <div className="p-3 hover:bg-[#f9faf7] transition-colors">
-                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
-                    Start Time
-                  </label>
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="w-full mt-2 text-sm bg-transparent outline-none"
-                  />
-                </div>
-
-                {/* END TIME */}
-                <div className="p-3 hover:bg-[#f9faf7] transition-colors">
-                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
-                    End Time
-                  </label>
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="w-full mt-2 text-sm bg-transparent outline-none"
-                  />
-                </div>
-              </div>
+              
+              
 
               <div className="grid grid-cols-1 divide-x divide-[#dee3e0]">
                 <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
                   <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
-                    Number of Hours
+                    Number of Days
                   </label>
                   <div className="text-sm font-medium text-[#131614] mt-1">
                     <input
                       type="text"
-                      value={`${duration.hours} hr ${duration.minutes} min`}
+                      value={`${durationDays}days(s)`}
                       readOnly
                       className="w-full mt-2 text-sm bg-transparent outline-none border border-[#dee3e0] rounded-lg px-3 py-2"
                     />
                   </div>
                 </div>
 
-                {/* <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
+                { <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
                   <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
                     End Date
                   </label>
@@ -393,7 +391,7 @@ const MachineDetails = () => {
                     />
 
                   </div>
-                </div> */}
+                </div> }
               </div>
 
               {/* <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors flex items-center justify-between">
@@ -452,11 +450,10 @@ const MachineDetails = () => {
 
                 if (
                   !startDate ||
-                  !startTime ||
-                  !endTime ||
-                  duration.totalHoursDecimal <= 0
+                  !endDate ||
+                  durationDays  <= 0
                 ) {
-                  alert("Please select date and time range.");
+                  alert("Please select valid date range");
                   return;
                 }
 
@@ -474,9 +471,8 @@ const MachineDetails = () => {
                     {
                       machine_id: machine._id,
                       start_date: startDate,
-                      start_time: startTime,
-                      end_time: endTime,
-                      total_hours: duration.totalHoursDecimal,
+                    
+                      total_hours: total_hours,
                       // total_amount: grandTotal,
                     },
                     {
@@ -497,7 +493,7 @@ const MachineDetails = () => {
                     name: machine.machine_name,
                     image: machine.images?.[0]?.url,
                     startDate,
-                    hours: duration.totalHoursDecimal,
+                    hours: total_hours,
                     total: breakdown.total,
                   };
 
@@ -587,8 +583,7 @@ const MachineDetails = () => {
             <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
               <div className="flex justify-between">
                 <span className="underline decoration-dotted decoration-sage cursor-help">
-                  ₹{machine.price_per_hour} x {duration.hours} hr{" "}
-                  {duration.minutes} min
+                  ₹{machine.price_per_hour * 24} x {durationDays} day(s)
                 </span>
                 <span>₹{rentTotal}</span>
               </div>
@@ -596,8 +591,8 @@ const MachineDetails = () => {
               {includeOperator && (
                 <div className="flex justify-between">
                   <span className="underline decoration-dotted decoration-sage cursor-help">
-                    Operator Fee (₹{machine.operatorFeePerHour} ×{" "}
-                    {duration.hours} hr {duration.minutes} min hour)
+                    Operator Fee
+                    (₹{machine.operatorFeePerHour} × {total_hours} hours)
                   </span>
                   <span>₹{operatorTotal}</span>
                 </div>
