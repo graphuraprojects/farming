@@ -22,10 +22,11 @@ export default function Checkout() {
   });
 
   const [errors, setErrors] = useState({});
-
+  const [hasSavedAddress, setHasSavedAddress] = useState(false);
+  const [loadingAddress, setLoadingAddress] = useState(true);
   const navigate = useNavigate();
   const [deliveryMode, setDeliveryMode] = useState("delivery");
-
+  const [liveLocation, setLiveLocation] = useState(null);
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
   if (bookings.length === 0) return <p>No booking data found</p>;
 
@@ -46,26 +47,27 @@ export default function Checkout() {
       try {
         const token = localStorage.getItem("token");
 
-        const res = await axios.get(`${API_BASE}/api/users/my-profile`, {
+        const res = await axios.get(`${API_BASE}/api/users/addresses/default`, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        const user = res.data.data;
+        const defaultAddress = res.data.data;
 
-        const nameParts = user.name?.split(" ") || [];
+        if (defaultAddress) {
+          setHasSavedAddress(true);
 
-        setFormData((prev) => ({
-          ...prev,
-          firstName: nameParts[0] || "",
-          lastName: nameParts.slice(1).join(" ") || "",
-          email: user.email || "",
-          phone: user.phone || "",
-          address: user.address?.street || "",
-          city: user.address?.city || "",
-          zipCode: user.address?.zip || "",
-        }));
+          setFormData((prev) => ({
+            ...prev,
+            address: defaultAddress.street || "",
+            city: defaultAddress.city || "",
+            zipCode: defaultAddress.zip || "",
+          }));
+        }
       } catch (error) {
-        console.log("Profile fetch error:", error);
+        console.log("No default address found");
+        setHasSavedAddress(false);
+      } finally {
+        setLoadingAddress(false);
       }
     };
 
@@ -88,61 +90,64 @@ export default function Checkout() {
 
     return Object.keys(newErrors).length === 0;
   };
+  const getLiveLocation = async () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation not supported");
+      return;
+    }
 
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const latitude = position.coords.latitude;
+        const longitude = position.coords.longitude;
+
+        setLiveLocation({ latitude, longitude });
+
+        console.log("Live location:", latitude, longitude);
+
+        // Optional: You can integrate reverse geocoding API here
+        // For now just auto-fill dummy city
+
+        setFormData((prev) => ({
+          ...prev,
+          city: "Detected City",
+        }));
+      },
+      (error) => {
+        alert("Location permission denied");
+      },
+    );
+  };
   /* ================= SAVE ADDRESS ================= */
 
   const saveAddress = async () => {
-    try {
-      const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token");
 
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        return;
-      }
-
-      // Wrap geolocation in Promise so we can await it
-      const getLocation = () =>
-        new Promise((resolve, reject) => {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              resolve({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-              });
-            },
-            (error) => {
-              reject(error);
-            },
-          );
-        });
-
-      const { latitude, longitude } = await getLocation();
-
-      console.log("Latitude:", latitude);
-      console.log("Longitude:", longitude);
-
-      await axios.put(
-        `${API_BASE}/api/users/address`,
-        {
-          street: formData.address,
-          city: formData.city,
-          zip: formData.zipCode,
-          state: "Delhi",
-          country: "India",
-          latitude,
-          longitude,
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-
-      console.log("Address + location saved successfully");
-    } catch (error) {
-      console.log("Address save error:", error);
-      alert("Please allow location access to continue.");
-      throw error;
+    // ✅ If address already exists, skip saving
+    if (hasSavedAddress) {
+      console.log("Address already saved. Skipping location.");
+      return;
     }
+
+    // Otherwise create new address
+    await axios.post(
+      `${API_BASE}/api/users/addresses`,
+      {
+        label: "Primary",
+        street: formData.address,
+        city: formData.city,
+        state: "Delhi",
+        zip: formData.zipCode,
+        country: "India",
+        latitude: liveLocation?.latitude || null,
+        longitude: liveLocation?.longitude || null,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    );
+
+    console.log("New address saved");
   };
 
   /* ================= PAYMENT ================= */
@@ -296,7 +301,16 @@ export default function Checkout() {
             Complete your order with secure payment
           </p>
         </div>
-
+        {!hasSavedAddress && (
+          <div className="flex justify-end mb-4">
+            <button
+              onClick={getLiveLocation}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+            >
+              📍 Use Live Location
+            </button>
+          </div>
+        )}
         <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="lg:col-span-2 space-y-6">
             <Section title="Contact Information" value="1">
@@ -327,40 +341,46 @@ export default function Checkout() {
             </div>
 
             <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2">
-              {currentBooking && (() => {
-                  console.log("[Checkout] Booking image value:", currentBooking.image);
+              {currentBooking &&
+                (() => {
+                  console.log(
+                    "[Checkout] Booking image value:",
+                    currentBooking.image,
+                  );
                   return (
-                <div key={currentBooking.id} className="flex gap-3">
-                  {currentBooking.image && typeof currentBooking.image === "string" && currentBooking.image.length > 30 ? (
-                    <img
-                      src={currentBooking.image}
-                      alt={currentBooking.name}
-                      className="w-16 h-16 rounded-lg object-cover shrink-0"
-                    />
-                  ) : (
-                    <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-2xl shrink-0">
-                      🚜
+                    <div key={currentBooking.id} className="flex gap-3">
+                      {currentBooking.image &&
+                      typeof currentBooking.image === "string" &&
+                      currentBooking.image.length > 30 ? (
+                        <img
+                          src={currentBooking.image}
+                          alt={currentBooking.name}
+                          className="w-16 h-16 rounded-lg object-cover shrink-0"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-2xl shrink-0">
+                          🚜
+                        </div>
+                      )}
+
+                      <div className="flex-1">
+                        <h3 className="font-bold text-[13px]">
+                          {currentBooking.name}
+                        </h3>
+
+                        <p className="text-[10px] text-gray-500">
+                          Date: {currentBooking.startDate}
+                        </p>
+
+                        <p className="text-[12px] font-semibold">
+                          Duration: {durationText}
+                        </p>
+                      </div>
+
+                      <p className="font-bold">₹{currentBooking.total}</p>
                     </div>
-                  )}
-
-                  <div className="flex-1">
-                    <h3 className="font-bold text-[13px]">
-                      {currentBooking.name}
-                    </h3>
-
-                    <p className="text-[10px] text-gray-500">
-                      Date: {currentBooking.startDate}
-                    </p>
-
-                    <p className="text-[12px] font-semibold">
-                      Duration: {durationText}
-                    </p>
-                  </div>
-
-                  <p className="font-bold">₹{currentBooking.total}</p>
-                </div>
-              );
-              })()}
+                  );
+                })()}
             </div>
 
             <div className="border-t mt-4 pt-4 space-y-2 text-sm">
