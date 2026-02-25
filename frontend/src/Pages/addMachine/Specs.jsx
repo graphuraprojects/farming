@@ -4,7 +4,7 @@ const Specs = ({ data, setData, next, prev }) => {
   const handleChange = (e) => {
     let { name, value } = e.target;
 
-    if (name === "pricePerHour" && value < 0) value = 0;
+    if (name === "pricePerDay" && value < 0) value = 0;
 
     setData((prev) => ({
       ...prev,
@@ -16,15 +16,15 @@ const Specs = ({ data, setData, next, prev }) => {
     if (
       !data.fuelType ||
       !data.category ||
-      !data.pricePerHour ||
+      !data.pricePerDay ||
       data.transport === ""
     ) {
       alert("Please fill all required fields");
       return;
     }
 
-    if (parseFloat(data.pricePerHour) < 100) {
-      alert("Price per hour must be at least ₹100");
+    if (parseFloat(data.pricePerDay) < 100) {
+      alert("Price per day must be at least ₹100");
       return;
     }
 
@@ -99,7 +99,7 @@ return (
             <div className="max-w-md">
               <div className="flex flex-col gap-2">
                 <label className="font-medium text-gray-700 text-sm">
-                  Price Per Hour
+                  Price Per Day
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
@@ -107,10 +107,10 @@ return (
                   </span>
                   <input
                     type="number"
-                    name="pricePerHour"
-                    value={data.pricePerHour}
+                    name="pricePerDay"
+                    value={data.pricePerDay}
                     onChange={handleChange}
-                    placeholder="Enter hourly rate"
+                    placeholder="Enter daily rate"
                     min="100"
                     step="1"
                     onWheel={(e) => e.target.blur()}

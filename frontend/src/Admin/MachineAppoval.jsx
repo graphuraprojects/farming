@@ -395,10 +395,10 @@ const MachineApproval = () => {
                 </div>
                 <div>
                   <p className="text-[#5b6e58] text-xs uppercase font-semibold mb-1">
-                    Price Per Hour
+                    Price Per Day
                   </p>
                   <p className="text-[#2b2b2b] font-medium">
-                    ₹{machineData.price_per_hour}
+                    ₹{machineData.price_per_day}
                   </p>
                 </div>
               </div>

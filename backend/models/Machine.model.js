@@ -46,7 +46,7 @@ const machineSchema = new mongoose.Schema(
     },
 
     // PRICING
-    price_per_hour: {
+    price_per_day: {
       type: Number,
       required: true,
     },

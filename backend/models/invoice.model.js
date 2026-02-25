@@ -30,8 +30,8 @@ const invoiceSchema = new mongoose.Schema(
       {
         machineName: String,
         model: String,
-        ratePerHour: Number,
-        hours: Number,
+        ratePerDay: Number,
+        days: Number,
         transportCharge: Number,
         subtotal: Number
       }

@@ -119,7 +119,7 @@ export const verifyPayment = async (req, res) => {
       { new: true }
     )
       .populate("farmer_id", "name email phone")
-      .populate("machine_id", "machine_name model category price_per_hour images")
+      .populate("machine_id", "machine_name model category price_per_day images")
       .populate("owner_id", "name phone");
 
     console.log("Booking payment status updated:", booking);
@@ -236,19 +236,19 @@ export const verifyPayment = async (req, res) => {
                         </tr>
                         <tr>
                           <td style="color: #666; font-size: 14px;">Start Date:</td>
-                          <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.start_time)} at ${formatTime(booking.start_time)}</td>
+                          <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.start_date)}</td>
                         </tr>
                         <tr>
                           <td style="color: #666; font-size: 14px;">End Date:</td>
-                          <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.end_time)} at ${formatTime(booking.end_time)}</td>
+                          <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.end_date)}</td>
                         </tr>
                         <tr>
                           <td style="color: #666; font-size: 14px;">Duration:</td>
-                          <td style="color: #333; font-size: 14px; font-weight: 600;">${booking.total_hours} hours</td>
+                          <td style="color: #333; font-size: 14px; font-weight: 600;">${booking.total_days} day${booking.total_days > 1 ? 's' : ''}</td>
                         </tr>
                         <tr>
-                          <td style="color: #666; font-size: 14px;">Hourly Rate:</td>
-                          <td style="color: #333; font-size: 14px; font-weight: 600;">₹${machine.price_per_hour}/hour</td>
+                          <td style="color: #666; font-size: 14px;">Daily Rate:</td>
+                          <td style="color: #333; font-size: 14px; font-weight: 600;">₹${machine.price_per_day}/day</td>
                         </tr>
                         <tr>
                           <td style="color: #666; font-size: 14px;">Booking Status:</td>

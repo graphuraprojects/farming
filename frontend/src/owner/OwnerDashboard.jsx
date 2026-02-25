@@ -1057,7 +1057,19 @@ function Fleet({ img, name, type, extra, enabled, onToggle, onEdit, id }) {
   return (
     <div className="p-4 rounded-lg border border-gray-100 bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
       <div className="flex gap-3">
-        <img src={img} className="w-14 h-14 rounded-md object-cover" />
+        {(() => {
+          console.log("[OwnerDashboard] Fleet card image value:", img);
+          if (img && typeof img === "string" && img.length > 30) {
+            return <img src={img} className="w-14 h-14 rounded-md object-cover" />;
+          } else {
+            console.log("[OwnerDashboard] Fleet card image skipped — invalid value:", img);
+            return (
+              <div className="w-14 h-14 rounded-md bg-gray-200 flex items-center justify-center text-gray-400 text-xl">
+                🚜
+              </div>
+            );
+          }
+        })()}
         <div className="flex-1 min-w-0">
           <div className="flex justify-between items-start mb-1">
             <p className="font-bold text-[#131614] truncate">{name}</p>
@@ -1139,7 +1151,7 @@ function EditMachineModal({ machine, onClose, onSave }) {
     machine_name: machine.machine_name || "",
     model: machine.model || "",
     category: machine.category || "",
-    price_per_hour: machine.price_per_hour || "",
+    price_per_day: machine.price_per_day || "",
     description: machine.description || "",
   });
   const [loading, setLoading] = useState(false);
@@ -1283,12 +1295,12 @@ function EditMachineModal({ machine, onClose, onSave }) {
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Price Per Hour (₹)
+              Price Per Day (₹)
             </label>
             <input
               type="number"
-              name="price_per_hour"
-              value={formData.price_per_hour}
+              name="price_per_day"
+              value={formData.price_per_day}
               onChange={handleChange}
               disabled={loading}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"

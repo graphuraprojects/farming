@@ -25,7 +25,7 @@ const bookingSchema = new mongoose.Schema(
 
     start_date: Date,
     end_date: Date,
-    total_hours: Number,
+    total_days: Number,
     total_amount: Number,
 
     transport_fee: {

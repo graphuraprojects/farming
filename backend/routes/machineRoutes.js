@@ -3,14 +3,14 @@ import {
   addMachine,
   updateMachine,
   deleteMachine,
-  setPricePerHour,
+  setPricePerDay,
   getAllMachines,
   approveOrRejectMachine,
   getAdminMachines,
   getMachineByIdAdmin
 } from "../controllers/machineController.js";
 
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, optionalProtect } from "../middleware/authMiddleware.js";
 import { allowOwnerAdminFarmer, allowOwnerOrAdmin } from "../middleware/roleMiddleware.js";
 import upload from "../configs/multer.js";
 import { allowAdmin } from "../middleware/roleMiddleware.js";
@@ -30,11 +30,11 @@ router.post(
 
 router.put("/:id", protect, allowOwnerOrAdmin, updateMachine);
 router.delete("/:id", protect, allowOwnerOrAdmin, deleteMachine);
-router.patch("/:id/price", protect, allowOwnerOrAdmin, setPricePerHour);
+router.patch("/:id/price", protect, allowOwnerOrAdmin, setPricePerDay);
 
 // Get all machines
 // Public (farmers) + Owner + Admin
-router.get("/", getAllMachines);
+router.get("/", optionalProtect, getAllMachines);
 
 /**
  * Admin approve / reject machine

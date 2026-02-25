@@ -21,7 +21,7 @@ export const createInvoice = async (req, res) => {
 
     const machine = booking.machine_id;
 
-    const machineCost = machine.price_per_hour * booking.total_hours;
+    const machineCost = machine.price_per_day * booking.total_days;
     const transportCost = booking.transport_cost || 0;
     const subtotal = machineCost + transportCost;
 
@@ -41,8 +41,8 @@ export const createInvoice = async (req, res) => {
         {
           machineName: machine.machine_name,
           model: machine.model,
-          ratePerHour: machine.price_per_hour,
-          hours: booking.total_hours,
+          ratePerDay: machine.price_per_day,
+          days: booking.total_days,
           transportCharge: transportCost,
           subtotal,
         },

@@ -59,9 +59,7 @@ const MachineDetails = () => {
   const [endDate, setEndDate] = useState("");
 
   const [duration, setDuration] = useState({
-    hours: 0,
-    minutes: 0,
-    totalHoursDecimal: 0, // needed for price calculation
+    totalDays: 0, // needed for price calculation
   });
   const [includeOperator, setIncludeOperator] = useState(false);
 
@@ -69,18 +67,20 @@ const MachineDetails = () => {
   useEffect(() => {
     const fetchMachine = async () => {
       try {
-        const token = localStorage.getItem("token");
-
         const res = await axios.get(`/api/machines`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
+          withCredentials: true,
         });
 
-        // find machine by id from URL
-        const found = res.data.data.find((m) => m._id === id);
+        console.log("[MachineDetails] Full API response:", res.data);
 
-        setMachine(found);
+        const found = res.data.data.find((m) => m._id === id);
+        if (found) {
+          console.log("[MachineDetails] Machine images:", found.images);
+          setMachine(found);
+        }
       } catch (err) {
         console.error("Error fetching machine:", err);
       } finally {
@@ -123,28 +123,22 @@ const MachineDetails = () => {
   useEffect(() => {
     if (!startDate || !endDate) return;
 
-    const start = new Date(startDate);
-    const end = new Date(endDate);
+    const start = new Date(startDate + "T00:00:00");
+    const end = new Date(endDate + "T00:00:00");
 
-    if (end <= start) {
+    if (end < start) {
       setDuration({
-        hours: 0,
-        minutes: 0,
-        totalHoursDecimal: 0,
+        totalDays: 0,
       });
       return;
     }
 
+    // Inclusive day count: Jan 1 to Jan 3 = 3 days
     const diffMs = end - start;
-    const diffHours = diffMs / (1000 * 60 * 60);
-
-    const hrs = Math.floor(diffHours);
-    const mins = Math.round((diffHours - hrs) * 60);
+    const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
 
     setDuration({
-      hours: hrs,
-      minutes: mins,
-      totalHoursDecimal: diffHours,
+      totalDays,
     });
   }, [startDate, endDate]);
 
@@ -158,13 +152,13 @@ const MachineDetails = () => {
 
   const today = new Date().toISOString().split("T")[0];
 
-  const durationDecimal = duration.totalHoursDecimal;
+  const durationDays = duration.totalDays;
 
   const operatorTotal = includeOperator
-    ? (machine.operatorFeePerHour || 0) * duration.totalHoursDecimal
+    ? (machine.operatorFeePerHour || 0) * duration.totalDays
     : 0;
 
-  const rentTotal = durationDecimal * machine.price_per_hour;
+  const rentTotal = durationDays * machine.price_per_day;
 
   const grandTotal =
     Number(rentTotal || 0) +
@@ -184,17 +178,47 @@ const MachineDetails = () => {
 
       {/* IMAGE GRID */}
       <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-2 h-[300px] md:h-[450px] rounded-lg overflow-hidden mb-8 group/gallery">
-        <img
-          src={machine.images?.[0]?.url}
-          className="col-span-1 md:col-span-2 row-span-2 relative w-full object-cover h-full rounded-lg cursor-pointer hover:scale-105 transition-transform duration-500"
-        />
-        {machine.images?.slice(1).map((img, i) => (
-          <img
-            key={i}
-            src={img.url}
-            className="w-full h-full bg-cover bg-center cursor-pointer hover:scale-105 transition-transform duration-500 rounded-lg object-cover hidden md:block "
-          />
-        ))}
+        {(() => {
+          const heroUrl = machine.images?.[0]?.url;
+          console.log("[MachineDetails] Hero image value:", heroUrl);
+          if (heroUrl && typeof heroUrl === "string" && heroUrl.length > 30) {
+            return (
+              <img
+                src={heroUrl}
+                className="col-span-1 md:col-span-2 row-span-2 relative w-full object-cover h-full rounded-lg cursor-pointer hover:scale-105 transition-transform duration-500"
+              />
+            );
+          } else {
+            console.log("[MachineDetails] Hero image skipped — invalid value:", heroUrl);
+            return (
+              <div className="col-span-1 md:col-span-2 row-span-2 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-4xl">
+                🚜
+              </div>
+            );
+          }
+        })()}
+        {machine.images?.slice(1).map((img, i) => {
+          console.log(`[MachineDetails] Gallery image ${i + 1} value:`, img?.url);
+          if (img?.url && typeof img.url === "string" && img.url.length > 30) {
+            return (
+              <img
+                key={i}
+                src={img.url}
+                className="w-full h-full bg-cover bg-center cursor-pointer hover:scale-105 transition-transform duration-500 rounded-lg object-cover hidden md:block "
+              />
+            );
+          } else {
+            console.log(`[MachineDetails] Gallery image ${i + 1} skipped — invalid value`);
+            return (
+              <div
+                key={i}
+                className="bg-gray-200 rounded-lg hidden md:flex items-center justify-center text-gray-400 text-2xl"
+              >
+                🖼️
+              </div>
+            );
+          }
+        })}
       </div>
 
       {/* MAIN CONTENT */}
@@ -335,10 +359,10 @@ const MachineDetails = () => {
             <div className="flex items-baseline justify-between">
               <div className="flex items-end gap-1">
                 <span className="text-2xl font-bold text-[#131614]">
-                  ₹{machine.price_per_hour}
+                  ₹{machine.price_per_day}
                 </span>
                 <span className="text-[#6d7e74] text-sm font-medium">
-                  / hours
+                  / day
                 </span>
               </div>
               <div className="text-xs font-semibold text-primary bg-green-50 px-2 py-1 rounded">
@@ -425,12 +449,12 @@ const MachineDetails = () => {
               <div className="grid grid-cols-1 divide-x divide-[#dee3e0]">
                 <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
                   <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
-                    Number of Hours
+                    Number of Days
                   </label>
                   <div className="text-sm font-medium text-[#131614] mt-1">
                     <input
                       type="text"
-                      value={`${duration.hours} hr ${duration.minutes} min`}
+                      value={`${duration.totalDays} day${duration.totalDays !== 1 ? 's' : ''}`}
                       readOnly
                       className="w-full mt-2 text-sm bg-transparent outline-none border border-[#dee3e0] rounded-lg px-3 py-2"
                     />
@@ -480,7 +504,7 @@ const MachineDetails = () => {
                     Include Operator
                   </span>
                   <span className="text-[#6d7e74] text-xs">
-                    Certified driver (+₹{machine.operatorFeePerHour}/hour)
+                    Certified driver (+₹{machine.operatorFeePerHour}/day)
                   </span>
                 </div>
               </label>
@@ -515,7 +539,7 @@ const MachineDetails = () => {
                 //   !endTime ||
                 //   duration.totalHoursDecimal <= 0
                 // )
-                if (!startDate || !endDate || duration.totalHoursDecimal <= 0) {
+                if (!startDate || !endDate || duration.totalDays <= 0) {
                   alert("Please select date and time range.");
                   return;
                 }
@@ -550,7 +574,7 @@ const MachineDetails = () => {
                       machine_id: machine._id,
                       start_date: startDate,
                       end_date: endDate,
-                      total_hours: duration.totalHoursDecimal,
+                      total_days: duration.totalDays,
                     },
                     {
                       headers: {
@@ -573,7 +597,7 @@ const MachineDetails = () => {
                     name: machine.machine_name,
                     image: machine.images?.[0]?.url,
                     startDate,
-                    hours: duration.totalHoursDecimal,
+                    days: duration.totalDays,
                     total: breakdown.total,
                   };
 
@@ -663,8 +687,7 @@ const MachineDetails = () => {
             <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
               <div className="flex justify-between">
                 <span className="underline decoration-dotted decoration-sage cursor-help">
-                  ₹{machine.price_per_hour} x {duration.hours} hr{" "}
-                  {duration.minutes} min
+                  ₹{machine.price_per_day} x {duration.totalDays} day{duration.totalDays !== 1 ? 's' : ''}
                 </span>
                 <span>₹{rentTotal}</span>
               </div>
@@ -673,7 +696,7 @@ const MachineDetails = () => {
                 <div className="flex justify-between">
                   <span className="underline decoration-dotted decoration-sage cursor-help">
                     Operator Fee (₹{machine.operatorFeePerHour} ×{" "}
-                    {duration.hours} hr {duration.minutes} min hour)
+                    {duration.totalDays} day{duration.totalDays !== 1 ? 's' : ''})
                   </span>
                   <span>₹{operatorTotal}</span>
                 </div>

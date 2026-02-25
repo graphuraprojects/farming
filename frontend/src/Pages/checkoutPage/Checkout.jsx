@@ -327,13 +327,21 @@ export default function Checkout() {
             </div>
 
             <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2">
-              {currentBooking && (
+              {currentBooking && (() => {
+                  console.log("[Checkout] Booking image value:", currentBooking.image);
+                  return (
                 <div key={currentBooking.id} className="flex gap-3">
-                  <img
-                    src={currentBooking.image}
-                    alt={currentBooking.name}
-                    className="w-16 h-16 rounded-lg object-cover shrink-0"
-                  />
+                  {currentBooking.image && typeof currentBooking.image === "string" && currentBooking.image.length > 30 ? (
+                    <img
+                      src={currentBooking.image}
+                      alt={currentBooking.name}
+                      className="w-16 h-16 rounded-lg object-cover shrink-0"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-2xl shrink-0">
+                      🚜
+                    </div>
+                  )}
 
                   <div className="flex-1">
                     <h3 className="font-bold text-[13px]">
@@ -351,7 +359,8 @@ export default function Checkout() {
 
                   <p className="font-bold">₹{currentBooking.total}</p>
                 </div>
-              )}
+              );
+              })()}
             </div>
 
             <div className="border-t mt-4 pt-4 space-y-2 text-sm">

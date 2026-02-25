@@ -41,7 +41,7 @@ export const addMachine = async (req, res) => {
       fuel_type: data.fuel_type,
       category: data.category,
 
-      price_per_hour: data.price_per_hour,
+      price_per_day: data.price_per_day,
       transport: data.transport,
       location: {
         latitude: data.latitude,
@@ -154,10 +154,10 @@ export const deleteMachine = async (req, res) => {
 /**
  * SET PRICE
  */
-export const setPricePerHour = async (req, res) => {
-  const { price_per_hour } = req.body;
+export const setPricePerDay = async (req, res) => {
+  const { price_per_day } = req.body;
 
-  if (!price_per_hour || price_per_hour <= 0) {
+  if (!price_per_day || price_per_day <= 0) {
     return res.status(400).json({ success: false, message: "Invalid price" });
   }
 
@@ -168,7 +168,7 @@ export const setPricePerHour = async (req, res) => {
       .json({ success: false, message: "Machine not found" });
   }
 
-  machine.price_per_hour = price_per_hour;
+  machine.price_per_day = price_per_day;
   await machine.save();
 
   res.json({
@@ -222,9 +222,13 @@ export const getAllMachines = async (req, res) => {
       };
     }
 
+    console.log("📋 getAllMachines - User role:", req.user?.role || "public", "| Filter:", JSON.stringify(filter));
+
     const machines = await Machine.find(filter)
       .populate("owner_id", "name phone")
       .sort({ createdAt: -1 });
+
+    console.log("📋 getAllMachines - Found:", machines.length, "machines");
 
     // ⭐ AUTO CREATE SPECS
     const formattedMachines = machines.map((machine) => {
@@ -362,7 +366,7 @@ export const approveOrRejectMachine = async (req, res) => {
                                 </tr>
                                 <tr>
                                   <td style="color: #666; font-size: 14px;">Price:</td>
-                                  <td style="color: #03a74f; font-size: 16px; font-weight: 700;">₹${machine.price_per_hour}/hour</td>
+                                  <td style="color: #03a74f; font-size: 16px; font-weight: 700;">₹${machine.price_per_day}/day</td>
                                 </tr>
                               </table>
                             </td>

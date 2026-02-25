@@ -7,12 +7,23 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
+const PLACEHOLDER_IMAGE =
+  "https://res.cloudinary.com/drq2a0262/image/upload/f_webp/v1769270928/home-banner_lkkcdb";
+
+const isValidImage = (url) => {
+  return url && typeof url === "string" && url.startsWith("http");
+};
+
 const MachineCard = ({ item }) => {
   const navigate = useNavigate();
+
+  console.log("Rendering MachineCard:", item);
 
   const goToDetails = () => {
     navigate(`/machine-details/${item.id}`);
   };
+
+  const imageSrc = isValidImage(item.image) ? item.image : PLACEHOLDER_IMAGE;
 
   return (
     <div
@@ -23,8 +34,8 @@ const MachineCard = ({ item }) => {
       <div className="relative h-48 w-full overflow-hidden bg-gray-100">
         <img
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          src={item.image}
-          alt={item.name}
+          src={imageSrc}
+          alt={item.name || "Machine"}
         />
 
         {item.verified && (
@@ -70,7 +81,7 @@ const MachineCard = ({ item }) => {
         <div className="flex justify-between items-center pt-2">
           <p className="text-[#dca738] font-black text-xl">
             ₹{item.price}
-            <span className="text-xs text-[#6d7e74] font-medium">/hr</span>
+            <span className="text-xs text-[#6d7e74] font-medium">/day</span>
           </p>
 
           {/* View Details Button */}

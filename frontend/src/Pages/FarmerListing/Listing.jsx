@@ -11,7 +11,7 @@ const ITEMS_PER_PAGE = 6;
 const Listing = () => {
   const [filters, setFilters] = useState({
     search: "",
-    price: 2500,
+    price: 25000,
     distance: 100,
     type: [],
   });
@@ -45,7 +45,10 @@ const Listing = () => {
           withCredentials: true,
         });
 
-        setMachines(res.data.data);
+        console.log("[Listing] Full API response:", res.data);
+        const machineData = res.data.data || [];
+        console.log("Machines state:", machineData);
+        setMachines(machineData);
       } catch (error) {
         console.error("Error fetching machines:", error);
       } finally {
@@ -66,13 +69,21 @@ const Listing = () => {
     acc[item.category] = (acc[item.category] || 0) + 1;
     return acc;
   }, {});
-
+  console.log(
+    "Machine prices:",
+    machines.map((m) => m.price_per_day),
+  );
+  useEffect(() => {
+    if (machines.length > 0) {
+      console.log("FIRST MACHINE FULL OBJECT:", machines[0]);
+    }
+  }, [machines]);
   //  FILTER
   const filteredData = machines
     .map((m) => ({
       id: m._id,
       name: m.machine_name,
-      price: m.price_per_hour,
+      price: Number(m.price_per_day) || 0,
       year: m.model_year,
       image: m.images?.[0]?.url,
       location: `${m.address?.street || ""}, ${m.address?.city || ""}, ${m.address?.state || ""}`,
@@ -84,7 +95,7 @@ const Listing = () => {
 
     // SEARCH FILTER
     .filter((item) =>
-      item.name.toLowerCase().includes(filters.search.toLowerCase()),
+      (item.name || "").toLowerCase().includes(filters.search.toLowerCase()),
     )
 
     //PRICE FILTER
@@ -92,7 +103,10 @@ const Listing = () => {
 
     // DISTANCE FILTER
     .filter((item) => item.distance <= filters.distance)
-
+    
+    .filter((item) =>
+      typeof item.price === "number" ? item.price <= filters.price : true,
+    )
     // TYPE FILTER
     .filter((item) =>
       filters.type.length === 0 ? true : filters.type.includes(item.type),
@@ -112,12 +126,16 @@ const Listing = () => {
   }
 
   // PAGINATION
+  console.log("Filtered data:", filteredData);
+
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const paginatedData = filteredData.slice(
     startIndex,
     startIndex + ITEMS_PER_PAGE,
   );
+
+  console.log("Paginated data:", paginatedData);
 
   return (
     <>

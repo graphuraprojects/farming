@@ -22,7 +22,7 @@ const AddMachine = () => {
     // Specs
     fuelType: "",
     category: "",
-    pricePerHour: "",
+    pricePerDay: "",
     transport: "",
 
     // Location
@@ -57,7 +57,7 @@ const AddMachine = () => {
         registration_no: machineData.registrationNumber,
         fuel_type: machineData.fuelType,
         category: machineData.category,
-        price_per_hour: machineData.pricePerHour,
+        price_per_day: machineData.pricePerDay,
         transport: machineData.transport,
 
         latitude: machineData.lat,

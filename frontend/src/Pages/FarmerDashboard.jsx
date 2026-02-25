@@ -61,11 +61,8 @@ const FarmerDashboard = () => {
   if (error) {
     return <p className="text-center text-red-500">{error}</p>;
   }
-  const formatHoursMinutes = (totalHours) => {
-    const hours = Math.floor(totalHours);
-    const minutes = Math.round((totalHours - hours) * 60);
-
-    return `${hours}h ${minutes}m`;
+  const formatDays = (totalDays) => {
+    return `${totalDays} day${totalDays !== 1 ? 's' : ''}`;
   };
 
   return (
@@ -100,11 +97,11 @@ const FarmerDashboard = () => {
                 <Clock className="w-6 h-6 text-orange-600" />
               </div>
 
-              <p className="text-sm text-gray-500">Hours Logged</p>
+              <p className="text-sm text-gray-500">Days Logged</p>
 
               <h3 className="text-3xl font-bold text-gray-900">
-                {formatHoursMinutes(
-                  bookings.reduce((acc, b) => acc + (b.total_hours || 0), 0),
+                {formatDays(
+                  bookings.reduce((acc, b) => acc + (b.total_days || 0), 0),
                 )}
               </h3>
             </div>
@@ -201,7 +198,7 @@ const FarmerDashboard = () => {
                     </td>
 
                     <td className="px-6 py-4 text-sm">
-                      {booking.total_hours} Hours
+                      {booking.total_days} Days
                     </td>
 
                     <td className="px-6 py-4 text-sm font-semibold text-yellow-600">
@@ -263,7 +260,7 @@ const FarmerDashboard = () => {
 
                   <div>
                     <div className="text-xs text-gray-500">Duration</div>
-                    <div>{booking.total_hours} Hours</div>
+                    <div>{booking.total_days} Days</div>
                   </div>
                 </div>
 

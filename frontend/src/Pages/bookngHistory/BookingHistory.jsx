@@ -146,7 +146,7 @@ export default function BookingHistory() {
                     </td>
 
                     <td className="px-6 py-4 text-sm text-gray-700">
-                      {booking.total_hours} Hours
+                      {booking.total_days} Days
                     </td>
 
                     <td className="px-6 py-4 text-sm font-semibold text-yellow-600">
@@ -210,7 +210,7 @@ export default function BookingHistory() {
 
                   <div>
                     <div className="text-xs text-gray-500">Duration</div>
-                    <div>{booking.total_hours} Hours</div>
+                    <div>{booking.total_days} Days</div>
                   </div>
                 </div>
 

@@ -11,7 +11,7 @@ export const getPendingBookingRequests = async (req, res) => {
       booking_status: "pending", // Only pending status
       // ❌ REMOVED: payment_status: "paid" - Owner should see requests BEFORE payment
     })
-      .populate("machine_id", "machine_name category images price_per_hour")
+      .populate("machine_id", "machine_name category images price_per_day")
       .populate("farmer_id", "name email phone address profile_pic")
       .sort({ createdAt: -1 });
 
@@ -39,7 +39,7 @@ export const acceptBookingRequest = async (req, res) => {
   try {
     const booking = await Booking.findById(req.params.bookingId)
       .populate("farmer_id", "name email phone")
-      .populate("machine_id", "machine_name model category price_per_hour images")
+      .populate("machine_id", "machine_name model category price_per_day images")
       .populate("owner_id", "name phone");
     
     if (!booking) {
@@ -172,15 +172,15 @@ export const acceptBookingRequest = async (req, res) => {
                               </tr>
                               <tr>
                                 <td style="color: #666; font-size: 14px;">Start Date:</td>
-                                <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.start_time)} at ${formatTime(booking.start_time)}</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.start_date)}</td>
                               </tr>
                               <tr>
                                 <td style="color: #666; font-size: 14px;">End Date:</td>
-                                <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.end_time)} at ${formatTime(booking.end_time)}</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.end_date)}</td>
                               </tr>
                               <tr>
                                 <td style="color: #666; font-size: 14px;">Duration:</td>
-                                <td style="color: #333; font-size: 14px; font-weight: 600;">${booking.total_hours} hours</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600;">${booking.total_days} day${booking.total_days > 1 ? 's' : ''}</td>
                               </tr>
                               <tr>
                                 <td style="color: #666; font-size: 14px;">Total Amount:</td>
@@ -303,7 +303,7 @@ export const rejectBookingRequest = async (req, res) => {
     const { rejection_reason } = req.body;
     const booking = await Booking.findById(req.params.bookingId)
       .populate("farmer_id", "name email phone")
-      .populate("machine_id", "machine_name model category price_per_hour")
+      .populate("machine_id", "machine_name model category price_per_day")
       .populate("owner_id", "name phone");
     
     if (!booking) {
@@ -426,7 +426,7 @@ export const rejectBookingRequest = async (req, res) => {
                               </tr>
                               <tr>
                                 <td style="color: #666; font-size: 14px;">Requested Period:</td>
-                                <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.start_time)} - ${formatDate(booking.end_time)}</td>
+                                <td style="color: #333; font-size: 14px; font-weight: 600;">${formatDate(booking.start_date)} - ${formatDate(booking.end_date)}</td>
                               </tr>
                               <tr>
                                 <td style="color: #666; font-size: 14px;">Status:</td>

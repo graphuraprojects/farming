@@ -221,25 +221,25 @@ export const createBooking = async (req, res) => {
       });
     }
 
-    // 🔹 Convert dates
-    const startDate = new Date(start_date);
-    const endDate = new Date(end_date);
+    // 🔹 Convert dates (strip time to avoid timezone issues)
+    const startDate = new Date(start_date + "T00:00:00");
+    const endDate = new Date(end_date + "T00:00:00");
 
-    if (endDate <= startDate) {
+    if (endDate < startDate) {
       return res.status(400).json({
         success: false,
-        message: "End date must be after start date",
+        message: "End date cannot be before start date",
       });
     }
 
-    // ✅ Calculate total hours dynamically
+    // ✅ Calculate total days (inclusive: Jan 1 to Jan 3 = 3 days)
     const diffMs = endDate - startDate;
-    const totalHours = diffMs / (1000 * 60 * 60);
+    const totalDays = Math.floor(diffMs / (1000 * 60 * 60 * 24)) + 1;
 
-    if (totalHours <= 0) {
+    if (totalDays < 1) {
       return res.status(400).json({
         success: false,
-        message: "Invalid booking duration",
+        message: "Minimum rental duration is 1 day",
       });
     }
 
@@ -288,7 +288,7 @@ export const createBooking = async (req, res) => {
     }
 
     // 🔹 Calculate Rent
-    const rentAmount = totalHours * machine.price_per_hour;
+    const rentAmount = totalDays * machine.price_per_day;
 
     // 🔹 Calculate Distance
     const distanceKm = getDistanceInKm(
@@ -332,7 +332,7 @@ export const createBooking = async (req, res) => {
       start_date: startDate,
       end_date: endDate,
 
-      total_hours: totalHours,
+      total_days: totalDays,
       rent_amount: rentAmount,
       transport_fee: transportFee,
       total_amount: finalAmount,
@@ -466,7 +466,7 @@ export const getBookings = async (req, res) => {
     }
 
     const bookings = await Booking.find(filter)
-      .populate("machine_id", "machine_name images price_per_hour")
+      .populate("machine_id", "machine_name images price_per_day")
       .populate("farmer_id", "name phone")
       .populate("owner_id", "name phone")
       .sort({ createdAt: -1 });
@@ -539,7 +539,7 @@ export const getBookingById = async (req, res) => {
     const bookingId = req.params.id;
 
     const booking = await Booking.findById(bookingId)
-      .populate("machine_id", "machine_name images category price_per_hour")
+      .populate("machine_id", "machine_name images category price_per_day")
       .populate("farmer_id", "name email phone address profile_pic")
       .populate("owner_id", "name email phone");
 
