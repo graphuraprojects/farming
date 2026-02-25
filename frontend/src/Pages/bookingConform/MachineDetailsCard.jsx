@@ -5,7 +5,6 @@ const MachineDetailsCard = ({ details }) => {
     machineName = "Unknown Machine",
     description = "No description available",
     rentalDates = "Dates pending",
-    totalUsage = "0 Hours",
     pickupLocation = "Location pending",
     imageUrl
   } = details || {};
@@ -45,14 +44,14 @@ const MachineDetailsCard = ({ details }) => {
               </div>
             </div>
             
-            {/* Item 2 */}
+            {/* Item 2
             <div className="w-full sm:w-auto min-w-[120px]">
               <p className="text-[#1f3d2b]/60 uppercase text-[9px] sm:text-[10px] font-bold mb-0.5">Total Usage</p>
               <div className="flex items-center gap-1.5 text-[#2b2b2b] font-semibold text-xs sm:text-sm">
                 <span className="material-symbols-outlined text-sm sm:text-base">timer</span>
                 {totalUsage}
               </div>
-            </div>
+            </div> */}
 
             {/* Item 3 */}
             <div className="w-full pt-1">
