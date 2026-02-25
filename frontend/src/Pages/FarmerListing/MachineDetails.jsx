@@ -54,8 +54,9 @@ const MachineDetails = () => {
   const [machine, setMachine] = useState(null);
   const [loading, setLoading] = useState(true);
   const [startDate, setStartDate] = useState("");
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  // const [startTime, setStartTime] = useState("");
+  // const [endTime, setEndTime] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const [duration, setDuration] = useState({
     hours: 0,
@@ -90,34 +91,62 @@ const MachineDetails = () => {
     fetchMachine();
   }, [id]);
 
+  // useEffect(() => {
+  //   if (!startTime || !endTime) return;
+
+  //   const [sh, sm] = startTime.split(":").map(Number);
+  //   const [eh, em] = endTime.split(":").map(Number);
+
+  //   const startMinutes = sh * 60 + sm;
+  //   const endMinutes = eh * 60 + em;
+
+  //   if (endMinutes > startMinutes) {
+  //     const diffMinutes = endMinutes - startMinutes;
+
+  //     const hrs = Math.floor(diffMinutes / 60);
+  //     const mins = diffMinutes % 60;
+
+  //     setDuration({
+  //       hours: hrs,
+  //       minutes: mins,
+  //       totalHoursDecimal: diffMinutes / 60, // for price
+  //     });
+  //   } else {
+  //     setDuration({
+  //       hours: 0,
+  //       minutes: 0,
+  //       totalHoursDecimal: 0,
+  //     });
+  //   }
+  // }, [startTime, endTime]);
+
   useEffect(() => {
-    if (!startTime || !endTime) return;
+    if (!startDate || !endDate) return;
 
-    const [sh, sm] = startTime.split(":").map(Number);
-    const [eh, em] = endTime.split(":").map(Number);
+    const start = new Date(startDate);
+    const end = new Date(endDate);
 
-    const startMinutes = sh * 60 + sm;
-    const endMinutes = eh * 60 + em;
-
-    if (endMinutes > startMinutes) {
-      const diffMinutes = endMinutes - startMinutes;
-
-      const hrs = Math.floor(diffMinutes / 60);
-      const mins = diffMinutes % 60;
-
-      setDuration({
-        hours: hrs,
-        minutes: mins,
-        totalHoursDecimal: diffMinutes / 60, // for price
-      });
-    } else {
+    if (end <= start) {
       setDuration({
         hours: 0,
         minutes: 0,
         totalHoursDecimal: 0,
       });
+      return;
     }
-  }, [startTime, endTime]);
+
+    const diffMs = end - start;
+    const diffHours = diffMs / (1000 * 60 * 60);
+
+    const hrs = Math.floor(diffHours);
+    const mins = Math.round((diffHours - hrs) * 60);
+
+    setDuration({
+      hours: hrs,
+      minutes: mins,
+      totalHoursDecimal: diffHours,
+    });
+  }, [startDate, endDate]);
 
   if (loading) {
     return <p className="text-center py-20">Loading machine details...</p>;
@@ -320,7 +349,7 @@ const MachineDetails = () => {
 
           <div className="p-6 flex flex-col gap-5">
             <div className="border border-[#dee3e0] rounded-xl overflow-hidden">
-              <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors border-b border-[#dee3e0]">
+              {/* <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors border-b border-[#dee3e0]">
                 <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
                   Start Date
                 </label>
@@ -333,10 +362,10 @@ const MachineDetails = () => {
                     className="w-full text-sm bg-transparent outline-none"
                   />
                 </div>
-              </div>
-
+              </div> */}
+              {/* 
               <div className="grid grid-cols-2 divide-x divide-[#dee3e0] border-b border-[#dee3e0]">
-                {/* START TIME */}
+               
                 <div className="p-3 hover:bg-[#f9faf7] transition-colors">
                   <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
                     Start Time
@@ -349,7 +378,7 @@ const MachineDetails = () => {
                   />
                 </div>
 
-                {/* END TIME */}
+                
                 <div className="p-3 hover:bg-[#f9faf7] transition-colors">
                   <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
                     End Time
@@ -361,7 +390,37 @@ const MachineDetails = () => {
                     className="w-full mt-2 text-sm bg-transparent outline-none"
                   />
                 </div>
+              </div> */}
+
+              <div className="grid grid-cols-2 divide-x divide-[#dee3e0] border-b border-[#dee3e0]">
+                <div className="p-3">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74]">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    min={today}
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    className="w-full mt-2 text-sm bg-transparent outline-none"
+                  />
+                </div>
+
+                <div className="p-3">
+                  <label className="block text-[10px] uppercase font-bold text-[#6d7e74]">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    min={startDate || today}
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    className="w-full mt-2 text-sm bg-transparent outline-none"
+                  />
+                </div>
               </div>
+
+             
 
               <div className="grid grid-cols-1 divide-x divide-[#dee3e0]">
                 <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
@@ -450,12 +509,13 @@ const MachineDetails = () => {
                   return;
                 }
 
-                if (
-                  !startDate ||
-                  !startTime ||
-                  !endTime ||
-                  duration.totalHoursDecimal <= 0
-                ) {
+                // if (
+                //   !startDate ||
+                //   !startTime ||
+                //   !endTime ||
+                //   duration.totalHoursDecimal <= 0
+                // )
+                if (!startDate || !endDate || duration.totalHoursDecimal <= 0) {
                   alert("Please select date and time range.");
                   return;
                 }
@@ -469,18 +529,34 @@ const MachineDetails = () => {
                 }
 
                 try {
+                  // const res = await axios.post(
+                  //   `/api/bookings/create`,
+                  //   {
+                  //     machine_id: machine._id,
+                  //     start_date: startDate,
+                  //     start_time: startTime,
+                  //     end_time: endTime,
+                  //     total_hours: duration.totalHoursDecimal,
+                  //     // total_amount: grandTotal,
+                  //   },
+                  //   {
+                  //     headers: { Authorization: `Bearer ${token}` },
+                  //   },
+                  // );
+
                   const res = await axios.post(
-                    `/api/bookings/create`,
+                    "/api/bookings/create",
                     {
                       machine_id: machine._id,
                       start_date: startDate,
-                      start_time: startTime,
-                      end_time: endTime,
+                      end_date: endDate,
                       total_hours: duration.totalHoursDecimal,
-                      // total_amount: grandTotal,
                     },
                     {
-                      headers: { Authorization: `Bearer ${token}` },
+                      headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                      },
                     },
                   );
 
