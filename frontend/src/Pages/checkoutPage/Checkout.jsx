@@ -7,7 +7,7 @@ import { MoveLeft, CreditCard } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const API_BASE = import.meta.env.VITE_API_BASE;
+const API_BASE = import.meta.env.VITE_API_BASE || "";
 
 export default function Checkout() {
   const navigate = useNavigate();
@@ -26,6 +26,9 @@ export default function Checkout() {
   const [hasSavedAddress, setHasSavedAddress] = useState(false);
   const [liveLocation, setLiveLocation] = useState(null);
   const [deliveryMode, setDeliveryMode] = useState("delivery");
+  const [paying, setPaying] = useState(false);
+
+  /* ================= BOOKING DATA ================= */
 
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
   if (bookings.length === 0) return <p>No booking data found</p>;
@@ -35,10 +38,16 @@ export default function Checkout() {
 
   const durationText =
     currentBooking?.durationDisplay ||
-    `${currentBooking?.hoursDecimal || 0} hr`;
+    `${currentBooking?.totalDays || 0} day(s)`;
 
   const subtotal = Number(currentBooking?.total || 0);
   const totalAmount = Math.round(subtotal * 100) / 100;
+
+  // Safe image — never pass undefined/empty to <img src>
+  const bookingImage =
+    currentBooking?.image && currentBooking.image.startsWith("http")
+      ? currentBooking.image
+      : null;
 
   /* ================= FETCH USER DATA ================= */
 
@@ -46,14 +55,15 @@ export default function Checkout() {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem("token");
+        if (!token) return;
+
         const headers = { Authorization: `Bearer ${token}` };
 
-        // Profile
+        // 1. Profile
         const profileRes = await axios.get(
           `${API_BASE}/api/users/my-profile`,
           { headers }
         );
-
         const user = profileRes.data.data;
         const nameParts = user.name?.split(" ") || [];
 
@@ -65,28 +75,29 @@ export default function Checkout() {
           phone: user.phone || "",
         }));
 
-        // Default address
-        const addressRes = await axios.get(
-          `/api/users/addresses/default`,
-          { headers }
-        );
+        // 2. Default address
+        try {
+          const addressRes = await axios.get(
+            `${API_BASE}/api/users/addresses/default`,
+            { headers }
+          );
+          const defaultAddress = addressRes.data.data;
 
-        const defaultAddress = addressRes.data.data;
-
-        if (defaultAddress) {
-          setHasSavedAddress(true);
-          setFormData((prev) => ({
-            ...prev,
-            address: defaultAddress.street || "",
-            city: defaultAddress.city || "",
-            zipCode: defaultAddress.zip || "",
-          }));
-        } else {
+          if (defaultAddress) {
+            setHasSavedAddress(true);
+            setFormData((prev) => ({
+              ...prev,
+              address: defaultAddress.street || "",
+              city: defaultAddress.city || "",
+              zipCode: defaultAddress.zip || "",
+            }));
+          }
+        } catch {
+          // No default address — that's fine
           setHasSavedAddress(false);
         }
       } catch (err) {
-        console.log("User data fetch error:", err);
-        setHasSavedAddress(false);
+        console.error("User data fetch error:", err);
       }
     };
 
@@ -97,12 +108,12 @@ export default function Checkout() {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.firstName) newErrors.firstName = "First name required";
-    if (!formData.phone) newErrors.phone = "Phone required";
-    if (!formData.email) newErrors.email = "Email required";
-    if (!formData.address) newErrors.address = "Address required";
-    if (!formData.city) newErrors.city = "City required";
-    if (!formData.zipCode) newErrors.zipCode = "Zip required";
+    if (!formData.firstName.trim()) newErrors.firstName = "First name required";
+    if (!formData.phone.trim()) newErrors.phone = "Phone required";
+    if (!formData.email.trim()) newErrors.email = "Email required";
+    if (!formData.address.trim()) newErrors.address = "Address required";
+    if (!formData.city.trim()) newErrors.city = "City required";
+    if (!formData.zipCode.trim()) newErrors.zipCode = "Zip required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -112,20 +123,19 @@ export default function Checkout() {
 
   const getLiveLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation not supported");
+      alert("Geolocation is not supported by your browser.");
       return;
     }
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-
-        setLiveLocation({ latitude, longitude });
-
-        console.log("Live location:", latitude, longitude);
+        setLiveLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        alert("Location captured successfully!");
       },
-      () => alert("Location permission denied")
+      () => alert("Location permission denied. Please allow access.")
     );
   };
 
@@ -137,7 +147,7 @@ export default function Checkout() {
     const token = localStorage.getItem("token");
 
     await axios.post(
-      `/api/users/addresses`,
+      `${API_BASE}/api/users/addresses`,
       {
         label: "Primary",
         street: formData.address,
@@ -148,37 +158,56 @@ export default function Checkout() {
         latitude: liveLocation?.latitude || null,
         longitude: liveLocation?.longitude || null,
       },
-      {
-        headers: { Authorization: `Bearer ${token}` },
-      }
+      { headers: { Authorization: `Bearer ${token}` } }
     );
   };
 
   /* ================= PAYMENT ================= */
 
   const handlePayment = async () => {
+    // Guard: booking ID
     if (!bookingId) {
-      alert("Invalid booking.");
+      alert("Missing booking information. Please try again.");
       return;
     }
 
+    // Guard: Razorpay SDK
+    if (!window.Razorpay) {
+      alert("Payment gateway failed to load. Please refresh and try again.");
+      return;
+    }
+
+    // Guard: Razorpay key
+    const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+    if (!razorpayKey) {
+      alert("Payment configuration error. Please contact support.");
+      return;
+    }
+
+    // Validate form fields
     if (!validateForm()) return;
 
+    setPaying(true);
+
     try {
+      // 1. Save address if not already saved
       await saveAddress();
 
       const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
 
+      // 2. Create Razorpay order
       const createRes = await fetch(
-        `/api/admin/payments/create-order`,
+        `${API_BASE}/api/admin/payments/create-order`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
           body: JSON.stringify({
             booking_id: bookingId,
+            total_amount: totalAmount,
           }),
         }
       );
@@ -186,46 +215,91 @@ export default function Checkout() {
       const data = await createRes.json();
 
       if (!createRes.ok) {
-        alert(data?.message || "Failed to create order");
+        alert(data?.message || "Failed to create payment order.");
+        setPaying(false);
         return;
       }
 
+      // 3. Open Razorpay popup
       const options = {
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+        key: razorpayKey,
         amount: data.amount,
         currency: data.currency || "INR",
         name: "Farmer Machine Booking",
         order_id: data.order_id,
         prefill: {
-          name: `${formData.firstName} ${formData.lastName}`,
+          name: `${formData.firstName} ${formData.lastName}`.trim(),
           email: formData.email,
           contact: formData.phone,
         },
         handler: async function (response) {
-          await fetch(`/api/admin/payments/verify`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              booking_id: bookingId,
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            }),
-          });
+          try {
+            // 4. Verify payment
+            const verifyRes = await fetch(
+              `${API_BASE}/api/admin/payments/verify`,
+              {
+                method: "POST",
+                headers,
+                body: JSON.stringify({
+                  booking_id: bookingId,
+                  razorpay_order_id: response.razorpay_order_id,
+                  razorpay_payment_id: response.razorpay_payment_id,
+                  razorpay_signature: response.razorpay_signature,
+                }),
+              }
+            );
 
-          navigate(`/booking-confirmation/${response.razorpay_order_id}`);
+            const verifyData = await verifyRes.json();
+
+            if (!verifyRes.ok) {
+              alert(verifyData?.message || "Payment verification failed.");
+              setPaying(false);
+              return;
+            }
+
+            // 5. Save confirmation data for next page
+            localStorage.setItem(
+              "paymentConfirmationData",
+              JSON.stringify({
+                machineName: currentBooking?.name,
+                machineImage: currentBooking?.image,
+                bookingDate: currentBooking?.startDate,
+                duration: durationText,
+                totalPrice: totalAmount,
+                orderId: response.razorpay_order_id,
+                paymentStatus: "paid",
+              })
+            );
+
+            // 6. Navigate to confirmation
+            navigate(
+              `/booking-confirmation/${response.razorpay_order_id}`
+            );
+          } catch (verifyErr) {
+            console.error("Verification error:", verifyErr);
+            alert("Payment verification failed. Please contact support.");
+            setPaying(false);
+          }
+        },
+        modal: {
+          ondismiss: () => setPaying(false),
         },
         theme: { color: "#03a74f" },
       };
 
       const rzp = new window.Razorpay(options);
+
+      rzp.on("payment.failed", (resp) => {
+        console.error("Payment failed:", resp.error);
+        alert("Payment failed. Please try again.");
+        setPaying(false);
+      });
+
       rzp.open();
     } catch (err) {
-      console.log(err);
-      alert("Payment failed.");
+      console.error("Payment error:", err);
+      alert(err?.message || "Something went wrong. Please try again.");
+      setPaying(false);
     }
   };
 
@@ -243,11 +317,11 @@ export default function Checkout() {
             <span className="font-medium">Back to Home</span>
           </Link>
 
-          <h1 className="text-4xl font-bold text-[#131614] mb-2">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#131614] mb-2">
             Checkout
           </h1>
 
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm sm:text-base">
             Complete your order with secure payment
           </p>
         </div>
@@ -256,14 +330,14 @@ export default function Checkout() {
           <div className="flex justify-end mb-4">
             <button
               onClick={getLiveLocation}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm font-semibold transition-colors"
             >
               📍 Use Live Location
             </button>
           </div>
         )}
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8">
           <div className="lg:col-span-2 space-y-6">
             <Section title="Contact Information" value="1">
               <InputGrid
@@ -284,40 +358,62 @@ export default function Checkout() {
             </Section>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-6 sticky top-10">
-            <h2 className="text-xl font-bold mb-4 flex justify-between">
-              Order Summary <CreditCard />
-            </h2>
-
-            <div className="space-y-4">
-              <div className="flex gap-3">
-                <img
-                  src={currentBooking.image}
-                  className="w-16 h-16 rounded-lg object-cover"
-                />
-                <div>
-                  <h3 className="font-bold">{currentBooking.name}</h3>
-                  <p className="text-sm text-gray-500">
-                    {currentBooking.startDate}
-                  </p>
-                  <p className="text-sm">{durationText}</p>
-                </div>
-              </div>
-
-              <Row label="Subtotal" value={`₹${subtotal}`} />
-
-              <div className="flex justify-between font-bold text-lg pt-4 border-t">
-                <span>Total</span>
-                <span>₹{totalAmount}</span>
-              </div>
-
-              <button
-                onClick={handlePayment}
-                className="w-full mt-4 bg-[#03a74f] text-white py-3 rounded-lg font-semibold"
-              >
-                Proceed to Payment →
-              </button>
+          {/* Order Summary */}
+          <div className="bg-white rounded-xl shadow p-5 h-fit sticky top-10 overflow-hidden">
+            <div className="flex items-center justify-between mb-6 pb-4 border-b border-[#e6e8e6]">
+              <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#131614]">
+                Order Summary
+              </h2>
+              <CreditCard className="text-[#1f3d2b] w-5 h-5" />
             </div>
+
+            <div className="space-y-4 max-h-[320px] overflow-y-auto pr-2">
+              <div className="flex gap-3">
+                {bookingImage ? (
+                  <img
+                    src={bookingImage}
+                    alt={currentBooking.name}
+                    className="w-16 h-16 rounded-lg object-cover shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-lg bg-gray-200 flex items-center justify-center text-gray-400 text-2xl shrink-0">
+                    🚜
+                  </div>
+                )}
+
+                <div className="flex-1">
+                  <h3 className="font-bold text-[13px]">
+                    {currentBooking.name}
+                  </h3>
+                  <p className="text-[10px] text-gray-500">
+                    Date: {currentBooking.startDate}
+                  </p>
+                  <p className="text-[12px] font-semibold">
+                    Duration: {durationText}
+                  </p>
+                </div>
+
+                <p className="font-bold">₹{currentBooking.total}</p>
+              </div>
+            </div>
+
+            <div className="border-t mt-4 pt-4 space-y-2 text-sm">
+              <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
+            </div>
+
+            <div className="border-t mt-4 pt-4 flex justify-between font-bold text-lg">
+              <span className="text-gray-600">Total</span>
+              <span>₹{totalAmount}</span>
+            </div>
+
+            <button
+              onClick={handlePayment}
+              disabled={paying}
+              className="w-full mt-5 bg-[#03a74f] text-white py-3 rounded-lg hover:bg-[#38864b] cursor-pointer flex justify-center items-center gap-2 font-semibold transition-all shadow-lg hover:shadow-xl transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              <CreditCard className="text-white w-5 h-5" />
+              {paying ? "Processing..." : "Proceed to Payment →"}
+            </button>
           </div>
         </div>
       </div>
