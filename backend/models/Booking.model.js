@@ -20,8 +20,11 @@ const bookingSchema = new mongoose.Schema(
       required: true,
     },
 
-    start_time: Date,
-    end_time: Date,
+    // start_time: Date,
+    // end_time: Date,
+
+    start_date: Date,
+    end_date: Date,
     total_hours: Number,
     total_amount: Number,
 

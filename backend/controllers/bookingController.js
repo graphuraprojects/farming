@@ -21,76 +21,249 @@ function getDistanceInKm(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+// export const createBooking = async (req, res) => {
+//   try {
+//     console.log("\n========== CREATE BOOKING START ==========");
+
+//     // 1️⃣ Log Request
+//     console.log("Full req.body:", req.body);
+//     console.log("Logged user:", req.user);
+
+//     if (!req.user || !req.user.userId) {
+//       console.log("❌ No authenticated user found");
+//       return res.status(401).json({
+//         success: false,
+//         message: "Unauthorized user",
+//       });
+//     }
+
+//     // 2️⃣ Destructure Fields
+//     const { machine_id, start_date, start_time, end_time, total_hours } =
+//       req.body;
+
+//     console.log("Parsed fields:", {
+//       machine_id,
+//       start_date,
+//       start_time,
+//       end_time,
+//       total_hours,
+//     });
+
+//     // 3️⃣ Validate Required Fields
+//     if (
+//       !machine_id ||
+//       !start_date ||
+//       !start_time ||
+//       !end_time ||
+//       total_hours == null
+//     ) {
+//       console.log("❌ Missing required fields");
+//       return res.status(400).json({
+//         success: false,
+//         message: "Missing required fields",
+//       });
+//     }
+
+//     // 4️⃣ Fetch Machine
+//     const machine = await Machine.findById(machine_id);
+//     console.log("Machine found:", machine?._id);
+
+//     if (!machine) {
+//       console.log("❌ Machine not found");
+//       return res.status(404).json({
+//         success: false,
+//         message: "Machine not found",
+//       });
+//     }
+
+//     // 5️⃣ Fetch Farmer
+//     const farmer = await User.findById(req.user.userId);
+//     console.log("Farmer found:", farmer?._id);
+//     console.log("Farmer location:", farmer?.location);
+
+//     if (!farmer) {
+//       console.log("❌ Farmer not found");
+//       return res.status(404).json({
+//         success: false,
+//         message: "Farmer not found",
+//       });
+//     }
+
+//     // 6️⃣ Validate Locations
+//     // Get farmer default address
+//     const defaultAddress = farmer.addresses?.find((a) => a.isDefault);
+
+//     if (
+//       !defaultAddress ||
+//       defaultAddress.latitude == null ||
+//       defaultAddress.longitude == null
+//     ) {
+//       return res.status(400).json({
+//         success: false,
+//         message: "Please set your default address with location.",
+//       });
+//     }
+
+//     if (
+//       machine?.location?.latitude == null ||
+//       machine?.location?.longitude == null
+//     ) {
+//       console.log("❌ Machine location missing");
+//       return res.status(400).json({
+//         success: false,
+//         message: "Machine location not available.",
+//       });
+//     }
+
+//     // 7️⃣ Convert total_hours safely
+//     const hours = Number(total_hours);
+
+//     if (isNaN(hours) || hours <= 0) {
+//       console.log("❌ Invalid total hours:", total_hours);
+//       return res.status(400).json({
+//         success: false,
+//         message: "Invalid total hours",
+//       });
+//     }
+
+//     // 8️⃣ Calculate Rent
+//     const rentAmount = hours * machine.price_per_hour;
+//     console.log("Rent amount:", rentAmount);
+
+//     // 9️⃣ Calculate Distance
+//     const distanceKm = getDistanceInKm(
+//       machine.location.latitude,
+//       machine.location.longitude,
+//       defaultAddress.latitude,
+//       defaultAddress.longitude,
+//     );
+
+//     console.log("Distance KM:", distanceKm);
+
+//     // 🔟 Calculate Transport (rate per KM)
+//     const transportRate = machine.transport || 0;
+//     const transportFee = Math.round(distanceKm * transportRate);
+
+//     console.log("Transport rate:", transportRate);
+//     console.log("Transport fee:", transportFee);
+
+//     // 1️⃣1️⃣ Final Amount
+//     const finalAmount = rentAmount + transportFee;
+//     console.log("Final amount:", finalAmount);
+
+//     // 1️⃣2️⃣ Create Date Objects
+//     const startDateTime = new Date(`${start_date}T${start_time}:00`);
+//     const endDateTime = new Date(`${start_date}T${end_time}:00`);
+
+//     console.log("Start DateTime:", startDateTime);
+//     console.log("End DateTime:", endDateTime);
+
+//     // 1️⃣3️⃣ Create Booking
+//     const booking = await Booking.create({
+//       farmer_id: farmer._id,
+//       machine_id: machine._id,
+//       owner_id: machine.owner_id,
+//       start_time: startDateTime,
+//       end_time: endDateTime,
+//       total_hours: hours,
+//       rent_amount: rentAmount,
+//       transport_fee: transportFee,
+//       total_amount: finalAmount,
+//       booking_status: "pending",
+//       payment_status: "pending",
+//     });
+
+//     console.log("✅ Booking created:", booking._id);
+//     console.log("========== CREATE BOOKING END ==========\n");
+
+//     return res.status(201).json({
+//       success: true,
+//       message: "Booking created successfully",
+//       data: {
+//         booking,
+//         breakdown: {
+//           rent: rentAmount,
+//           transport: transportFee,
+//           distance_km: distanceKm.toFixed(2),
+//           total: finalAmount,
+//         },
+//       },
+//     });
+//   } catch (error) {
+//     console.error("❌ CREATE BOOKING ERROR:", error);
+//     return res.status(500).json({
+//       success: false,
+//       message: "Failed to create booking",
+//       error: error.message,
+//     });
+//   }
+// };
+
+
 export const createBooking = async (req, res) => {
   try {
     console.log("\n========== CREATE BOOKING START ==========");
 
-    // 1️⃣ Log Request
-    console.log("Full req.body:", req.body);
-    console.log("Logged user:", req.user);
-
     if (!req.user || !req.user.userId) {
-      console.log("❌ No authenticated user found");
       return res.status(401).json({
         success: false,
         message: "Unauthorized user",
       });
     }
 
-    // 2️⃣ Destructure Fields
-    const { machine_id, start_date, start_time, end_time, total_hours } =
-      req.body;
+    // ✅ NEW: Expect end_date instead of time
+    const { machine_id, start_date, end_date } = req.body;
 
-    console.log("Parsed fields:", {
-      machine_id,
-      start_date,
-      start_time,
-      end_time,
-      total_hours,
-    });
-
-    // 3️⃣ Validate Required Fields
-    if (
-      !machine_id ||
-      !start_date ||
-      !start_time ||
-      !end_time ||
-      total_hours == null
-    ) {
-      console.log("❌ Missing required fields");
+    if (!machine_id || !start_date || !end_date) {
       return res.status(400).json({
         success: false,
         message: "Missing required fields",
       });
     }
 
-    // 4️⃣ Fetch Machine
+    // 🔹 Convert dates
+    const startDate = new Date(start_date);
+    const endDate = new Date(end_date);
+
+    if (endDate <= startDate) {
+      return res.status(400).json({
+        success: false,
+        message: "End date must be after start date",
+      });
+    }
+
+    // ✅ Calculate total hours dynamically
+    const diffMs = endDate - startDate;
+    const totalHours = diffMs / (1000 * 60 * 60);
+
+    if (totalHours <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid booking duration",
+      });
+    }
+
+    // 🔹 Fetch machine
     const machine = await Machine.findById(machine_id);
-    console.log("Machine found:", machine?._id);
 
     if (!machine) {
-      console.log("❌ Machine not found");
       return res.status(404).json({
         success: false,
         message: "Machine not found",
       });
     }
 
-    // 5️⃣ Fetch Farmer
+    // 🔹 Fetch farmer
     const farmer = await User.findById(req.user.userId);
-    console.log("Farmer found:", farmer?._id);
-    console.log("Farmer location:", farmer?.location);
 
     if (!farmer) {
-      console.log("❌ Farmer not found");
       return res.status(404).json({
         success: false,
         message: "Farmer not found",
       });
     }
 
-    // 6️⃣ Validate Locations
-    // Get farmer default address
+    // 🔹 Get default address
     const defaultAddress = farmer.addresses?.find((a) => a.isDefault);
 
     if (
@@ -108,29 +281,16 @@ export const createBooking = async (req, res) => {
       machine?.location?.latitude == null ||
       machine?.location?.longitude == null
     ) {
-      console.log("❌ Machine location missing");
       return res.status(400).json({
         success: false,
         message: "Machine location not available.",
       });
     }
 
-    // 7️⃣ Convert total_hours safely
-    const hours = Number(total_hours);
+    // 🔹 Calculate Rent
+    const rentAmount = totalHours * machine.price_per_hour;
 
-    if (isNaN(hours) || hours <= 0) {
-      console.log("❌ Invalid total hours:", total_hours);
-      return res.status(400).json({
-        success: false,
-        message: "Invalid total hours",
-      });
-    }
-
-    // 8️⃣ Calculate Rent
-    const rentAmount = hours * machine.price_per_hour;
-    console.log("Rent amount:", rentAmount);
-
-    // 9️⃣ Calculate Distance
+    // 🔹 Calculate Distance
     const distanceKm = getDistanceInKm(
       machine.location.latitude,
       machine.location.longitude,
@@ -138,43 +298,48 @@ export const createBooking = async (req, res) => {
       defaultAddress.longitude,
     );
 
-    console.log("Distance KM:", distanceKm);
-
-    // 🔟 Calculate Transport (rate per KM)
+    // 🔹 Calculate Transport
     const transportRate = machine.transport || 0;
     const transportFee = Math.round(distanceKm * transportRate);
 
-    console.log("Transport rate:", transportRate);
-    console.log("Transport fee:", transportFee);
-
-    // 1️⃣1️⃣ Final Amount
     const finalAmount = rentAmount + transportFee;
-    console.log("Final amount:", finalAmount);
 
-    // 1️⃣2️⃣ Create Date Objects
-    const startDateTime = new Date(`${start_date}T${start_time}:00`);
-    const endDateTime = new Date(`${start_date}T${end_time}:00`);
+    // 🔹 Check overlapping booking
+    const overlapping = await Booking.findOne({
+      machine_id,
+      booking_status: { $in: ["pending", "accepted"] },
+      $or: [
+        {
+          start_date: { $lt: endDate },
+          end_date: { $gt: startDate },
+        },
+      ],
+    });
 
-    console.log("Start DateTime:", startDateTime);
-    console.log("End DateTime:", endDateTime);
+    if (overlapping) {
+      return res.status(400).json({
+        success: false,
+        message: "Machine already booked for selected dates",
+      });
+    }
 
-    // 1️⃣3️⃣ Create Booking
+    // 🔹 Create booking
     const booking = await Booking.create({
       farmer_id: farmer._id,
       machine_id: machine._id,
       owner_id: machine.owner_id,
-      start_time: startDateTime,
-      end_time: endDateTime,
-      total_hours: hours,
+
+      start_date: startDate,
+      end_date: endDate,
+
+      total_hours: totalHours,
       rent_amount: rentAmount,
       transport_fee: transportFee,
       total_amount: finalAmount,
+
       booking_status: "pending",
       payment_status: "pending",
     });
-
-    console.log("✅ Booking created:", booking._id);
-    console.log("========== CREATE BOOKING END ==========\n");
 
     return res.status(201).json({
       success: true,
@@ -190,7 +355,7 @@ export const createBooking = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("❌ CREATE BOOKING ERROR:", error);
+    console.error("CREATE BOOKING ERROR:", error);
     return res.status(500).json({
       success: false,
       message: "Failed to create booking",
@@ -198,6 +363,8 @@ export const createBooking = async (req, res) => {
     });
   }
 };
+
+
 
 /**ACCEPT OR REJECT BOOKING (Owner/Admin)*/
 export const decideBooking = async (req, res) => {
