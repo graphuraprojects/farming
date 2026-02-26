@@ -108,7 +108,7 @@ const FarmerNavBar = () => {
               <>
                 <Link to="/login">
                   <button
-                    className="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-300 hover:bg-gray-50"
+                    className="px-4 py-2 text-sm cursor-pointer font-medium rounded-lg transition-all duration-300 hover:bg-gray-50"
                     style={{ color: color.text }}
                   >
                     Login
@@ -117,7 +117,7 @@ const FarmerNavBar = () => {
 
                 <Link to="/register">
                   <button
-                    className="px-5 py-2 text-sm text-white font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="px-5 py-2 text-sm cursor-pointer text-white font-semibold rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97]"
                     style={{
                       background: gradientBg(color.emerald, color.forest),
                       boxShadow: `0 2px 10px ${color.emerald}25`,
