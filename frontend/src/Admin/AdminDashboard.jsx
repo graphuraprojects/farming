@@ -26,6 +26,7 @@ import {
 } from "recharts";
 import ApprovalList from "./ApprovalList";
 import UserManagement from "./UserManagement";
+import { color, shadow, gradientBg } from "../theme";
 
 /* ============================
    ADMIN DASHBOARD
@@ -59,22 +60,24 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen flex" style={{ background: color.bg }}>
       {/* SIDEBAR */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 bg-green-900 text-white transform transition-transform duration-300 ${
+        className={`fixed lg:static inset-y-0 left-0 z-50 w-64 text-white transform transition-transform duration-300 ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
+        style={{ background: `linear-gradient(180deg, ${color.deepForest} 0%, ${color.forest} 100%)` }}
       >
         <div className="flex flex-col h-full">
-          <div className="p-6 border-b border-green-800">
-            <img src={logo} alt="logo" />
+          <div className="p-6" style={{ borderBottom: `1px solid ${color.emerald}30` }}>
+            <img src={logo} alt="logo" className="max-h-10" />
           </div>
 
           <nav className="flex-1 p-4">
-            <ul className="space-y-2">
+            <ul className="space-y-1.5">
               {menuItems.map((item) => {
                 const Icon = item.icon;
+                const isActive = activeTab === item.id;
                 return (
                   <li key={item.id}>
                     <button
@@ -82,13 +85,16 @@ const AdminDashboard = () => {
                         setActiveTab(item.id);
                         setIsSidebarOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg ${
-                        activeTab === item.id
-                          ? "bg-green-800 shadow-md"
-                          : "hover:bg-green-800/50"
-                      }`}
+                      className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                      style={
+                        isActive
+                          ? { background: `${color.emerald}25`, color: color.paleGreen, boxShadow: `0 0 20px ${color.emerald}15` }
+                          : { color: "rgba(255,255,255,0.7)" }
+                      }
+                      onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = `${color.emerald}15`; }}
+                      onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = "transparent"; }}
                     >
-                      <Icon size={20} />
+                      <Icon size={18} />
                       {item.label}
                     </button>
                   </li>
@@ -97,18 +103,26 @@ const AdminDashboard = () => {
             </ul>
           </nav>
 
-          <div className="p-4 border-t border-green-800 space-y-2">
+          <div className="p-4 space-y-1.5" style={{ borderTop: `1px solid ${color.emerald}30` }}>
             <Link to="/">
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-800/50">
-                <Home size={20} /> Back to Home
+              <button
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+                style={{ color: "rgba(255,255,255,0.7)" }}
+                onMouseEnter={(e) => e.currentTarget.style.background = `${color.emerald}15`}
+                onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
+              >
+                <Home size={18} /> Back to Home
               </button>
             </Link>
 
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-green-800/50 text-red-300"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200"
+              style={{ color: "#fca5a5" }}
+              onMouseEnter={(e) => e.currentTarget.style.background = "rgba(239,68,68,0.1)"}
+              onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
             >
-              <LogOut size={20} /> Logout
+              <LogOut size={18} /> Logout
             </button>
           </div>
         </div>
@@ -116,12 +130,15 @@ const AdminDashboard = () => {
 
       {/* MAIN */}
       <div className="flex-1 flex flex-col">
-        <header className="bg-white shadow-sm lg:hidden sticky top-0 z-40">
+        <header
+          className="lg:hidden sticky top-0 z-40"
+          style={{ background: "rgba(255,255,255,0.85)", backdropFilter: "blur(12px)", borderBottom: `1px solid ${color.border}` }}
+        >
           <div className="flex items-center justify-between px-4 py-3">
             <button onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
               {isSidebarOpen ? <X /> : <Menu />}
             </button>
-            <h1 className="font-bold">Admin Dashboard</h1>
+            <h1 className="font-bold text-sm" style={{ color: color.text }}>Admin Dashboard</h1>
             <div className="w-10" />
           </div>
         </header>
@@ -178,36 +195,47 @@ const DashboardContent = () => {
   }, [analytics]);
 
   if (loading || !analytics)
-    return <p className="text-center py-10">Loading dashboard...</p>;
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="text-center">
+          <div className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: color.paleGreen, borderTopColor: color.emerald }} />
+          <p className="text-sm font-medium" style={{ color: color.textSoft }}>Loading dashboard...</p>
+        </div>
+      </div>
+    );
 
   const stats = [
     {
       label: "Total Transactions",
       value: `₹${analytics.totalRevenue.toLocaleString()}`,
       icon: IndianRupee,
-      bgColor: "bg-blue-50",
-      iconColor: "text-blue-600",
+      iconBg: color.paleGreen,
+      iconColor: color.emerald,
+      accentBg: color.paleGreen,
     },
     {
       label: "Admin Commission",
       value: `₹${analytics.adminEarnings.toLocaleString()}`,
       icon: TrendingUp,
-      bgColor: "bg-green-50",
-      iconColor: "text-green-600",
+      iconBg: "#fff7ed",
+      iconColor: "#ea580c",
+      accentBg: "#fff7ed",
     },
     {
       label: "Total Bookings",
       value: analytics.totalBookings,
       icon: Package,
-      bgColor: "bg-purple-50",
-      iconColor: "text-purple-600",
+      iconBg: "#f3e8ff",
+      iconColor: "#9333ea",
+      accentBg: "#f3e8ff",
     },
     {
       label: "Completed Bookings",
       value: analytics.completedBookings,
       icon: Calendar,
-      bgColor: "bg-orange-50",
-      iconColor: "text-orange-600",
+      iconBg: "#ecfdf5",
+      iconColor: color.lush,
+      accentBg: "#ecfdf5",
     },
   ];
 
@@ -220,38 +248,60 @@ const DashboardContent = () => {
           return (
             <div
               key={index}
-              className="group bg-white rounded-2xl shadow-sm border border-gray-200 p-6"
+              className="group relative overflow-hidden bg-white rounded-2xl p-6 transition-all duration-300 hover:-translate-y-0.5"
+              style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
             >
-              <div className="flex justify-between mb-4">
-                <div className={`p-3 ${stat.bgColor} rounded-xl`}>
-                  <Icon className={`${stat.iconColor}`} />
-                </div>
-              </div>
+              <div
+                className="absolute -right-6 -top-6 h-24 w-24 rounded-full transition-transform group-hover:scale-110"
+                style={{ background: stat.accentBg }}
+              />
 
-              <p className="text-sm text-gray-600">{stat.label}</p>
-              <p className="text-3xl font-bold">{stat.value}</p>
+              <div className="relative z-10 flex flex-col gap-1">
+                <div
+                  className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl"
+                  style={{ background: stat.iconBg }}
+                >
+                  <Icon className="w-6 h-6" style={{ color: stat.iconColor }} />
+                </div>
+
+                <p className="text-sm" style={{ color: color.textSoft }}>{stat.label}</p>
+                <p className="text-3xl font-bold" style={{ color: color.text }}>{stat.value}</p>
+              </div>
             </div>
           );
         })}
       </div>
 
       {/* GRAPH */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
-        <h3 className="text-xl font-bold mb-4">Monthly Revenue</h3>
+      <div
+        className="bg-white rounded-2xl p-6"
+        style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
+      >
+        <h3 className="text-lg font-bold mb-4" style={{ color: color.text }}>Monthly Revenue</h3>
 
         {console.log("🎯 Rendering Graph With:", analytics.monthlyRevenue)}
 
         <ResponsiveContainer width="100%" height={350}>
           <LineChart data={analytics.monthlyRevenue}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="month" />
-            <YAxis tickFormatter={(v) => `₹${v / 1000}k`} />
-            <Tooltip formatter={(v) => `₹${v.toLocaleString()}`} />
+            <CartesianGrid strokeDasharray="3 3" stroke={color.border} />
+            <XAxis dataKey="month" tick={{ fill: color.textSoft, fontSize: 12 }} />
+            <YAxis tickFormatter={(v) => `₹${v / 1000}k`} tick={{ fill: color.textSoft, fontSize: 12 }} />
+            <Tooltip
+              formatter={(v) => `₹${v.toLocaleString()}`}
+              contentStyle={{
+                background: "white",
+                border: `1px solid ${color.border}`,
+                borderRadius: "12px",
+                boxShadow: shadow.md,
+              }}
+            />
             <Line
               type="monotone"
               dataKey="revenue"
-              stroke="#03a74f"
+              stroke={color.emerald}
               strokeWidth={3}
+              dot={{ fill: color.emerald, r: 4, strokeWidth: 0 }}
+              activeDot={{ r: 6, fill: color.emerald, strokeWidth: 0 }}
             />
           </LineChart>
         </ResponsiveContainer>

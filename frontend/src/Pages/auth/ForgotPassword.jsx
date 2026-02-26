@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, ArrowLeft } from "lucide-react";
+import { color, gradientBg } from "../../theme";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
@@ -19,7 +20,6 @@ const ForgotPassword = () => {
       const res = await axios.post(`/api/auth/forgot-password`, { email });
 
       if (res.data.success) {
-        // Navigate to OTP verification page
         navigate("/reset-password", { state: { email } });
       }
     } catch (err) {
@@ -30,25 +30,29 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#e9fbf1cc] flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: `${color.mintCream}cc` }}>
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-lg p-8">
+        <div className="bg-white rounded-3xl p-8" style={{ boxShadow: "0 12px 40px rgba(0,0,0,0.08)", border: `1px solid ${color.border}` }}>
           <Link
             to="/login"
-            className="inline-flex items-center gap-2 text-gray-600 hover:text-[#03a74f] mb-6 transition-colors"
+            className="inline-flex items-center gap-2 text-sm font-medium mb-6 transition-colors duration-200"
+            style={{ color: color.textSoft }}
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={18} />
             Back to Login
           </Link>
 
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-blue-600" />
+            <div
+              className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4"
+              style={{ background: color.paleGreen }}
+            >
+              <Mail className="w-7 h-7" style={{ color: color.emerald }} />
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-extrabold tracking-tight mb-2" style={{ color: color.text }}>
               Forgot Password?
             </h1>
-            <p className="text-gray-600">
+            <p className="text-sm" style={{ color: color.textSoft }}>
               Enter your email address and we'll send you an OTP to reset your
               password
             </p>
@@ -56,7 +60,7 @@ const ForgotPassword = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: color.text }}>
                 Email Address
               </label>
               <input
@@ -64,13 +68,16 @@ const ForgotPassword = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#03a74f] focus:border-transparent outline-none transition-all"
+                className="w-full px-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200 placeholder:text-gray-400"
+                style={{ border: `1.5px solid ${color.inputBorder}`, background: "white" }}
+                onFocus={(e) => e.target.style.borderColor = color.emerald}
+                onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                 placeholder="Enter your email"
               />
             </div>
 
             {message && (
-              <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+              <div className="p-3 rounded-xl text-sm font-medium" style={{ background: "#fef2f2", color: color.danger, border: "1px solid #fecaca" }}>
                 {message}
               </div>
             )}
@@ -78,7 +85,8 @@ const ForgotPassword = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#03a74f] hover:bg-[#028a42] text-white font-semibold py-3 rounded-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full text-white font-semibold py-3.5 rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}30` }}
             >
               {loading ? "Sending..." : "Send Reset OTP"}
             </button>

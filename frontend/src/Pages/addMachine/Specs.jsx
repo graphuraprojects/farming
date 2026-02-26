@@ -1,4 +1,5 @@
 import React from "react";
+import { color, gradientBg, shadow } from "../../theme";
 
 const Specs = ({ data, setData, next, prev }) => {
   const handleChange = (e) => {
@@ -37,30 +38,33 @@ return (
     
     <div className="w-full max-w-5xl">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ color: color.text }}>
           Specifications & Pricing
         </h1>
-        <p className="text-sm sm:text-base text-gray-600">
+        <p className="text-sm" style={{ color: color.textSoft }}>
           Define your machine details and rental price
         </p>
       </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-5">
+          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+            <h2 className="text-base font-bold mb-5" style={{ color: color.text }}>
               Technical Specifications
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="flex flex-col gap-2">
-                <label className="font-medium text-gray-700 text-sm">
+                <label className="font-medium text-sm" style={{ color: color.text }}>
                   Fuel Type
                 </label>
                 <select
                   name="fuelType"
                   value={data.fuelType}
                   onChange={handleChange}
-                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  className="px-4 py-3.5 rounded-xl bg-white text-sm outline-none transition-all duration-200"
+                  style={{ border: `1.5px solid ${color.inputBorder}` }}
+                  onFocus={(e) => e.target.style.borderColor = color.emerald}
+                  onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                 >
                   <option value="">Select fuel type</option>
                   <option value="Diesel">Diesel</option>
@@ -71,14 +75,17 @@ return (
               </div>
 
               <div className="flex flex-col gap-2">
-                <label className="font-medium text-gray-700 text-sm">
+                <label className="font-medium text-sm" style={{ color: color.text }}>
                   Category
                 </label>
                 <select
                   name="category"
                   value={data.category}
                   onChange={handleChange}
-                  className="px-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                  className="px-4 py-3.5 rounded-xl bg-white text-sm outline-none transition-all duration-200"
+                  style={{ border: `1.5px solid ${color.inputBorder}` }}
+                  onFocus={(e) => e.target.style.borderColor = color.emerald}
+                  onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                 >
                   <option value="">Select category</option>
                   <option value="Tractors">Tractor</option>
@@ -91,18 +98,18 @@ return (
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-800 mb-5">
+          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+            <h2 className="text-base font-bold mb-5" style={{ color: color.text }}>
               Rental Pricing
             </h2>
 
             <div className="max-w-md">
               <div className="flex flex-col gap-2">
-                <label className="font-medium text-gray-700 text-sm">
+                <label className="font-medium text-sm" style={{ color: color.text }}>
                   Price Per Day
                 </label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium" style={{ color: color.textSoft }}>
                     ₹
                   </span>
                   <input
@@ -114,25 +121,28 @@ return (
                     min="100"
                     step="1"
                     onWheel={(e) => e.target.blur()}
-                    className="w-full pl-8 pr-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-3.5 rounded-xl bg-white text-sm outline-none transition-all duration-200"
+                    style={{ border: `1.5px solid ${color.inputBorder}` }}
+                    onFocus={(e) => e.target.style.borderColor = color.emerald}
+                    onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                   />
                 </div>
               </div>
 
-              <div className="mt-4 bg-green-50 border border-green-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700">
+              <div className="mt-4 rounded-xl p-4" style={{ background: color.paleGreen, border: `1px solid ${color.border}` }}>
+                <p className="text-sm" style={{ color: color.textSoft }}>
                   You will receive{" "}
-                  <span className="font-semibold text-[#03a74f]">95%</span> of
+                  <span className="font-semibold" style={{ color: color.emerald }}>95%</span> of
                   the total amount after each booking
                 </p>
               </div>
               <div className="flex flex-col gap-2 mt-5">
-                <label className="font-medium text-gray-700 text-sm">
+                <label className="font-medium text-sm" style={{ color: color.text }}>
                   Transport Fee
                 </label>
 
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 font-medium" style={{ color: color.textSoft }}>
                     ₹
                   </span>
 
@@ -144,7 +154,10 @@ return (
                     placeholder="Enter transport fee"
                     min="0"
                     step="1"
-                    className="w-full pl-8 pr-4 py-3 border-[1.5px] rounded-lg border-gray-300 bg-white focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] outline-none transition-all"
+                    className="w-full pl-8 pr-4 py-3.5 rounded-xl bg-white text-sm outline-none transition-all duration-200"
+                    style={{ border: `1.5px solid ${color.inputBorder}` }}
+                    onFocus={(e) => e.target.style.borderColor = color.emerald}
+                    onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                   />
                 </div>
               </div>
@@ -155,7 +168,8 @@ return (
             <button
               type="button"
               onClick={prev}
-              className="px-8 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 hover:-translate-y-1 active:scale-95"
+              className="px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97]"
+              style={{ border: `2px solid ${color.border}`, color: color.text }}
             >
               Back
             </button>
@@ -163,7 +177,8 @@ return (
             <button
               type="button"
               onClick={handleSubmit}
-              className="bg-[#03a74f] hover:bg-[#028a42] text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:-translate-y-1 active:scale-95 shadow-md hover:shadow-lg"
+              className="text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97]"
+              style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}30` }}
             >
               Save & Continue
             </button>

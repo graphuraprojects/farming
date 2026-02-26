@@ -6,6 +6,7 @@ import {
   BadgeCheck,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { color, shadow, gradientBg } from "../../theme";
 
 const PLACEHOLDER_IMAGE =
   "https://res.cloudinary.com/drq2a0262/image/upload/f_webp/v1769270928/home-banner_lkkcdb";
@@ -28,19 +29,23 @@ const MachineCard = ({ item }) => {
   return (
     <div
       onClick={goToDetails}
-      className="group bg-white rounded-xl shadow hover:shadow-lg transition overflow-hidden cursor-pointer"
+      className="group bg-white rounded-2xl overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1"
+      style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
     >
-      {/* Image Section */}
-      <div className="relative h-48 w-full overflow-hidden bg-gray-100">
+      {/* Image */}
+      <div className="relative h-48 w-full overflow-hidden bg-gray-50">
         <img
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
           src={imageSrc}
           alt={item.name || "Machine"}
         />
 
         {item.verified && (
-          <span className="bg-[#1f3d2b] absolute top-3 right-3 text-white text-[10px] font-bold px-2 py-1 rounded-full shadow-sm flex items-center gap-1">
-            <BadgeCheck size={15} />
+          <span
+            className="absolute top-3 right-3 text-white text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1"
+            style={{ background: gradientBg(color.emerald, color.forest) }}
+          >
+            <BadgeCheck size={14} />
             VERIFIED
           </span>
         )}
@@ -49,50 +54,55 @@ const MachineCard = ({ item }) => {
       {/* Content */}
       <div className="p-4 space-y-2">
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-bold text-[#131614] leading-tight">
+          <h3 className="text-lg font-bold leading-tight" style={{ color: color.text }}>
             {item.name}
           </h3>
         </div>
 
-        <div className="flex items-center gap-3 text-xs text-text-subtle mb-4">
-          <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
-            <CircleGauge size={15} />
+        <div className="flex items-center gap-2.5 text-xs mb-4" style={{ color: color.textSoft }}>
+          <span
+            className="flex items-center gap-1 px-2 py-1 rounded-lg"
+            style={{ background: color.paleGreen }}
+          >
+            <CircleGauge size={14} style={{ color: color.emerald }} />
             {item.hp} HP
           </span>
 
-          <span className="flex items-center gap-1 bg-gray-50 px-2 py-1 rounded">
-            <Calendar size={15} />
+          <span
+            className="flex items-center gap-1 px-2 py-1 rounded-lg"
+            style={{ background: color.paleGreen }}
+          >
+            <Calendar size={14} style={{ color: color.emerald }} />
             {item.year}
           </span>
         </div>
 
-        <div className="mt-auto pt-4 border-t border-dashed border-gray-200">
+        <div className="mt-auto pt-3" style={{ borderTop: `1px dashed ${color.border}` }}>
           <div className="flex justify-between">
-            <p className="text-xs text-[#6d7e74] font-medium flex items-center gap-1">
-              <MapPin size={15} />
+            <p className="text-xs font-medium flex items-center gap-1" style={{ color: color.textSoft }}>
+              <MapPin size={14} />
               {item.distance} miles away
             </p>
-
-            <p className="text-xs text-[#6d7e74]">{item.location}</p>
+            <p className="text-xs" style={{ color: color.textSoft }}>{item.location}</p>
           </div>
         </div>
 
-        {/* Bottom Section */}
+        {/* Bottom */}
         <div className="flex justify-between items-center pt-2">
-          <p className="text-[#dca738] font-black text-xl">
+          <p className="font-extrabold text-xl" style={{ color: color.warmGold }}>
             ₹{item.price}
-            <span className="text-xs text-[#6d7e74] font-medium">/day</span>
+            <span className="text-xs font-medium ml-0.5" style={{ color: color.textSoft }}>/day</span>
           </p>
 
-          {/* View Details Button */}
           <button
             onClick={(e) => {
-              e.stopPropagation(); // ⭐ prevents card click
+              e.stopPropagation();
               navigate(`/machine-details/${item.id}`);
             }}
-            className="flex items-center gap-1 text-sm text-[#1f3d2b] font-medium"
+            className="flex items-center gap-1 text-sm font-semibold transition-colors duration-200 group-hover:gap-2"
+            style={{ color: color.emerald }}
           >
-            View Details <MoveRight size={15} />
+            View Details <MoveRight size={15} className="transition-transform duration-300 group-hover:translate-x-1" />
           </button>
         </div>
       </div>

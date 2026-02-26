@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { color, gradientBg, shadow } from "../../theme";
 
 const Contact = () => {
   const [form, setForm] = useState({
@@ -40,12 +41,18 @@ const Contact = () => {
     }
   };
 
+  const inputCls =
+    "w-full pl-12 pr-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200 placeholder:text-gray-400";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8" style={{ background: color.bg }}>
       <div className="max-w-4xl mx-auto">
-        {/* Header Section */}
+        {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#03a74f] to-emerald-600 rounded-2xl shadow-lg mb-4">
+          <div
+            className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4"
+            style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 8px 24px ${color.emerald}30` }}
+          >
             <svg
               className="w-8 h-8 text-white"
               fill="none"
@@ -60,29 +67,38 @@ const Contact = () => {
               />
             </svg>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#03a74f] to-emerald-600 bg-clip-text text-transparent mb-3">
+          <h1
+            className="text-4xl md:text-5xl font-extrabold tracking-tight mb-3"
+            style={{
+              backgroundImage: gradientBg(color.emerald, color.forest),
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}
+          >
             Get In Touch
           </h1>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-base max-w-2xl mx-auto" style={{ color: color.textSoft }}>
             Have questions or feedback? We'd love to hear from you. Send us a
             message and we'll respond as soon as possible.
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12 backdrop-blur-sm bg-opacity-80 border border-gray-100">
+        <div
+          className="bg-white rounded-3xl p-8 md:p-12"
+          style={{ boxShadow: shadow.lg, border: `1px solid ${color.border}` }}
+        >
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Name & Email Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Name */}
               <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: color.text }}>
                   Full Name
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg
-                      className="w-5 h-5 text-gray-400 group-focus-within:text-[#03a74f] transition-colors"
+                      className="w-5 h-5 text-gray-400 group-focus-within:text-[#047857] transition-colors"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -102,20 +118,22 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     placeholder="John Doe"
-                    className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300"
+                    className={inputCls}
+                    style={{ border: `1.5px solid ${color.inputBorder}` }}
+                    onFocus={(e) => e.target.style.borderColor = color.emerald}
+                    onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                   />
                 </div>
               </div>
 
-              {/* Email */}
               <div className="group">
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                <label className="block text-sm font-medium mb-2" style={{ color: color.text }}>
                   Email Address
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <svg
-                      className="w-5 h-5 text-gray-400 group-focus-within:text-[#03a74f] transition-colors"
+                      className="w-5 h-5 text-gray-400 group-focus-within:text-[#047857] transition-colors"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -135,7 +153,10 @@ const Contact = () => {
                     onChange={handleChange}
                     required
                     placeholder="john@example.com"
-                    className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300"
+                    className={inputCls}
+                    style={{ border: `1.5px solid ${color.inputBorder}` }}
+                    onFocus={(e) => e.target.style.borderColor = color.emerald}
+                    onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                   />
                 </div>
               </div>
@@ -143,13 +164,13 @@ const Contact = () => {
 
             {/* Subject */}
             <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: color.text }}>
                 Subject
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                   <svg
-                    className="w-5 h-5 text-gray-400 group-focus-within:text-[#03a74f] transition-colors"
+                    className="w-5 h-5 text-gray-400 group-focus-within:text-[#047857] transition-colors"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -169,20 +190,23 @@ const Contact = () => {
                   onChange={handleChange}
                   required
                   placeholder="How can we help you?"
-                  className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300"
+                  className={inputCls}
+                  style={{ border: `1.5px solid ${color.inputBorder}` }}
+                  onFocus={(e) => e.target.style.borderColor = color.emerald}
+                  onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                 />
               </div>
             </div>
 
             {/* Message */}
             <div className="group">
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: color.text }}>
                 Message
               </label>
               <div className="relative">
                 <div className="absolute top-4 left-0 pl-4 pointer-events-none">
                   <svg
-                    className="w-5 h-5 text-gray-400 group-focus-within:text-[#03a74f] transition-colors"
+                    className="w-5 h-5 text-gray-400 group-focus-within:text-[#047857] transition-colors"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -202,16 +226,20 @@ const Contact = () => {
                   onChange={handleChange}
                   required
                   placeholder="Tell us more about your inquiry..."
-                  className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none resize-none transition-all duration-200 hover:border-gray-300"
+                  className="w-full pl-12 pr-4 py-3.5 rounded-xl text-sm outline-none resize-none transition-all duration-200 placeholder:text-gray-400"
+                  style={{ border: `1.5px solid ${color.inputBorder}` }}
+                  onFocus={(e) => e.target.style.borderColor = color.emerald}
+                  onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                 />
               </div>
             </div>
 
-            {/* Submit Button */}
+            {/* Submit */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#03a74f] cursor-pointer py-4 flex gap-2 justify-center items-center rounded-lg font-medium text-white hover:bg-[#38864b] hover:-translate-y-2 transition-transform duration-300 active:scale-95"
+              className="group w-full py-3.5 flex gap-2 justify-center items-center rounded-xl font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}30` }}
             >
               {loading ? (
                 <>
@@ -241,7 +269,7 @@ const Contact = () => {
                 <>
                   Send Message
                   <svg
-                    className="w-5 h-5"
+                    className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

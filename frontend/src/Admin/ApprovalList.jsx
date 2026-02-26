@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { color, shadow, gradientBg } from "../theme";
 
 export default function ApprovalList() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,12 +73,12 @@ export default function ApprovalList() {
 
   const getStatusInfo = (machine) => {
     if (machine.rejection_reason) {
-      return { label: "Rejected", color: "bg-red-100 text-red-700" };
+      return { label: "Rejected", dotColor: color.danger, bgColor: "#fef2f2", textColor: color.danger };
     }
     if (machine.isApproved) {
-      return { label: "Approved", color: "bg-green-100 text-green-700" };
+      return { label: "Approved", dotColor: color.emerald, bgColor: color.paleGreen, textColor: color.emerald };
     }
-    return { label: "Pending Review", color: "bg-yellow-100 text-yellow-700" };
+    return { label: "Pending Review", dotColor: "#ca8a04", bgColor: "#fef9c3", textColor: "#ca8a04" };
   };
 
   const formatDate = (dateString) => {
@@ -126,15 +127,18 @@ export default function ApprovalList() {
   }, [sortBy, filterStatus]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8" style={{ background: color.bg, minHeight: "100vh" }}>
       <div className="max-w-7xl mx-auto">
-        <div className="mb-6 sm:mb-8 animate-fade-in">
-          <div className="flex flex-col bg-white rounded-2xl shadow-lg p-4 sm:p-6 gap-3">
+        <div className="mb-6 sm:mb-8">
+          <div className="flex flex-col bg-white rounded-2xl p-4 sm:p-6 gap-3" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
             <div>
-              <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 bg-gradient-to-r from-green-800 to-green-600 bg-clip-text text-transparent">
+              <h1
+                className="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight mb-1"
+                style={{ backgroundImage: gradientBg(color.forest, color.emerald), WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}
+              >
                 Machine Approvals
               </h1>
-              <p className="text-xs sm:text-sm text-gray-600">
+              <p className="text-xs sm:text-sm" style={{ color: color.textSoft }}>
                 Review and approve machine listings
               </p>
             </div>
@@ -142,28 +146,31 @@ export default function ApprovalList() {
         </div>
 
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 animate-fade-in">
+          <div className="mb-6 p-4 rounded-xl text-sm" style={{ background: "#fef2f2", border: `1px solid #fecaca`, color: color.danger }}>
             <div className="flex items-center gap-2">
               <span>⚠️</span>
-              <span className="text-sm">{error}</span>
+              <span>{error}</span>
             </div>
           </div>
         )}
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-fade-in">
-          <div className="px-4 sm:px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
+        <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+          <div className="px-4 sm:px-6 py-4" style={{ borderBottom: `1px solid ${color.border}`, background: color.bg }}>
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-              <h2 className="text-base sm:text-lg font-semibold text-gray-900">
+              <h2 className="text-base sm:text-lg font-bold" style={{ color: color.text }}>
                 All Machines
               </h2>
 
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
-                <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                <div className="flex items-center gap-2 text-xs sm:text-sm" style={{ color: color.textSoft }}>
                   <span className="hidden sm:inline text-xs">Sort by:</span>
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
-                    className="flex-1 sm:flex-none border border-gray-300 rounded-lg px-3 py-2 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-green-500 transition-all"
+                    className="flex-1 sm:flex-none rounded-xl px-3 py-2 text-xs sm:text-sm outline-none transition-all"
+                    style={{ border: `1.5px solid ${color.inputBorder}` }}
+                    onFocus={(e) => e.target.style.borderColor = color.emerald}
+                    onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                   >
                     <option value="newest">Newest First</option>
                     <option value="oldest">Oldest First</option>
@@ -172,7 +179,8 @@ export default function ApprovalList() {
 
                 <button
                   onClick={() => setShowFilter(!showFilter)}
-                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg text-xs sm:text-sm font-medium text-gray-700 hover:bg-gray-50 transition-all"
+                  className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200"
+                  style={{ border: `1.5px solid ${color.inputBorder}`, color: color.text }}
                 >
                   <span>☰</span>
                   <span>Filter</span>
@@ -181,7 +189,7 @@ export default function ApprovalList() {
             </div>
 
             {showFilter && (
-              <div className="mt-4 p-3 sm:p-4 bg-gray-50 rounded-lg animate-slide-down">
+              <div className="mt-4 p-3 sm:p-4 rounded-xl" style={{ background: "white", border: `1px solid ${color.border}` }}>
                 <div className="flex flex-wrap gap-2">
                   {[
                     { value: "all", label: "All Machines" },
@@ -192,11 +200,12 @@ export default function ApprovalList() {
                     <button
                       key={filter.value}
                       onClick={() => setFilterStatus(filter.value)}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                      className="px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200"
+                      style={
                         filterStatus === filter.value
-                          ? "bg-green-800 text-white"
-                          : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                      }`}
+                          ? { background: gradientBg(color.emerald, color.forest), color: "white" }
+                          : { background: "white", color: color.text, border: `1px solid ${color.inputBorder}` }
+                      }
                     >
                       {filter.label}
                     </button>
@@ -208,14 +217,14 @@ export default function ApprovalList() {
 
           {loading ? (
             <div className="p-8 sm:p-12 text-center">
-              <div className="inline-block w-12 h-12 border-4 border-green-200 border-t-green-800 rounded-full animate-spin"></div>
-              <p className="mt-4 text-sm sm:text-base text-gray-600">
+              <div className="inline-block w-10 h-10 border-3 rounded-full animate-spin" style={{ borderColor: color.paleGreen, borderTopColor: color.emerald }}></div>
+              <p className="mt-4 text-sm" style={{ color: color.textSoft }}>
                 Loading machines...
               </p>
             </div>
           ) : machines.length === 0 ? (
-            <div className="p-8 sm:p-12 text-center text-gray-500">
-              <p className="text-base sm:text-lg font-medium">
+            <div className="p-8 sm:p-12 text-center" style={{ color: color.textSoft }}>
+              <p className="text-base sm:text-lg font-semibold">
                 No machines found
               </p>
               <p className="text-xs sm:text-sm mt-2">
@@ -227,7 +236,7 @@ export default function ApprovalList() {
               {/* Desktop Table View */}
               <div className="hidden lg:block overflow-x-auto">
                 <div className="min-w-full">
-                  <div className="grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-medium text-gray-600 uppercase">
+                  <div className="grid grid-cols-12 gap-4 px-6 py-3 text-xs font-semibold uppercase tracking-wider" style={{ background: color.bg, borderBottom: `1px solid ${color.border}`, color: color.textSoft }}>
                     <div className="col-span-4">Machine Info</div>
                     <div className="col-span-2">Owner</div>
                     <div className="col-span-2">Category</div>
@@ -235,18 +244,18 @@ export default function ApprovalList() {
                     <div className="col-span-2">Status</div>
                   </div>
 
-                  <div className="divide-y divide-gray-200">
+                  <div style={{ borderTop: "none" }}>
                     {currentMachines.map((machine, index) => {
                       const statusInfo = getStatusInfo(machine);
                       return (
                         <div
                           key={machine._id}
                           onClick={() => handleViewDetails(machine._id)}
-                          className="grid grid-cols-12 px-6 gap-4 py-4 items-center hover:bg-gray-50 transition-colors animate-fade-in cursor-pointer"
-                          style={{ animationDelay: `${index * 50}ms` }}
+                          className="grid grid-cols-12 px-6 gap-4 py-4 items-center transition-colors duration-200 cursor-pointer hover:bg-gray-50"
+                          style={{ borderBottom: index < currentMachines.length - 1 ? `1px solid ${color.border}` : "none" }}
                         >
                           <div className="col-span-4 flex items-center gap-3">
-                            <div className="w-14 h-14 sm:w-16 sm:h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden flex-shrink-0" style={{ background: color.bg }}>
                               {machine.images && machine.images.length > 0 ? (
                                 <img
                                   src={machine.images[0].url}
@@ -260,39 +269,40 @@ export default function ApprovalList() {
                               )}
                             </div>
                             <div className="min-w-0">
-                              <div className="font-semibold text-gray-900 truncate text-sm">
+                              <div className="font-semibold truncate text-sm" style={{ color: color.text }}>
                                 {machine.machine_name}
                               </div>
-                              <div className="text-xs text-gray-500 truncate">
+                              <div className="text-xs truncate" style={{ color: color.textSoft }}>
                                 {machine.model} • {machine.model_year}
                               </div>
                             </div>
                           </div>
 
                           <div className="col-span-2">
-                            <div className="font-medium text-gray-900 text-sm truncate">
+                            <div className="font-medium text-sm truncate" style={{ color: color.text }}>
                               {machine.owner_id?.name || "Unknown"}
                             </div>
-                            <div className="text-xs text-gray-500 truncate">
+                            <div className="text-xs truncate" style={{ color: color.textSoft }}>
                               {machine.owner_id?._id || "N/A"}
                             </div>
                           </div>
 
                           <div className="col-span-2">
-                            <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 truncate max-w-full">
+                            <span className="inline-block px-2.5 py-1 rounded-full text-xs font-semibold truncate max-w-full" style={{ background: color.paleGreen, color: color.emerald }}>
                               {machine.category}
                             </span>
                           </div>
 
-                          <div className="col-span-2 text-xs sm:text-sm text-gray-600">
+                          <div className="col-span-2 text-xs sm:text-sm" style={{ color: color.textSoft }}>
                             {formatDate(machine.createdAt)}
                           </div>
 
                           <div className="col-span-2">
                             <span
-                              className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                              style={{ background: statusInfo.bgColor, color: statusInfo.textColor }}
                             >
-                              <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                              <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusInfo.dotColor }}></span>
                               {statusInfo.label}
                             </span>
                           </div>
@@ -304,18 +314,18 @@ export default function ApprovalList() {
               </div>
 
               {/* Mobile Card View */}
-              <div className="lg:hidden divide-y divide-gray-200">
+              <div className="lg:hidden">
                 {currentMachines.map((machine, index) => {
                   const statusInfo = getStatusInfo(machine);
                   return (
                     <div
                       key={machine._id}
                       onClick={() => handleViewDetails(machine._id)}
-                      className="p-4 hover:bg-gray-50 transition-colors animate-fade-in cursor-pointer"
-                      style={{ animationDelay: `${index * 50}ms` }}
+                      className="p-4 transition-colors cursor-pointer hover:bg-gray-50"
+                      style={{ borderBottom: index < currentMachines.length - 1 ? `1px solid ${color.border}` : "none" }}
                     >
                       <div className="flex items-start gap-3 mb-3">
-                        <div className="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0" style={{ background: color.bg }}>
                           {machine.images && machine.images.length > 0 ? (
                             <img
                               src={machine.images[0].url}
@@ -329,16 +339,17 @@ export default function ApprovalList() {
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-gray-900 text-sm truncate">
+                          <div className="font-semibold text-sm truncate" style={{ color: color.text }}>
                             {machine.machine_name}
                           </div>
-                          <div className="text-xs text-gray-500 truncate">
+                          <div className="text-xs truncate" style={{ color: color.textSoft }}>
                             {machine.model} • {machine.model_year}
                           </div>
                           <span
-                            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium mt-1 ${statusInfo.color}`}
+                            className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold mt-1"
+                            style={{ background: statusInfo.bgColor, color: statusInfo.textColor }}
                           >
-                            <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse"></span>
+                            <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusInfo.dotColor }}></span>
                             {statusInfo.label}
                           </span>
                         </div>
@@ -346,24 +357,24 @@ export default function ApprovalList() {
 
                       <div className="grid grid-cols-2 gap-3 text-sm">
                         <div>
-                          <div className="text-xs text-gray-500 mb-0.5">
+                          <div className="text-xs mb-0.5" style={{ color: color.textSoft }}>
                             Owner
                           </div>
-                          <div className="font-medium text-gray-900 text-sm truncate">
+                          <div className="font-medium text-sm truncate" style={{ color: color.text }}>
                             {machine.owner_id?.name || "Unknown"}
                           </div>
                         </div>
                         <div>
-                          <div className="text-xs text-gray-500 mb-0.5">
+                          <div className="text-xs mb-0.5" style={{ color: color.textSoft }}>
                             Category
                           </div>
-                          <span className="inline-block px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 truncate max-w-full">
+                          <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold truncate max-w-full" style={{ background: color.paleGreen, color: color.emerald }}>
                             {machine.category}
                           </span>
                         </div>
                       </div>
 
-                      <div className="text-xs text-gray-500 mt-2">
+                      <div className="text-xs mt-2" style={{ color: color.textSoft }}>
                         Submitted {formatDate(machine.createdAt)}
                       </div>
                     </div>
@@ -372,9 +383,9 @@ export default function ApprovalList() {
               </div>
 
               {/* Pagination */}
-              <div className="px-4 sm:px-6 py-4 border-t border-gray-200 bg-gray-50">
+              <div className="px-4 sm:px-6 py-4" style={{ borderTop: `1px solid ${color.border}`, background: color.bg }}>
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                  <div className="text-xs sm:text-sm text-gray-600">
+                  <div className="text-xs sm:text-sm" style={{ color: color.textSoft }}>
                     Showing {startIndex + 1} to{" "}
                     {Math.min(endIndex, machines.length)} of {machines.length}{" "}
                     machine{machines.length !== 1 ? "s" : ""}
@@ -385,9 +396,10 @@ export default function ApprovalList() {
                       <button
                         onClick={goToPreviousPage}
                         disabled={currentPage === 1}
-                        className="p-2 rounded-lg border border-gray-300 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ border: `1px solid ${color.inputBorder}` }}
                       >
-                        <ChevronLeft className="w-4 h-4 text-gray-600" />
+                        <ChevronLeft className="w-4 h-4" style={{ color: color.textSoft }} />
                       </button>
 
                       <div className="flex gap-1">
@@ -404,11 +416,12 @@ export default function ApprovalList() {
                               <button
                                 key={pageNumber}
                                 onClick={() => goToPage(pageNumber)}
-                                className={`min-w-[32px] h-8 px-2 rounded-lg text-xs font-medium transition-all ${
+                                className="min-w-[32px] h-8 px-2 rounded-lg text-xs font-semibold transition-all"
+                                style={
                                   currentPage === pageNumber
-                                    ? "bg-green-800 text-white"
-                                    : "border border-gray-300 text-gray-700 hover:bg-white"
-                                }`}
+                                    ? { background: gradientBg(color.emerald, color.forest), color: "white" }
+                                    : { border: `1px solid ${color.inputBorder}`, color: color.text }
+                                }
                               >
                                 {pageNumber}
                               </button>
@@ -420,7 +433,8 @@ export default function ApprovalList() {
                             return (
                               <span
                                 key={pageNumber}
-                                className="px-1 text-gray-400"
+                                className="px-1"
+                                style={{ color: color.textSoft }}
                               >
                                 ...
                               </span>
@@ -433,9 +447,10 @@ export default function ApprovalList() {
                       <button
                         onClick={goToNextPage}
                         disabled={currentPage === totalPages}
-                        className="p-2 rounded-lg border border-gray-300 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                        className="p-2 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                        style={{ border: `1px solid ${color.inputBorder}` }}
                       >
-                        <ChevronRight className="w-4 h-4 text-gray-600" />
+                        <ChevronRight className="w-4 h-4" style={{ color: color.textSoft }} />
                       </button>
                     </div>
                   )}
@@ -445,36 +460,6 @@ export default function ApprovalList() {
           )}
         </div>
       </div>
-
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        @keyframes slide-down {
-          from {
-            opacity: 0;
-            transform: translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out forwards;
-        }
-
-        .animate-slide-down {
-          animation: slide-down 0.3s ease-out forwards;
-        }
-      `}</style>
     </div>
   );
 }

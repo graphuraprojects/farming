@@ -4,6 +4,7 @@ import Specs from "./Specs";
 import Location from "./Location";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { color, gradientBg } from "../../theme";
 
 const AddMachine = () => {
   const [step, setStep] = useState(1);
@@ -12,20 +13,15 @@ const AddMachine = () => {
   const navigate = useNavigate();
 
   const [machineData, setMachineData] = useState({
-    // Basic Info
     machineName: "",
     model: "",
     modelYear: "",
     registrationNumber: "",
     photos: [],
-
-    // Specs
     fuelType: "",
     category: "",
     pricePerDay: "",
     transport: "",
-
-    // Location
     lat: "",
     lng: "",
     address: "",
@@ -33,8 +29,6 @@ const AddMachine = () => {
     state: "",
     zipCode: "",
     country: "",
-
-    // Document
     document: null,
   });
 
@@ -59,10 +53,8 @@ const AddMachine = () => {
         category: machineData.category,
         price_per_day: machineData.pricePerDay,
         transport: machineData.transport,
-
         latitude: machineData.lat,
         longitude: machineData.lng,
-
         address: {
           street: machineData.address,
           city: machineData.city,
@@ -74,12 +66,10 @@ const AddMachine = () => {
 
       formData.append("data", JSON.stringify(data));
 
-      // Images
       machineData.photos.forEach((photo) => {
         formData.append("images", photo.file);
       });
 
-      // Ownership proof (FIXED)
       if (machineData.document) {
         formData.append("ownership_proof", machineData.document);
       }
@@ -103,67 +93,42 @@ const AddMachine = () => {
   };
 
   return (
-    <div className="bg-[#e9fbf1cc] pb-10 min-h-screen overflow-x-hidden">
-      {/* ADDED: overflow-x-hidden to prevent horizontal scroll */}
-
+    <div className="pb-10 min-h-screen overflow-x-hidden" style={{ background: `${color.mintCream}cc` }}>
       <div className="pt-6 w-full flex justify-center px-2 sm:px-4">
-        {/* CHANGED: px-4 to px-2 sm:px-4 for better mobile spacing */}
-
         {/* Step Bar */}
         <div className="flex items-center justify-center gap-2 sm:gap-4 md:gap-6 max-w-full overflow-x-auto">
-          {/* ADDED: gap responsive + max-w-full + overflow-x-auto */}
-
           {steps.map((title, index) => {
             const stepNumber = index + 1;
-
             const isCompleted = step > stepNumber;
             const isActive = step === stepNumber;
 
             return (
               <React.Fragment key={index}>
                 <div className="flex flex-col items-center min-w-[60px] sm:min-w-[70px]">
-                  {/* CHANGED: min-w-[70px] to min-w-[60px] sm:min-w-[70px] */}
-
                   <div
-                    className={`
-                      w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full text-xs sm:text-sm font-semibold
-                      ${
-                        isCompleted || isActive
-                          ? "bg-[#03a74f] text-white"
-                          : "bg-gray-200 text-gray-500"
-                      }
-                    `}
+                    className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-xs sm:text-sm font-semibold transition-all duration-300"
+                    style={
+                      isCompleted || isActive
+                        ? { background: gradientBg(color.emerald, color.forest), color: "white" }
+                        : { background: "#e5e7eb", color: color.textSoft }
+                    }
                   >
-                    {/* CHANGED: w-8 h-8 to w-7 h-7 sm:w-8 sm:h-8 for smaller mobile */}
                     {isCompleted ? "✓" : stepNumber}
                   </div>
 
-                  {/* title */}
                   <span
-                    className={`
-                      mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium text-center leading-tight
-                      ${
-                        isActive || isCompleted
-                          ? "text-[#03a74f]"
-                          : "text-gray-400"
-                      }
-                    `}
+                    className="mt-1 sm:mt-2 text-[10px] sm:text-xs font-medium text-center leading-tight"
+                    style={{ color: isActive || isCompleted ? color.emerald : color.textSoft }}
                   >
-                    {/* CHANGED: mt-2 to mt-1 sm:mt-2, text-xs to text-[10px] sm:text-xs */}
                     {title}
                   </span>
                 </div>
 
-                {/* line */}
                 {index !== steps.length - 1 && (
                   <div
-                    className={`
-                      w-8 sm:w-12 md:w-16 h-[2px] flex-shrink-0
-                      ${step > stepNumber ? "bg-[#03a74f]" : "bg-gray-300"}
-                    `}
-                  >
-                    {/* CHANGED: w-16 to w-8 sm:w-12 md:w-16 + added flex-shrink-0 */}
-                  </div>
+                    className="w-8 sm:w-12 md:w-16 h-[2px] flex-shrink-0 rounded-full"
+                    style={{ background: step > stepNumber ? color.emerald : "#d1d5db" }}
+                  />
                 )}
               </React.Fragment>
             );

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, ArrowRight } from "lucide-react";
+import { color, gradientBg } from "../../theme";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,11 +33,9 @@ const Login = () => {
 
       const { token, user } = res.data.data;
 
-      // Save auth data
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      // ✅ Role navigation
       switch (user.role) {
         case "admin":
           navigate("/admin/dashboard");
@@ -59,9 +58,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex min-h-screen w-full flex-row overflow-hidden bg-[#FAFAF7] dark:bg-[#161c18]">
+    <div className="flex min-h-screen w-full flex-row overflow-hidden" style={{ background: color.bg }}>
       {/* LEFT IMAGE SECTION */}
-      <div className="hidden lg:flex lg:w-1/2 relative bg-[#1f3d2b]">
+      <div className="hidden lg:flex lg:w-1/2 relative">
         <div className="absolute inset-0">
           <div
             className="w-full h-full bg-cover bg-center"
@@ -70,30 +69,29 @@ const Login = () => {
                 'url("https://res.cloudinary.com/drq2a0262/image/upload/f_webp/v1769270928/home-banner_lkkcdb")',
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/30"></div>
+          <div
+            className="absolute inset-0"
+            style={{
+              background: `linear-gradient(165deg, ${color.deepForest}dd 0%, ${color.forest}bb 40%, rgba(0,0,0,0.5) 100%)`,
+            }}
+          />
         </div>
 
         <div className="relative z-10 flex flex-col justify-center p-12 text-white">
           <div className="max-w-md">
-            <h1 className="text-white text-2xl md:text-3xl lg:text-5xl font-bold">
+            <h1 className="text-2xl md:text-3xl lg:text-5xl font-extrabold leading-tight tracking-tight">
               Welcome back to{" "}
-              <em className="text-outline">Your Farming Journey.</em>
+              <span style={{ color: color.lush }}>Your Farming Journey.</span>
             </h1>
             <div
-              className="mt-5
-    max-w-md w-full
-    rounded-3xl
-    overflow-hidden
-    bg-black/60
-    border border-white/20
-    shadow-[0_25px_60px_rgba(0,0,0,0.55)]
-    p-8
-    text-center
-    relative
-  "
+              className="mt-6 max-w-md w-full rounded-3xl overflow-hidden backdrop-blur-xl p-8 text-center"
+              style={{
+                background: "rgba(255,255,255,0.07)",
+                border: "1px solid rgba(255,255,255,0.15)",
+                boxShadow: "0 25px 60px rgba(0,0,0,0.3)",
+              }}
             >
-              {/* Icon */}
-              <div className="flex justify-center mb-3 relative z-10">
+              <div className="flex justify-center mb-3">
                 <img
                   className="w-16"
                   src="https://res.cloudinary.com/drq2a0262/image/upload/v1770029209/register-icon_nnebju.png"
@@ -101,17 +99,14 @@ const Login = () => {
                 />
               </div>
 
-              {/* Quote */}
-              <h1 className="relative z-10 text-lg md:text-xl font-semibold text-white leading-relaxed">
+              <h2 className="text-lg md:text-xl font-semibold text-white leading-relaxed">
                 "Access your tools and connections,
-                <span className="text-[#03a74f]"> continue growing.</span>"
-              </h1>
+                <span style={{ color: color.lush }}> continue growing."</span>
+              </h2>
 
-              {/* Divider */}
-              <div className="relative z-10 w-12 h-[3px] bg-[#03a74f] mx-auto my-4 rounded-full"></div>
+              <div className="w-12 h-[3px] mx-auto my-4 rounded-full" style={{ background: gradientBg(color.lush, color.emerald) }} />
 
-              {/* Sub text */}
-              <p className="relative z-10 text-sm text-gray-300">
+              <p className="text-sm text-gray-300">
                 Your farming community awaits you.
               </p>
             </div>
@@ -120,19 +115,21 @@ const Login = () => {
       </div>
 
       {/* RIGHT FORM SECTION */}
-      <div className="flex flex-1 flex-col justify-center items-center p-2 overflow-y-auto bg-[#e9fbf1cc]">
-        <div className="w-full max-w-[480px] flex flex-col gap-4">
-          {/* Header */}
+      <div
+        className="flex flex-1 flex-col justify-center items-center p-6 overflow-y-auto"
+        style={{ background: `${color.mintCream}cc` }}
+      >
+        <div className="w-full max-w-[480px] flex flex-col gap-5">
           <div>
-            <h1 className="text-[32px] font-bold">Welcome Back 👋</h1>
-            <p className="text-[#5E5E5E] dark:text-gray-700">
+            <h1 className="text-[32px] font-extrabold tracking-tight" style={{ color: color.text }}>
+              Welcome Back 👋
+            </h1>
+            <p style={{ color: color.textSoft }}>
               Login to your AgriRent account
             </p>
           </div>
 
-          {/* FORM */}
           <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {/* INPUTS */}
             <input
               type="email"
               name="email"
@@ -140,12 +137,15 @@ const Login = () => {
               value={form.email}
               required
               onChange={handleChange}
-              className="w-full rounded-lg border-gray-400 
-pl-4 py-3 
- placeholder-gray-400 border-[1.5px]
-focus:border-[#03a74f] focus:ring-[#1f3d2b] bg-white outline-none"
+              className="w-full rounded-xl px-4 py-3.5 text-sm outline-none transition-all duration-200 placeholder:text-gray-400"
+              style={{
+                border: `1.5px solid ${color.inputBorder}`,
+                background: "white",
+              }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
             />
-            {/* Password Input with Eye Toggle */}
+
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -155,50 +155,66 @@ focus:border-[#03a74f] focus:ring-[#1f3d2b] bg-white outline-none"
                 autoComplete="current-password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full rounded-lg border-gray-400 
-pl-4 py-3 pr-12 bg-white 
- placeholder-gray-400 border-[1.5px]
-focus:border-[#03a74f] focus:ring-[#1f3d2b] outline-none"
+                className="w-full rounded-xl px-4 py-3.5 pr-12 text-sm outline-none transition-all duration-200 placeholder:text-gray-400"
+                style={{
+                  border: `1.5px solid ${color.inputBorder}`,
+                  background: "white",
+                }}
+                onFocus={(e) => e.target.style.borderColor = color.emerald}
+                onBlur={(e) => e.target.style.borderColor = color.inputBorder}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700 focus:outline-none"
+                className="absolute right-4 top-1/2 -translate-y-1/2 transition-colors duration-200"
+                style={{ color: color.textSoft }}
               >
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
+
             <div className="flex justify-end">
               <Link
                 to="/forgot-password"
-                className="text-sm text-[#03a74f] hover:text-[#028a42] font-semibold"
+                className="text-sm font-semibold transition-colors duration-200"
+                style={{ color: color.emerald }}
               >
                 Forgot Password?
               </Link>
             </div>
-            {/* BUTTON */}
+
             <button
               disabled={loading}
               type="submit"
-              className="w-full py-3 rounded-lg text-white font-semibold bg-[#03a74f] hover:bg-[#028a42] cursor-pointer transition-transform active:scale-95 hover:-translate-y-2 duration-300"
+              className="group w-full py-3.5 rounded-xl text-white font-semibold cursor-pointer transition-all duration-300 active:scale-[0.97] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{
+                background: gradientBg(color.emerald, color.forest),
+                boxShadow: `0 4px 16px ${color.emerald}30`,
+              }}
             >
-              {loading ? "Logging in..." : "Login"}
+              {loading ? "Logging in..." : (
+                <>
+                  Login
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+                </>
+              )}
             </button>
           </form>
 
-          <p className="text-center mt-2">
+          <p className="text-center text-sm" style={{ color: color.textSoft }}>
             Don't have an account?{" "}
-            <Link to="/register" className="text-[#03a74f] font-semibold">
+            <Link to="/register" className="font-semibold" style={{ color: color.emerald }}>
               Register here
             </Link>
           </p>
         </div>
-        <div className="flex items-center justify-center gap-3 text-xs text-gray-600 mt-5">
-          <Link to="/T&C" className="hover:text-[#03a74f] transition-colors">
+
+        <div className="flex items-center justify-center gap-3 text-xs mt-6" style={{ color: color.textSoft }}>
+          <Link to="/T&C" className="hover:opacity-70 transition-opacity">
             Terms & Conditions
           </Link>
           <span>•</span>
-          <Link to="/P" className="hover:text-[#03a74f] transition-colors">
+          <Link to="/P" className="hover:opacity-70 transition-opacity">
             Privacy Policy
           </Link>
         </div>

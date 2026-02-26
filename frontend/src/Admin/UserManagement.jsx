@@ -13,6 +13,7 @@ import {
   Unlock,
 } from "lucide-react";
 import axios from "axios";
+import { color, shadow, gradientBg } from "../theme";
 
 const UserManagement = () => {
   const [searchId, setSearchId] = useState("");
@@ -148,46 +149,50 @@ const UserManagement = () => {
   const getRoleBadgeColor = (role) => {
     switch (role) {
       case "admin":
-        return "bg-red-100 text-red-700 border-red-200";
+        return { background: "#fef2f2", color: color.danger, border: "#fecaca" };
       case "owner":
-        return "bg-blue-100 text-blue-700 border-blue-200";
+        return { background: "#eff6ff", color: "#2563eb", border: "#bfdbfe" };
       case "farmer":
-        return "bg-green-100 text-green-700 border-green-200";
+        return { background: color.paleGreen, color: color.emerald, border: color.border };
       default:
-        return "bg-gray-100 text-gray-700 border-gray-200";
+        return { background: "#f3f4f6", color: color.textSoft, border: "#e5e7eb" };
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 lg:p-8">
+    <div className="p-4 sm:p-6 lg:p-8" style={{ background: color.bg, minHeight: "100vh" }}>
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2" style={{ color: color.text }}>
             User Management
           </h1>
-          <p className="text-gray-600">
+          <p style={{ color: color.textSoft }}>
             Search and manage users by their unique ID
           </p>
         </div>
 
         {/* Search Section */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-2xl p-6 mb-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5" style={{ color: color.textSoft }} />
               <input
                 type="text"
                 placeholder="Enter User ID (e.g., 507f1f77bcf86cd799439011)"
                 value={searchId}
                 onChange={(e) => setSearchId(e.target.value)}
                 onKeyPress={handleKeyPress}
-                className="w-full pl-12 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
+                className="w-full pl-12 pr-10 py-3.5 rounded-xl text-sm outline-none transition-all duration-200"
+                style={{ border: `1.5px solid ${color.inputBorder}` }}
+                onFocus={(e) => { e.target.style.borderColor = color.emerald; e.target.style.boxShadow = `0 0 0 3px ${color.emerald}15`; }}
+                onBlur={(e) => { e.target.style.borderColor = color.inputBorder; e.target.style.boxShadow = "none"; }}
               />
               {searchId && (
                 <button
                   onClick={clearSearch}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  className="absolute right-4 top-1/2 -translate-y-1/2"
+                  style={{ color: color.textSoft }}
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -196,7 +201,8 @@ const UserManagement = () => {
             <button
               onClick={handleSearch}
               disabled={loading || !searchId.trim()}
-              className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[120px]"
+              className="px-6 py-3.5 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 min-w-[120px]"
+              style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}20` }}
             >
               {loading ? (
                 <>
@@ -214,22 +220,22 @@ const UserManagement = () => {
 
           {/* Error Message */}
           {error && (
-            <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-              <div className="w-5 h-5 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div className="mt-4 p-4 rounded-xl flex items-start gap-3" style={{ background: "#fef2f2", border: `1px solid #fecaca` }}>
+              <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ background: color.danger }}>
                 <span className="text-white text-xs">!</span>
               </div>
-              <p className="text-red-700 text-sm">{error}</p>
+              <p className="text-sm" style={{ color: color.danger }}>{error}</p>
             </div>
           )}
         </div>
 
         {/* User Details Card */}
         {user && (
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden animate-fade-in">
+          <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: shadow.md, border: `1px solid ${color.border}` }}>
             {/* Header with Profile Picture */}
-            <div className="bg-green-900 p-6">
+            <div className="p-6" style={{ background: `linear-gradient(135deg, ${color.deepForest}, ${color.forest})` }}>
               <div className="flex items-center gap-4">
-                <div className="w-20 h-20 rounded-full overflow-hidden border-4 border-white shadow-lg bg-white flex-shrink-0">
+                <div className="w-20 h-20 rounded-2xl overflow-hidden border-4 border-white/20 flex-shrink-0" style={{ boxShadow: shadow.md }}>
                   {user.profile_pic?.url ? (
                     <img
                       src={user.profile_pic.url}
@@ -237,8 +243,8 @@ const UserManagement = () => {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                      <User className="w-10 h-10 text-gray-400" />
+                    <div className="w-full h-full flex items-center justify-center bg-white/10">
+                      <User className="w-10 h-10 text-white/60" />
                     </div>
                   )}
                 </div>
@@ -247,11 +253,17 @@ const UserManagement = () => {
                     {user.name}
                   </h2>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs font-semibold border ${getRoleBadgeColor(user.role)}`}
-                    >
-                      {user.role?.toUpperCase()}
-                    </span>
+                    {(() => {
+                      const badgeStyle = getRoleBadgeColor(user.role);
+                      return (
+                        <span
+                          className="px-3 py-1 rounded-full text-xs font-semibold"
+                          style={{ background: badgeStyle.background, color: badgeStyle.color, border: `1px solid ${badgeStyle.border}` }}
+                        >
+                          {user.role?.toUpperCase()}
+                        </span>
+                      );
+                    })()}
                     {user.isVerified && (
                       <span className="px-3 py-1 bg-white/20 text-white rounded-full text-xs font-semibold flex items-center gap-1">
                         <Shield className="w-3 h-3" />
@@ -259,7 +271,7 @@ const UserManagement = () => {
                       </span>
                     )}
                     {user.isBlocked && (
-                      <span className="px-3 py-1 bg-red-500 text-white rounded-full text-xs font-semibold flex items-center gap-1">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1" style={{ background: color.danger, color: "white" }}>
                         <Ban className="w-3 h-3" />
                         Blocked
                       </span>
@@ -274,18 +286,18 @@ const UserManagement = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 {/* Email */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Mail className="w-5 h-5 text-blue-600" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eff6ff" }}>
+                    <Mail className="w-5 h-5" style={{ color: "#2563eb" }} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
+                    <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                       Email Address
                     </p>
-                    <p className="text-gray-900 font-medium break-all">
+                    <p className="font-medium break-all text-sm" style={{ color: color.text }}>
                       {user.email}
                     </p>
                     {user.pendingEmail && (
-                      <p className="text-xs text-amber-600 mt-1">
+                      <p className="text-xs mt-1" style={{ color: color.warn }}>
                         Pending: {user.pendingEmail}
                       </p>
                     )}
@@ -294,18 +306,18 @@ const UserManagement = () => {
 
                 {/* Phone */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Phone className="w-5 h-5 text-green-600" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: color.paleGreen }}>
+                    <Phone className="w-5 h-5" style={{ color: color.emerald }} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
+                    <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                       Phone Number
                     </p>
-                    <p className="text-gray-900 font-medium">
+                    <p className="font-medium text-sm" style={{ color: color.text }}>
                       {user.phone || "Not provided"}
                     </p>
                     {user.pendingPhone && (
-                      <p className="text-xs text-amber-600 mt-1">
+                      <p className="text-xs mt-1" style={{ color: color.warn }}>
                         Pending: {user.pendingPhone}
                       </p>
                     )}
@@ -314,14 +326,14 @@ const UserManagement = () => {
 
                 {/* User ID */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <User className="w-5 h-5 text-purple-600" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#f3e8ff" }}>
+                    <User className="w-5 h-5" style={{ color: "#9333ea" }} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
+                    <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                       User ID
                     </p>
-                    <p className="text-gray-900 font-mono text-sm break-all">
+                    <p className="font-mono text-sm break-all" style={{ color: color.text }}>
                       {user._id}
                     </p>
                   </div>
@@ -329,14 +341,14 @@ const UserManagement = () => {
 
                 {/* Created At */}
                 <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <Calendar className="w-5 h-5 text-indigo-600" />
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#eef2ff" }}>
+                    <Calendar className="w-5 h-5" style={{ color: "#4f46e5" }} />
                   </div>
                   <div>
-                    <p className="text-xs text-gray-500 uppercase font-semibold mb-1">
+                    <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                       Member Since
                     </p>
-                    <p className="text-gray-900 font-medium">
+                    <p className="font-medium text-sm" style={{ color: color.text }}>
                       {formatDate(user.createdAt)}
                     </p>
                   </div>
@@ -345,20 +357,20 @@ const UserManagement = () => {
 
               {/* Address Section */}
               {user.address && (
-                <div className="border-t pt-6">
+                <div className="pt-6" style={{ borderTop: `1px solid ${color.border}` }}>
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <MapPin className="w-5 h-5 text-orange-600" />
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "#fff7ed" }}>
+                      <MapPin className="w-5 h-5" style={{ color: "#ea580c" }} />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs text-gray-500 uppercase font-semibold mb-2">
+                      <p className="text-xs uppercase font-semibold mb-2" style={{ color: color.textSoft }}>
                         Address
                       </p>
-                      <div className="bg-gray-50 rounded-lg p-4 space-y-1">
+                      <div className="rounded-xl p-4 space-y-1" style={{ background: color.bg }}>
                         {user.address.street && (
-                          <p className="text-gray-700">{user.address.street}</p>
+                          <p className="text-sm" style={{ color: color.text }}>{user.address.street}</p>
                         )}
-                        <p className="text-gray-700">
+                        <p className="text-sm" style={{ color: color.text }}>
                           {[
                             user.address.city,
                             user.address.state,
@@ -368,7 +380,7 @@ const UserManagement = () => {
                             .join(", ")}
                         </p>
                         {user.address.country && (
-                          <p className="text-gray-700">
+                          <p className="text-sm" style={{ color: color.text }}>
                             {user.address.country}
                           </p>
                         )}
@@ -380,14 +392,14 @@ const UserManagement = () => {
 
               {/* Block Status Alert */}
               {user.isBlocked && (
-                <div className="border-t pt-6 mt-6">
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
-                    <Ban className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <div className="pt-6 mt-6" style={{ borderTop: `1px solid ${color.border}` }}>
+                  <div className="rounded-xl p-4 flex items-start gap-3" style={{ background: "#fef2f2", border: `1px solid #fecaca` }}>
+                    <Ban className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: color.danger }} />
                     <div>
-                      <p className="font-semibold text-red-900">
+                      <p className="font-semibold" style={{ color: "#991b1b" }}>
                         User is currently blocked
                       </p>
-                      <p className="text-sm text-red-700 mt-1">
+                      <p className="text-sm mt-1" style={{ color: color.danger }}>
                         This user cannot login or access their account.
                       </p>
                     </div>
@@ -396,12 +408,13 @@ const UserManagement = () => {
               )}
 
               {/* Action Buttons */}
-              <div className="border-t pt-6 mt-6">
+              <div className="pt-6 mt-6" style={{ borderTop: `1px solid ${color.border}` }}>
                 {user.isBlocked ? (
                   <button
                     onClick={handleUnblock}
                     disabled={actionLoading}
-                    className="w-full sm:w-auto px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-6 py-3 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}20` }}
                   >
                     {actionLoading ? (
                       <>
@@ -419,7 +432,8 @@ const UserManagement = () => {
                   <button
                     onClick={handleBlock}
                     disabled={actionLoading}
-                    className="w-full sm:w-auto px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-6 py-3 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    style={{ background: color.danger }}
                   >
                     {actionLoading ? (
                       <>
@@ -434,7 +448,7 @@ const UserManagement = () => {
                     )}
                   </button>
                 )}
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs mt-2" style={{ color: color.textSoft }}>
                   {user.isBlocked
                     ? "⚠️ Unblocking will allow this user to login and access their account again."
                     : "⚠️ Blocking will prevent this user from logging in and accessing their account."}
@@ -444,23 +458,6 @@ const UserManagement = () => {
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fade-in 0.3s ease-out;
-        }
-      `}</style>
     </div>
   );
 };

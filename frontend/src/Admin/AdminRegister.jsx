@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { User, Mail, Lock, Key, Shield, Eye, EyeOff } from "lucide-react";
+import { color, shadow, gradientBg } from "../theme";
 
 export default function AdminRegister() {
   const navigate = useNavigate();
@@ -76,14 +77,19 @@ export default function AdminRegister() {
     console.log("=========== ADMIN REGISTER END ===========\n");
   };
 
+  const inputCls =
+    "w-full pl-12 pr-4 py-3.5 rounded-xl text-sm outline-none transition-all duration-200 bg-white";
+  const inputWithToggleCls =
+    "w-full pl-12 pr-12 py-3.5 rounded-xl text-sm outline-none transition-all duration-200 bg-white";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: color.bg }}>
       {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-[0.03]">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2303a74f' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23047857' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
           }}
         ></div>
       </div>
@@ -91,28 +97,34 @@ export default function AdminRegister() {
       <div className="w-full max-w-md relative z-10">
         {/* Logo/Header Section */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#03a74f] to-emerald-600 rounded-3xl shadow-2xl mb-4 transform hover:scale-105 transition-transform">
+          <div
+            className="inline-flex items-center justify-center w-20 h-20 rounded-2xl mb-4 transition-transform duration-300 hover:scale-105"
+            style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 8px 32px ${color.emerald}30` }}
+          >
             <Shield className="w-10 h-10 text-white" />
           </div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#03a74f] to-emerald-600 bg-clip-text text-transparent mb-2">
+          <h1 className="text-4xl font-extrabold tracking-tight mb-2" style={
+            { backgroundImage: gradientBg(color.emerald, color.forest), WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }
+          }>
             Admin Portal
           </h1>
-          <p className="text-gray-600">Create your administrator account</p>
+          <p className="text-sm" style={{ color: color.textSoft }}>Create your administrator account</p>
         </div>
 
         {/* Registration Form */}
         <form
           onSubmit={handleSubmit}
-          className="bg-white/80 backdrop-blur-sm p-8 md:p-10 rounded-3xl shadow-2xl border border-gray-100"
+          className="bg-white/90 backdrop-blur-sm p-8 md:p-10 rounded-3xl"
+          style={{ boxShadow: shadow.lg, border: `1px solid ${color.border}` }}
         >
           {/* Name Input */}
           <div className="mb-5">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold mb-2" style={{ color: color.text }}>
               Full Name
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <User className="w-5 h-5 text-gray-400" />
+                <User className="w-5 h-5" style={{ color: color.textSoft }} />
               </div>
               <input
                 name="name"
@@ -121,19 +133,22 @@ export default function AdminRegister() {
                 value={form.name}
                 onChange={handleChange}
                 required
-                className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300 bg-white"
+                className={inputCls}
+                style={{ border: `1.5px solid ${color.inputBorder}` }}
+                onFocus={(e) => { e.target.style.borderColor = color.emerald; e.target.style.boxShadow = `0 0 0 3px ${color.emerald}15`; }}
+                onBlur={(e) => { e.target.style.borderColor = color.inputBorder; e.target.style.boxShadow = "none"; }}
               />
             </div>
           </div>
 
           {/* Email Input */}
           <div className="mb-5">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold mb-2" style={{ color: color.text }}>
               Email Address
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Mail className="w-5 h-5 text-gray-400" />
+                <Mail className="w-5 h-5" style={{ color: color.textSoft }} />
               </div>
               <input
                 name="email"
@@ -142,19 +157,22 @@ export default function AdminRegister() {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full pl-12 pr-4 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300 bg-white"
+                className={inputCls}
+                style={{ border: `1.5px solid ${color.inputBorder}` }}
+                onFocus={(e) => { e.target.style.borderColor = color.emerald; e.target.style.boxShadow = `0 0 0 3px ${color.emerald}15`; }}
+                onBlur={(e) => { e.target.style.borderColor = color.inputBorder; e.target.style.boxShadow = "none"; }}
               />
             </div>
           </div>
 
           {/* Password Input */}
           <div className="mb-5">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold mb-2" style={{ color: color.text }}>
               Password
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Lock className="w-5 h-5 text-gray-400" />
+                <Lock className="w-5 h-5" style={{ color: color.textSoft }} />
               </div>
               <input
                 name="password"
@@ -163,12 +181,16 @@ export default function AdminRegister() {
                 value={form.password}
                 onChange={handleChange}
                 required
-                className="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300 bg-white"
+                className={inputWithToggleCls}
+                style={{ border: `1.5px solid ${color.inputBorder}` }}
+                onFocus={(e) => { e.target.style.borderColor = color.emerald; e.target.style.boxShadow = `0 0 0 3px ${color.emerald}15`; }}
+                onBlur={(e) => { e.target.style.borderColor = color.inputBorder; e.target.style.boxShadow = "none"; }}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center transition-colors"
+                style={{ color: color.textSoft }}
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -181,12 +203,12 @@ export default function AdminRegister() {
 
           {/* Secret Key Input */}
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold mb-2" style={{ color: color.text }}>
               Admin Secret Key
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <Key className="w-5 h-5 text-gray-400" />
+                <Key className="w-5 h-5" style={{ color: color.textSoft }} />
               </div>
               <input
                 name="secretKey"
@@ -195,12 +217,16 @@ export default function AdminRegister() {
                 value={form.secretKey}
                 onChange={handleChange}
                 required
-                className="w-full pl-12 pr-12 py-3.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-[#03a74f] focus:border-[#03a74f] outline-none transition-all duration-200 hover:border-gray-300 bg-white"
+                className={inputWithToggleCls}
+                style={{ border: `1.5px solid ${color.inputBorder}` }}
+                onFocus={(e) => { e.target.style.borderColor = color.emerald; e.target.style.boxShadow = `0 0 0 3px ${color.emerald}15`; }}
+                onBlur={(e) => { e.target.style.borderColor = color.inputBorder; e.target.style.boxShadow = "none"; }}
               />
               <button
                 type="button"
                 onClick={() => setShowSecretKey(!showSecretKey)}
-                className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                className="absolute inset-y-0 right-0 pr-4 flex items-center transition-colors"
+                style={{ color: color.textSoft }}
               >
                 {showSecretKey ? (
                   <EyeOff className="w-5 h-5" />
@@ -209,7 +235,7 @@ export default function AdminRegister() {
                 )}
               </button>
             </div>
-            <p className="mt-2 text-xs text-gray-500 flex items-center gap-1">
+            <p className="mt-2 text-xs flex items-center gap-1" style={{ color: color.textSoft }}>
               <Shield className="w-3 h-3" />
               Required for administrator registration
             </p>
@@ -219,11 +245,14 @@ export default function AdminRegister() {
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-4 rounded-xl font-semibold text-white shadow-lg transition-all duration-200 flex items-center justify-center gap-2 ${
+            className="w-full py-4 rounded-xl font-semibold text-white transition-all duration-300 flex items-center justify-center gap-2"
+            style={
               loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-gradient-to-r from-[#03a74f] to-emerald-600 hover:from-emerald-600 hover:to-[#03a74f] hover:shadow-xl transform hover:-translate-y-0.5"
-            }`}
+                ? { background: "#9ca3af", cursor: "not-allowed" }
+                : { background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}30` }
+            }
+            onMouseEnter={(e) => { if (!loading) e.currentTarget.style.transform = "translateY(-2px)"; }}
+            onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}
           >
             {loading ? (
               <>
@@ -259,11 +288,12 @@ export default function AdminRegister() {
 
           {/* Login Link */}
           <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+            <p className="text-sm" style={{ color: color.textSoft }}>
               Already have an account?{" "}
               <Link
                 to="/login"
-                className="text-[#03a74f] font-semibold hover:underline"
+                className="font-semibold hover:underline"
+                style={{ color: color.emerald }}
               >
                 Sign In
               </Link>
@@ -272,8 +302,8 @@ export default function AdminRegister() {
         </form>
 
         {/* Security Notice */}
-        <div className="mt-6 p-4 bg-amber-50 border border-amber-200 rounded-xl">
-          <p className="text-xs text-amber-800 flex items-center gap-2">
+        <div className="mt-6 p-4 rounded-xl" style={{ background: "#fffbeb", border: "1px solid #fde68a" }}>
+          <p className="text-xs flex items-center gap-2" style={{ color: "#92400e" }}>
             <svg
               className="w-4 h-4 shrink-0"
               fill="currentColor"

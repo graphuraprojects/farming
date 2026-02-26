@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-// import machines from "./Listing.js";
 import axios from "axios";
 import MachineCard from "./MachineCard";
 import Filters from "./Filters";
 import { useLocation } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { color, gradientBg } from "../../theme";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -59,12 +59,10 @@ const Listing = () => {
     fetchMachines();
   }, []);
 
-  // Reset page when filters/sort change
   useEffect(() => {
     setCurrentPage(1);
   }, [filters, sort]);
 
-  // Count machines by type (for Tractors (3))
   const typeCounts = machines.reduce((acc, item) => {
     acc[item.category] = (acc[item.category] || 0) + 1;
     return acc;
@@ -78,7 +76,7 @@ const Listing = () => {
       console.log("FIRST MACHINE FULL OBJECT:", machines[0]);
     }
   }, [machines]);
-  //  FILTER
+
   const filteredData = machines
     .map((m) => ({
       id: m._id,
@@ -88,35 +86,33 @@ const Listing = () => {
       image: m.images?.[0]?.url,
       location: `${m.address?.street || ""}, ${m.address?.city || ""}, ${m.address?.state || ""}`,
       type: m.category,
-      distance: 20, // dummy
+      distance: 20,
       hp: 50,
       verified: true,
     }))
-
-    // SEARCH FILTER
     .filter((item) =>
       (item.name || "").toLowerCase().includes(filters.search.toLowerCase()),
     )
-
-    //PRICE FILTER
     .filter((item) => item.price <= filters.price)
-
-    // DISTANCE FILTER
     .filter((item) => item.distance <= filters.distance)
-    
     .filter((item) =>
       typeof item.price === "number" ? item.price <= filters.price : true,
     )
-    // TYPE FILTER
     .filter((item) =>
       filters.type.length === 0 ? true : filters.type.includes(item.type),
     );
 
   if (loading) {
-    return <p className="text-center py-20">Loading machines...</p>;
+    return (
+      <div className="flex items-center justify-center py-32" style={{ background: color.bg }}>
+        <div className="text-center">
+          <div className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: `${color.paleGreen}`, borderTopColor: color.emerald }} />
+          <p className="font-medium" style={{ color: color.textSoft }}>Loading machines...</p>
+        </div>
+      </div>
+    );
   }
 
-  // SORT
   if (sort === "low-high") {
     filteredData.sort((a, b) => a.price - b.price);
   }
@@ -125,7 +121,6 @@ const Listing = () => {
     filteredData.sort((a, b) => b.price - a.price);
   }
 
-  // PAGINATION
   console.log("Filtered data:", filteredData);
 
   const totalPages = Math.ceil(filteredData.length / ITEMS_PER_PAGE);
@@ -139,43 +134,55 @@ const Listing = () => {
 
   return (
     <>
-      <div className="relative w-full h-[65vh] overflow-hidden">
+      {/* Hero Banner */}
+      <div className="relative w-full h-[50vh] sm:h-[60vh] overflow-hidden">
         <img
           alt="Contact banner"
           className="w-full h-full object-cover object-center"
           src="https://img.freepik.com/premium-photo/two-working-gathering-harvest-machines-harvest-gathering-gold-field-dry-wheat_116317-7329.jpg"
         />
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(165deg, ${color.deepForest}cc 0%, ${color.forest}99 40%, rgba(0,0,0,0.4) 100%)`,
+          }}
+        />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center text-white px-4">
-          <h1 className="text-4xl font-bold mb-4">
+          <p className="text-xs font-semibold uppercase tracking-[4px] mb-3" style={{ color: color.gold }}>
+            Browse Equipment
+          </p>
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 tracking-tight">
             Certified machines, verified owners, flexible rentals
           </h1>
-          <p className="max-w-2xl sm:text-lg text-[12px] leading-relaxed">
+          <p className="max-w-2xl sm:text-lg text-sm text-gray-300 leading-relaxed">
             From small farms to big construction sites, we provide the right
             machine for every project.
           </p>
         </div>
       </div>
 
-      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 py-10" style={{ background: color.bg }}>
         {/* TOP BAR */}
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-[#131614] text-4xl font-black tracking-tight">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ color: color.text }}>
               Available Machines
-              <span className="text-2xl pl-1">({filteredData.length})</span>
+              <span className="text-xl font-bold ml-2" style={{ color: color.textSoft }}>({filteredData.length})</span>
             </h1>
-            <p className="text-[#6d7e74] text-lg">
+            <p className="text-sm" style={{ color: color.textSoft }}>
               Browse premium agricultural machinery verified for enterprise use.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
-            <span className="text-sm font-medium text-[#6d7e74]">Sort by:</span>
+            <span className="text-sm font-medium" style={{ color: color.textSoft }}>Sort by:</span>
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="form-select border border-[#e6e8e6] bg-white rounded-lg text-sm font-medium py-2 pl-3 pr-10 focus:ring-[#1f3d2b] focus:border-[#1f3d2b]"
+              className="rounded-xl text-sm font-medium py-2.5 pl-3 pr-10 outline-none transition-all duration-200 cursor-pointer"
+              style={{ border: `1.5px solid ${color.border}`, background: "white" }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.border}
             >
               <option value="recommended">Recommended</option>
               <option value="low-high">Price: Low to High</option>
@@ -184,88 +191,88 @@ const Listing = () => {
           </div>
         </div>
 
-        {loading ? (
-          <p className="text-center py-20">Loading machines...</p>
-        ) : (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-              {/* STICKY FILTER */}
-              <div className="lg:sticky lg:top-6">
-                <Filters
-                  filters={filters}
-                  setFilters={setFilters}
-                  typeCounts={typeCounts}
-                  resetFilters={() =>
-                    setFilters({
-                      search: "",
-                      price: 2500,
-                      distance: 100,
-                      type: [],
-                    })
-                  }
-                />
-              </div>
-              {/* CARDS GRID */}
-              <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {paginatedData.length ? (
-                  paginatedData.map((item) => (
-                    <MachineCard key={item.id} item={item} />
-                  ))
-                ) : (
-                  <p>No machines found.</p>
-                )}
-              </div>
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+            {/* STICKY FILTER */}
+            <div className="lg:sticky lg:top-20">
+              <Filters
+                filters={filters}
+                setFilters={setFilters}
+                typeCounts={typeCounts}
+                resetFilters={() =>
+                  setFilters({
+                    search: "",
+                    price: 2500,
+                    distance: 100,
+                    type: [],
+                  })
+                }
+              />
             </div>
+            {/* CARDS GRID */}
+            <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {paginatedData.length ? (
+                paginatedData.map((item) => (
+                  <MachineCard key={item.id} item={item} />
+                ))
+              ) : (
+                <div className="col-span-full flex flex-col items-center py-20">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: color.paleGreen }}>
+                    <ChevronRight size={24} style={{ color: color.emerald }} />
+                  </div>
+                  <p className="text-lg font-semibold" style={{ color: color.text }}>No machines found</p>
+                  <p className="text-sm" style={{ color: color.textSoft }}>Try adjusting your filters</p>
+                </div>
+              )}
+            </div>
+          </div>
 
-            {/* PAGINATION BUTTONS */}
-            {totalPages > 1 && (
-              <div className="flex justify-center items-center mt-10 gap-2">
-                {/* LEFT ARROW */}
+          {/* PAGINATION */}
+          {totalPages > 1 && (
+            <div className="flex justify-center items-center mt-10 gap-1.5">
+              <button
+                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+                disabled={currentPage === 1}
+                className={`cursor-pointer px-3 py-2 rounded-xl transition-all duration-200 ${
+                  currentPage === 1
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                <ChevronLeft size={18} />
+              </button>
+
+              {Array.from({ length: totalPages }).map((_, i) => (
                 <button
-                  onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                  disabled={currentPage === 1}
-                  className={`cursor-pointer px-3 py-2 ${
-                    currentPage === 1
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  <ChevronLeft size={20} />
-                </button>
-
-                {/* PAGE NUMBERS */}
-                {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setCurrentPage(i + 1)}
-                    className={`cursor-pointer px-4 py-2 rounded-lg ${
-                      currentPage === i + 1
-                        ? "bg-[#1f3d2b] text-white font-bold"
-                        : "hover:bg-gray-100 text-gray-500 font-medium"
-                    }`}
-                  >
-                    {i + 1}
-                  </button>
-                ))}
-
-                {/* RIGHT ARROW */}
-                <button
-                  onClick={() =>
-                    setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  key={i}
+                  onClick={() => setCurrentPage(i + 1)}
+                  className="cursor-pointer px-3.5 py-2 rounded-xl text-sm font-semibold transition-all duration-200"
+                  style={
+                    currentPage === i + 1
+                      ? { background: gradientBg(color.emerald, color.forest), color: "white" }
+                      : { color: color.textSoft }
                   }
-                  disabled={currentPage === totalPages}
-                  className={`cursor-pointer px-3 py-2 rounded ${
-                    currentPage === totalPages
-                      ? "text-gray-400 cursor-not-allowed"
-                      : "hover:bg-gray-100"
-                  }`}
                 >
-                  <ChevronRight size={20} />
+                  {i + 1}
                 </button>
-              </div>
-            )}
-          </>
-        )}
+              ))}
+
+              <button
+                onClick={() =>
+                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                }
+                disabled={currentPage === totalPages}
+                className={`cursor-pointer px-3 py-2 rounded-xl transition-all duration-200 ${
+                  currentPage === totalPages
+                    ? "text-gray-300 cursor-not-allowed"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          )}
+        </>
       </div>
     </>
   );

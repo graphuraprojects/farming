@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { color, shadow, gradientBg } from "../theme";
 
 const API_BASE_URL = `/api`;
 
@@ -242,8 +243,8 @@ export default function App() {
 
   const rangeButtonClass = (range) =>
     activeRange === range
-      ? "px-5 py-2 rounded-lg bg-[#03a74f] text-white text-sm shadow-sm hover:bg-[#38864b] hover:shadow-md transition-all"
-      : "px-5 py-2 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:border-gray-300 hover:text-[#131614] transition-colors";
+      ? "px-5 py-2 rounded-xl text-white text-sm shadow-sm transition-all"
+      : "px-5 py-2 rounded-xl bg-white text-sm transition-colors";
 
   const handleRequestAction = async (id, action) => {
     try {
@@ -349,14 +350,14 @@ export default function App() {
   const revenuePath = buildSmoothPath(revenuePoints);
   const weekLabels = ["Week 1", "Week 2", "Week 3", "Week 4"];
   return (
-    <div className="min-h-screen bg-white font-['Manrope',sans-serif] text-[#1a1a1a]">
+    <div className="min-h-screen font-['Manrope',sans-serif]" style={{ background: color.bg, color: color.text }}>
       <main className="relative max-w-7xl mx-auto px-6 py-8">
-        <div className="pointer-events-none absolute top-40 -left-24 h-64 w-64 rounded-full bg-[#f7f7f7] blur-3xl opacity-70" />
+        <div className="pointer-events-none absolute top-40 -left-24 h-64 w-64 rounded-full blur-3xl opacity-40" style={{ background: color.paleGreen }} />
         {/* HEADER */}
         <div className="flex flex-wrap justify-between items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-semibold">Welcome back, {userName}</h1>
-            <p className="text-gray-500 mt-1">
+            <h1 className="text-3xl font-bold" style={{ color: color.text }}>Welcome back, {userName}</h1>
+            <p className="mt-1" style={{ color: color.textSoft }}>
               Here's what's happening with your fleet today.
             </p>
           </div>
@@ -386,7 +387,7 @@ export default function App() {
         </div>
 
         {errorMessage && (
-          <div className="mb-6 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="mb-6 rounded-xl px-4 py-3 text-sm" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: color.danger }}>
             {errorMessage}
           </div>
         )}
@@ -415,7 +416,7 @@ export default function App() {
             trendValue={currentStats.revenueTrend}
             trendTone={trendMeta(currentStats.revenueTrend).tone}
             trendDirection={trendMeta(currentStats.revenueTrend).direction}
-            iconBg="bg-[#ECF6F0]"
+            iconBg="bg-[#ecfdf5]"
             accentTone="green"
           />
           <Stat
@@ -446,7 +447,7 @@ export default function App() {
             trendValue={currentStats.activeTrend}
             trendTone={trendMeta(currentStats.activeTrend).tone}
             trendDirection={trendMeta(currentStats.activeTrend).direction}
-            iconBg="bg-[#F1F5F3]"
+            iconBg="bg-[#f0faf4]"
             accentTone="green"
           />
           <Stat
@@ -505,23 +506,23 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-start">
           <div className="flex flex-col gap-6">
             {/* CHART */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col min-h-[360px] transition-all duration-300 hover:shadow-md">
+            <div className="bg-white rounded-2xl p-6 flex flex-col min-h-[360px] transition-all duration-300 hover:shadow-md" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
               <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
                 <div>
-                  <h3 className="text-lg font-semibold text-[#131614]">
+                  <h3 className="text-lg font-bold" style={{ color: color.text }}>
                     Earnings Performance
                   </h3>
-                  <p className="text-sm text-gray-400 mt-1">
+                  <p className="text-sm mt-1" style={{ color: color.textSoft }}>
                     Revenue trend over the last 30 days
                   </p>
                 </div>
                 <div className="flex items-center gap-6 text-xs">
-                  <span className="flex items-center gap-2 font-medium text-[#131614]">
-                    <span className="w-2.5 h-2.5 rounded-full bg-[#03a74f]" />{" "}
+                  <span className="flex items-center gap-2 font-medium" style={{ color: color.text }}>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: color.emerald }} />{" "}
                     Revenue
                   </span>
-                  <span className="flex items-center gap-2 font-medium text-gray-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-gray-200" />{" "}
+                  <span className="flex items-center gap-2 font-medium" style={{ color: color.textSoft }}>
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ background: color.border }} />{" "}
                     Projected
                   </span>
                 </div>
@@ -634,9 +635,9 @@ export default function App() {
             </div>
 
             {/* BOOKINGS */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col transition-all duration-300 hover:shadow-md">
-              <div className="p-6 border-b border-gray-100 flex items-center justify-between">
-                <h3 className="text-lg font-semibold text-[#131614]">
+            <div className="bg-white rounded-2xl flex flex-col transition-all duration-300 hover:shadow-md" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+              <div className="p-6 flex items-center justify-between" style={{ borderBottom: `1px solid ${color.border}` }}>
+                <h3 className="text-lg font-bold" style={{ color: color.text }}>
                   Booking Requests
                 </h3>
                 {/* <button
@@ -734,23 +735,23 @@ export default function App() {
               </div>
               <div className="hidden md:block overflow-x-auto">
                 <table className="w-full text-left border-collapse">
-                  <thead className="bg-gray-50/50">
+                  <thead style={{ background: color.bg }}>
                     <tr>
-                      <th className="px-8 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-8 py-4 text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                         Farmer
                       </th>
-                      <th className="px-8 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-8 py-4 text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                         Machine
                       </th>
-                      <th className="px-8 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                      <th className="px-8 py-4 text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                         Dates
                       </th>
-                      <th className="px-8 py-4 text-xs font-semibold text-gray-400 uppercase tracking-wider text-right">
+                      <th className="px-8 py-4 text-xs font-semibold uppercase tracking-wider text-right" style={{ color: color.textSoft }}>
                         Action
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody style={{ borderTop: `1px solid ${color.border}` }}>
                     {requests.length === 0 ? (
                       <tr>
                         <td
@@ -832,7 +833,8 @@ export default function App() {
                                   Reject
                                 </button>
                                 <button
-                                  className="px-4 py-1.5 rounded-lg bg-[#03a74f] hover:bg-[#38864b] text-white text-sm font-medium shadow-sm transition-colors"
+                                  className="px-4 py-1.5 rounded-xl text-white text-sm font-medium transition-all duration-200"
+                                  style={{ background: gradientBg(color.emerald, color.forest) }}
                                   onClick={() =>
                                     handleRequestAction(request.id, "accept")
                                   }
@@ -852,9 +854,9 @@ export default function App() {
           </div>
 
           {/* FLEET */}
-          <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 min-h-[360px] flex flex-col gap-4 transition-all duration-300 hover:shadow-md">
+          <div className="bg-white rounded-2xl p-6 min-h-[360px] flex flex-col gap-4 transition-all duration-300 hover:shadow-md" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
             <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold text-[#131614]">My Fleet</h2>
+              <h2 className="text-lg font-bold" style={{ color: color.text }}>My Fleet</h2>
               <button
                 className="text-[#131614] hover:bg-gray-100 p-2 rounded-full transition-colors"
                 type="button"
@@ -996,7 +998,7 @@ function Stat({
     );
 
   return (
-    <div className="group relative overflow-hidden bg-white rounded-2xl p-5 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-md">
+    <div className="group relative overflow-hidden bg-white rounded-2xl p-5 transition-all duration-300 hover:shadow-md" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
       <div
         className={`pointer-events-none absolute -top-10 -right-10 h-24 w-24 rounded-full opacity-70 ${
           accentStyles[accentTone] || "bg-gray-100"
@@ -1055,12 +1057,12 @@ function Fleet({ img, name, type, extra, enabled, onToggle, onEdit, id }) {
   const status = enabled ? "Available" : "Unavailable";
 
   return (
-    <div className="p-4 rounded-lg border border-gray-100 bg-white shadow-[0_1px_2px_rgba(16,24,40,0.04)]">
+    <div className="p-4 rounded-xl bg-white" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
       <div className="flex gap-3">
         {(() => {
           console.log("[OwnerDashboard] Fleet card image value:", img);
           if (img && typeof img === "string" && img.length > 30) {
-            return <img src={img} className="w-14 h-14 rounded-md object-cover" />;
+            return <img src={img} className="w-14 h-14 rounded-xl object-cover" />;
           } else {
             console.log("[OwnerDashboard] Fleet card image skipped — invalid value:", img);
             return (
@@ -1210,10 +1212,10 @@ function EditMachineModal({ machine, onClose, onSave }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-lg max-w-lg w-full max-h-[90vh] overflow-y-auto">
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-[#131614]">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto" style={{ boxShadow: shadow.xl }}>
+        <div className="sticky top-0 bg-white p-4 flex justify-between items-center" style={{ borderBottom: `1px solid ${color.border}` }}>
+          <h2 className="text-lg font-bold" style={{ color: color.text }}>
             Edit Machine Details
           </h2>
           <button
@@ -1236,19 +1238,19 @@ function EditMachineModal({ machine, onClose, onSave }) {
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-600 px-3 py-2 rounded text-sm">
+            <div className="px-3 py-2 rounded-xl text-sm" style={{ background: "#fef2f2", border: "1px solid #fecaca", color: color.danger }}>
               ❌ {error}
             </div>
           )}
 
           {success && (
-            <div className="bg-green-50 border border-green-200 text-green-600 px-3 py-2 rounded text-sm animate-pulse">
+            <div className="px-3 py-2 rounded-xl text-sm animate-pulse" style={{ background: color.paleGreen, border: `1px solid ${color.border}`, color: color.emerald }}>
               ✅ Machine updated successfully!
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: color.text }}>
               Machine Name *
             </label>
             <input
@@ -1258,13 +1260,16 @@ function EditMachineModal({ machine, onClose, onSave }) {
               onChange={handleChange}
               required
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
+              style={{ border: `1.5px solid ${color.inputBorder}` }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
               placeholder="e.g., Tractor A"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: color.text }}>
               Model
             </label>
             <input
@@ -1273,13 +1278,16 @@ function EditMachineModal({ machine, onClose, onSave }) {
               value={formData.model}
               onChange={handleChange}
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
+              style={{ border: `1.5px solid ${color.inputBorder}` }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
               placeholder="e.g., MF 8600"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: color.text }}>
               Category
             </label>
             <input
@@ -1288,13 +1296,16 @@ function EditMachineModal({ machine, onClose, onSave }) {
               value={formData.category}
               onChange={handleChange}
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
+              style={{ border: `1.5px solid ${color.inputBorder}` }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
               placeholder="e.g., Tractor"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: color.text }}>
               Price Per Day (₹)
             </label>
             <input
@@ -1303,7 +1314,10 @@ function EditMachineModal({ machine, onClose, onSave }) {
               value={formData.price_per_day}
               onChange={handleChange}
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
+              style={{ border: `1.5px solid ${color.inputBorder}` }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
               placeholder="e.g., 500"
               step="0.01"
               min="0"
@@ -1311,7 +1325,7 @@ function EditMachineModal({ machine, onClose, onSave }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium mb-1" style={{ color: color.text }}>
               Description
             </label>
             <textarea
@@ -1319,7 +1333,10 @@ function EditMachineModal({ machine, onClose, onSave }) {
               value={formData.description}
               onChange={handleChange}
               disabled={loading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#03a74f] focus:ring-1 focus:ring-[#03a74f] disabled:bg-gray-50 disabled:text-gray-500"
+              className="w-full px-3 py-2.5 rounded-xl text-sm outline-none transition-all disabled:bg-gray-50 disabled:text-gray-500"
+              style={{ border: `1.5px solid ${color.inputBorder}` }}
+              onFocus={(e) => e.target.style.borderColor = color.emerald}
+              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
               placeholder="Enter machine description..."
               rows="3"
             />
@@ -1329,14 +1346,16 @@ function EditMachineModal({ machine, onClose, onSave }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2.5 rounded-xl font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ border: `1px solid ${color.inputBorder}`, color: color.text }}
               disabled={loading}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42] transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2.5 text-white rounded-xl font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              style={{ background: gradientBg(color.emerald, color.forest) }}
               disabled={loading}
             >
               {loading ? (
@@ -1379,10 +1398,10 @@ function BookingDetailsModal({ booking, onClose, onAccept, onReject }) {
   const farmer = booking.farmer_id;
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-lg max-w-md w-full p-6">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl max-w-md w-full p-6" style={{ boxShadow: shadow.xl }}>
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold text-[#131614]">
+          <h2 className="text-lg font-bold" style={{ color: color.text }}>
             Farmer Details
           </h2>
 
@@ -1428,7 +1447,8 @@ function BookingDetailsModal({ booking, onClose, onAccept, onReject }) {
               onAccept(booking._id);
               onClose();
             }}
-            className="flex-1 px-4 py-2 rounded-lg bg-[#03a74f] hover:bg-[#38864b] text-white text-sm font-medium"
+            className="flex-1 px-4 py-2.5 rounded-xl text-white text-sm font-medium transition-all"
+            style={{ background: gradientBg(color.emerald, color.forest) }}
           >
             Accept
           </button>

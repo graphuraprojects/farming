@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import { color, shadow, gradientBg } from "../theme";
 
 const MachineApproval = () => {
   const { id } = useParams();
@@ -182,20 +183,20 @@ const MachineApproval = () => {
 
   const getStatusInfo = () => {
     if (machineData.rejection_reason) {
-      return { label: "Rejected", color: "bg-red-100 text-red-800" };
+      return { label: "Rejected", bgColor: "#fef2f2", textColor: color.danger };
     }
     if (machineData.isApproved) {
-      return { label: "Approved", color: "bg-green-100 text-green-800" };
+      return { label: "Approved", bgColor: color.paleGreen, textColor: color.emerald };
     }
-    return { label: "Pending Review", color: "bg-amber-100 text-amber-800" };
+    return { label: "Pending Review", bgColor: "#fffbeb", textColor: "#b45309" };
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fafaf7]">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
         <div className="text-center">
-          <Loader className="w-12 h-12 text-[#03a74f] animate-spin mx-auto mb-4" />
-          <p className="text-gray-600 font-medium">
+          <div className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: color.paleGreen, borderTopColor: color.emerald }} />
+          <p className="font-medium text-sm" style={{ color: color.textSoft }}>
             Loading machine details...
           </p>
         </div>
@@ -205,12 +206,13 @@ const MachineApproval = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#fafaf7]">
-        <div className="text-center bg-white p-8 rounded-xl shadow-md">
-          <p className="text-red-600 font-medium mb-4">{error}</p>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
+        <div className="text-center bg-white p-8 rounded-2xl" style={{ boxShadow: shadow.md, border: `1px solid ${color.border}` }}>
+          <p className="font-medium mb-4" style={{ color: color.danger }}>{error}</p>
           <button
             onClick={() => navigate("/admin/dashboard")}
-            className="px-6 py-2 bg-[#03a74f] text-white rounded-lg hover:bg-[#028a42]"
+            className="px-6 py-2.5 text-white rounded-xl font-semibold transition-all duration-200"
+            style={{ background: gradientBg(color.emerald, color.forest) }}
           >
             Back to Dashboard
           </button>
@@ -222,30 +224,33 @@ const MachineApproval = () => {
   const statusInfo = getStatusInfo();
 
   return (
-    <div className="min-h-screen bg-[#fafaf7] text-[#2b2b2b] font-['Inter',sans-serif] pb-12 pt-8">
+    <div className="min-h-screen font-['Inter',sans-serif] pb-12 pt-8" style={{ background: color.bg, color: color.text }}>
       {isLightboxOpen && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
           onClick={closeLightbox}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-5xl overflow-hidden relative flex flex-col p-2"
+            className="bg-white rounded-2xl w-full max-w-5xl overflow-hidden relative flex flex-col p-2"
+            style={{ boxShadow: shadow.xl }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-4 right-4 z-50 p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600"
+              className="absolute top-4 right-4 z-50 p-2 rounded-full transition-colors"
+              style={{ background: color.bg }}
               onClick={closeLightbox}
             >
-              <span className="material-symbols-outlined text-xl font-bold">
+              <span className="material-symbols-outlined text-xl font-bold" style={{ color: color.textSoft }}>
                 close
               </span>
             </button>
-            <div className="relative w-full h-[60vh] md:h-[70vh] bg-gray-50 rounded-xl flex items-center justify-center overflow-hidden">
+            <div className="relative w-full h-[60vh] md:h-[70vh] rounded-xl flex items-center justify-center overflow-hidden" style={{ background: color.bg }}>
               <button
-                className="absolute left-4 z-10 p-3 rounded-full bg-white shadow-lg text-gray-700 hover:text-[#03a74f]"
+                className="absolute left-4 z-10 p-3 rounded-full bg-white transition-colors"
+                style={{ boxShadow: shadow.md }}
                 onClick={prevImage}
               >
-                <span className="material-symbols-outlined text-2xl">
+                <span className="material-symbols-outlined text-2xl" style={{ color: color.text }}>
                   chevron_left
                 </span>
               </button>
@@ -255,16 +260,17 @@ const MachineApproval = () => {
                 className="max-w-full max-h-full object-contain"
               />
               <button
-                className="absolute right-4 z-10 p-3 rounded-full bg-white shadow-lg text-gray-700 hover:text-[#03a74f]"
+                className="absolute right-4 z-10 p-3 rounded-full bg-white transition-colors"
+                style={{ boxShadow: shadow.md }}
                 onClick={nextImage}
               >
-                <span className="material-symbols-outlined text-2xl">
+                <span className="material-symbols-outlined text-2xl" style={{ color: color.text }}>
                   chevron_right
                 </span>
               </button>
             </div>
             <div className="py-3 px-4 flex justify-between items-center bg-white">
-              <span className="text-gray-500 font-medium text-sm">
+              <span className="font-medium text-sm" style={{ color: color.textSoft }}>
                 Image {currentImageIndex + 1} of {machineData.images.length}
               </span>
             </div>
@@ -278,25 +284,27 @@ const MachineApproval = () => {
           onClick={closeDocViewer}
         >
           <div
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] overflow-hidden relative flex flex-col"
+            className="bg-white rounded-2xl w-full max-w-4xl h-[80vh] overflow-hidden relative flex flex-col"
+            style={{ boxShadow: shadow.xl }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-white">
-              <h3 className="font-bold text-[#1f3d2b]">
+            <div className="px-6 py-4 flex justify-between items-center bg-white" style={{ borderBottom: `1px solid ${color.border}` }}>
+              <h3 className="font-bold" style={{ color: color.forest }}>
                 Ownership Proof Document
               </h3>
               <button
-                className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-600"
+                className="p-2 rounded-full transition-colors"
+                style={{ background: color.bg }}
                 onClick={closeDocViewer}
               >
-                <span className="material-symbols-outlined text-xl font-bold">
+                <span className="material-symbols-outlined text-xl font-bold" style={{ color: color.textSoft }}>
                   close
                 </span>
               </button>
             </div>
 
-            <div className="flex-1 bg-gray-50 p-6 flex items-center justify-center overflow-auto">
-              <div className="bg-white p-2 shadow-lg border border-gray-200 rounded-lg">
+            <div className="flex-1 p-6 flex items-center justify-center overflow-auto" style={{ background: color.bg }}>
+              <div className="bg-white p-2 rounded-xl" style={{ boxShadow: shadow.md, border: `1px solid ${color.border}` }}>
                 <img
                   src={selectedDoc}
                   className="max-w-full max-h-[600px] object-contain"
@@ -312,7 +320,10 @@ const MachineApproval = () => {
         <div className="mb-6">
           <button
             onClick={() => navigate("/admin/dashboard")}
-            className="flex items-center gap-2 text-gray-600 hover:text-[#03a74f] font-medium"
+            className="flex items-center gap-2 font-medium text-sm transition-colors"
+            style={{ color: color.textSoft }}
+            onMouseEnter={(e) => e.currentTarget.style.color = color.emerald}
+            onMouseLeave={(e) => e.currentTarget.style.color = color.textSoft}
           >
             <span className="material-symbols-outlined">arrow_back</span>
             Back to Dashboard
@@ -321,28 +332,30 @@ const MachineApproval = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           <div className="lg:col-span-8 flex flex-col gap-6">
-            <div className="flex flex-col gap-2 pb-4 border-b border-gray-200">
+            <div className="flex flex-col gap-2 pb-4" style={{ borderBottom: `1px solid ${color.border}` }}>
               <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-[#1f3d2b]">
+                <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight" style={{ color: color.forest }}>
                   {machineData.machine_name}
                 </h1>
                 <span
-                  className={`px-3 py-1 text-xs font-bold uppercase rounded-full border ${statusInfo.color}`}
+                  className="px-3 py-1 text-xs font-bold uppercase rounded-full"
+                  style={{ background: statusInfo.bgColor, color: statusInfo.textColor }}
                 >
                   {statusInfo.label}
                 </span>
               </div>
-              <p className="text-[#5b6e58] text-base">
+              <p className="text-sm" style={{ color: color.textSoft }}>
                 {machineData.model} • {machineData.model_year} • Reg:{" "}
                 {machineData.registration_no}
               </p>
             </div>
 
             {machineData.images && machineData.images.length > 0 && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#1f3d2b]/10 p-1 overflow-hidden">
+              <div className="bg-white rounded-2xl p-1 overflow-hidden" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-1 md:gap-2">
                   <div
-                    className="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden rounded-lg bg-gray-100 h-64 md:h-auto"
+                    className="md:col-span-2 md:row-span-2 relative group cursor-pointer overflow-hidden rounded-xl h-64 md:h-auto"
+                    style={{ background: color.bg }}
                     onClick={() => openLightbox(0)}
                   >
                     <img
@@ -355,7 +368,8 @@ const MachineApproval = () => {
                   {machineData.images.slice(1, 5).map((img, idx) => (
                     <div
                       key={idx}
-                      className="relative group cursor-pointer overflow-hidden rounded-lg h-32 md:h-auto bg-gray-100"
+                      className="relative group cursor-pointer overflow-hidden rounded-xl h-32 md:h-auto"
+                      style={{ background: color.bg }}
                       onClick={() => openLightbox(idx + 1)}
                     >
                       <img
@@ -370,34 +384,34 @@ const MachineApproval = () => {
               </div>
             )}
 
-            <div className="bg-white rounded-xl shadow-sm border border-[#1f3d2b]/10 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-100 bg-[#fafaf7]">
-                <h3 className="font-bold text-lg text-[#1f3d2b]">
+            <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+              <div className="px-6 py-4" style={{ borderBottom: `1px solid ${color.border}`, background: color.bg }}>
+                <h3 className="font-bold text-base" style={{ color: color.forest }}>
                   Technical Specifications
                 </h3>
               </div>
               <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-6">
                 <div>
-                  <p className="text-[#5b6e58] text-xs uppercase font-semibold mb-1">
+                  <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                     Category
                   </p>
-                  <p className="text-[#2b2b2b] font-medium">
+                  <p className="font-medium text-sm" style={{ color: color.text }}>
                     {machineData.category}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[#5b6e58] text-xs uppercase font-semibold mb-1">
+                  <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                     Fuel Type
                   </p>
-                  <p className="text-[#2b2b2b] font-medium">
+                  <p className="font-medium text-sm" style={{ color: color.text }}>
                     {machineData.fuel_type}
                   </p>
                 </div>
                 <div>
-                  <p className="text-[#5b6e58] text-xs uppercase font-semibold mb-1">
+                  <p className="text-xs uppercase font-semibold mb-1" style={{ color: color.textSoft }}>
                     Price Per Day
                   </p>
-                  <p className="text-[#2b2b2b] font-medium">
+                  <p className="font-bold text-sm" style={{ color: color.warmGold }}>
                     ₹{machineData.price_per_day}
                   </p>
                 </div>
@@ -405,22 +419,22 @@ const MachineApproval = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl shadow-sm border border-[#1f3d2b]/10 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 bg-[#fafaf7]">
-                  <h3 className="font-bold text-lg text-[#1f3d2b]">
+              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+                <div className="px-6 py-4" style={{ borderBottom: `1px solid ${color.border}`, background: color.bg }}>
+                  <h3 className="font-bold text-base" style={{ color: color.forest }}>
                     Ownership Document
                   </h3>
                 </div>
                 <div className="p-4">
                   {machineData.ownership_proof ? (
-                    <div className="flex items-center justify-between p-4 hover:bg-gray-50 transition-colors rounded-lg border border-gray-200">
+                    <div className="flex items-center justify-between p-4 rounded-xl transition-colors" style={{ border: `1px solid ${color.border}` }}>
                       <div className="flex items-center gap-3">
-                        <div className="size-10 rounded-lg bg-red-50 flex items-center justify-center text-red-500">
+                        <div className="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-500">
                           <span className="material-symbols-outlined">
                             picture_as_pdf
                           </span>
                         </div>
-                        <span className="text-sm font-semibold text-[#2b2b2b]">
+                        <span className="text-sm font-semibold" style={{ color: color.text }}>
                           Ownership Proof
                         </span>
                       </div>
@@ -428,39 +442,40 @@ const MachineApproval = () => {
                         onClick={() =>
                           openDocViewer(machineData.ownership_proof.url)
                         }
-                        className="text-sm font-semibold text-[#03a74f] hover:text-[#38864b]"
+                        className="text-sm font-semibold transition-colors"
+                        style={{ color: color.emerald }}
                       >
                         View
                       </button>
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-sm p-4">
+                    <p className="text-sm p-4" style={{ color: color.textSoft }}>
                       No document uploaded
                     </p>
                   )}
                 </div>
               </div>
 
-              <div className="bg-white rounded-xl shadow-sm border border-[#1f3d2b]/10 overflow-hidden">
-                <div className="px-6 py-4 border-b border-gray-100 bg-[#fafaf7]">
-                  <h3 className="font-bold text-lg text-[#1f3d2b]">Location</h3>
+              <div className="bg-white rounded-2xl overflow-hidden" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+                <div className="px-6 py-4" style={{ borderBottom: `1px solid ${color.border}`, background: color.bg }}>
+                  <h3 className="font-bold text-base" style={{ color: color.forest }}>Location</h3>
                 </div>
                 <div className="p-6">
                   {machineData.address ? (
                     <div className="space-y-2 text-sm">
-                      <p className="text-gray-700">
+                      <p style={{ color: color.text }}>
                         {machineData.address.street}
                       </p>
-                      <p className="text-gray-700">
+                      <p style={{ color: color.text }}>
                         {machineData.address.city}, {machineData.address.state}{" "}
                         {machineData.address.zip}
                       </p>
-                      <p className="text-gray-700">
+                      <p style={{ color: color.text }}>
                         {machineData.address.country}
                       </p>
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-sm">No address provided</p>
+                    <p className="text-sm" style={{ color: color.textSoft }}>No address provided</p>
                   )}
                 </div>
               </div>
@@ -468,60 +483,60 @@ const MachineApproval = () => {
           </div>
 
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-xl shadow-sm border border-[#1f3d2b]/10 p-6">
+            <div className="bg-white rounded-2xl p-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="size-16 rounded-full bg-gray-200 border-2 border-white shadow-sm flex items-center justify-center text-2xl">
+                  <div className="w-16 h-16 rounded-2xl flex items-center justify-center text-2xl" style={{ background: color.bg, border: `1px solid ${color.border}` }}>
                     👤
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-[#2b2b2b]">
+                    <h3 className="text-lg font-bold" style={{ color: color.text }}>
                       {machineData.owner_id?.name || "Unknown Owner"}
                     </h3>
-                    <p className="text-sm text-gray-600">
+                    <p className="text-sm" style={{ color: color.textSoft }}>
                       {machineData.owner_id?.email}
                     </p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 py-4 border-t border-gray-100">
+                <div className="grid grid-cols-2 gap-4 py-4" style={{ borderTop: `1px solid ${color.border}` }}>
                   <div>
-                    <p className="text-xs text-gray-500 mb-1">Phone</p>
-                    <p className="text-sm font-semibold text-[#2b2b2b]">
+                    <p className="text-xs mb-1" style={{ color: color.textSoft }}>Phone</p>
+                    <p className="text-sm font-semibold" style={{ color: color.text }}>
                       {machineData.owner_id?.phone || "N/A"}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-500 mb-1">Role</p>
-                    <p className="text-sm font-semibold text-[#2b2b2b] capitalize">
+                    <p className="text-xs mb-1" style={{ color: color.textSoft }}>Role</p>
+                    <p className="text-sm font-semibold capitalize" style={{ color: color.text }}>
                       {machineData.owner_id?.role || "owner"}
                     </p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm" style={{ color: color.textSoft }}>
                   Owner id: {machineData.owner_id?._id}
                 </p>
               </div>
             </div>
 
             {machineData.rejection_reason && (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-                <h3 className="font-bold text-red-800 mb-2">
+              <div className="rounded-2xl p-6" style={{ background: "#fef2f2", border: `1px solid #fecaca` }}>
+                <h3 className="font-bold mb-2" style={{ color: "#991b1b" }}>
                   Rejection Reason
                 </h3>
-                <p className="text-sm text-red-700">
+                <p className="text-sm" style={{ color: color.danger }}>
                   {machineData.rejection_reason}
                 </p>
               </div>
             )}
 
             {!machineData.isApproved && !machineData.rejection_reason && (
-              <div className="bg-white rounded-xl shadow-sm border border-[#1f3d2b]/10 p-6 sticky top-24">
+              <div className="bg-white rounded-2xl p-6 sticky top-24" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="material-symbols-outlined text-[#03a74f]">
+                  <span className="material-symbols-outlined" style={{ color: color.emerald }}>
                     checklist
                   </span>
-                  <h3 className="font-bold text-lg text-[#1f3d2b]">
+                  <h3 className="font-bold text-base" style={{ color: color.forest }}>
                     Review Checklist
                   </h3>
                 </div>
@@ -536,10 +551,12 @@ const MachineApproval = () => {
                         type="checkbox"
                         checked={item.checked}
                         onChange={() => handleChecklistToggle(item.id)}
-                        className="mt-1 rounded border-gray-300 text-[#03a74f] focus:ring-[#03a74f] size-5"
+                        className="mt-1 rounded size-5"
+                        style={{ accentColor: color.emerald }}
                       />
                       <span
-                        className={`text-sm ${item.checked ? "text-[#111813]" : "text-gray-500"}`}
+                        className="text-sm"
+                        style={{ color: item.checked ? color.text : color.textSoft }}
                       >
                         {item.label}
                       </span>
@@ -548,26 +565,30 @@ const MachineApproval = () => {
                 </div>
 
                 <div className="mb-6">
-                  <label className="block text-xs font-bold text-gray-500 uppercase mb-2">
+                  <label className="block text-xs font-bold uppercase mb-2" style={{ color: color.textSoft }}>
                     Admin Notes{" "}
                     {!machineData.isApproved &&
                       !machineData.rejection_reason && (
-                        <span className="text-red-500">*</span>
+                        <span style={{ color: color.danger }}>*</span>
                       )}
                   </label>
                   <textarea
-                    className="w-full rounded-lg border border-gray-200 text-sm focus:border-[#03a74f] focus:ring-[#03a74f] min-h-[80px] resize-none"
+                    className="w-full rounded-xl text-sm min-h-[80px] resize-none px-3 py-2 outline-none transition-all duration-200"
                     placeholder="Required for rejection..."
                     value={adminNotes}
                     onChange={(e) => setAdminNotes(e.target.value)}
+                    style={{ border: `1.5px solid ${color.inputBorder}` }}
+                    onFocus={(e) => e.target.style.borderColor = color.emerald}
+                    onBlur={(e) => e.target.style.borderColor = color.inputBorder}
                   ></textarea>
                 </div>
 
-                <div className="flex flex-col gap-3 pt-4 border-t border-gray-100">
+                <div className="flex flex-col gap-3 pt-4" style={{ borderTop: `1px solid ${color.border}` }}>
                   <button
                     onClick={() => handleAction("approve")}
                     disabled={submitting}
-                    className="w-full py-3 px-4 bg-[#03a74f] hover:bg-[#38864b] text-white rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-3 px-4 text-white rounded-xl font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}25` }}
                   >
                     {submitting ? (
                       <>
@@ -586,7 +607,10 @@ const MachineApproval = () => {
                   <button
                     onClick={() => handleAction("reject")}
                     disabled={submitting}
-                    className="w-full py-2 px-4 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full py-2 px-4 rounded-xl font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ color: color.danger }}
+                    onMouseEnter={(e) => e.currentTarget.style.background = "#fef2f2"}
+                    onMouseLeave={(e) => e.currentTarget.style.background = "transparent"}
                   >
                     Reject Application
                   </button>

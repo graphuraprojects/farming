@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import { MapPin, Upload, FileText, Check, Trash2 } from "lucide-react";
+import { color, gradientBg, shadow } from "../../theme";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
@@ -220,23 +221,24 @@ return (
     
     <div className="w-full max-w-5xl">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-2" style={{ color: color.text }}>
           Location & Documents
         </h1>
-        <p className="text-sm sm:text-base text-gray-600">
+        <p className="text-sm" style={{ color: color.textSoft }}>
           Set your machine location and upload ownership documents
         </p>
       </div>
 
         <div className="space-y-6">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-semibold text-gray-800">
+              <h2 className="text-base font-bold" style={{ color: color.text }}>
                 Base Location
               </h2>
               <button
                 onClick={getCurrentLocation}
-                className="text-sm text-[#03a74f] hover:text-[#028a42] font-semibold transition-colors"
+                className="text-sm font-semibold transition-colors duration-200"
+                style={{ color: color.emerald }}
               >
                 Use current location
               </button>
@@ -246,7 +248,7 @@ return (
               {isLoadingLocation ? (
                 <div className="w-full h-80 rounded-lg bg-gray-100 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="w-12 h-12 border-4 border-[#03a74f] border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
+                    <div className="w-12 h-12 border-4 rounded-full animate-spin mx-auto mb-3" style={{ borderColor: color.paleGreen, borderTopColor: color.emerald }}></div>
                     <p className="text-sm text-gray-600 font-medium">
                       Getting your location...
                     </p>
@@ -292,8 +294,8 @@ return (
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-5">
+          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+            <h3 className="text-base font-bold mb-5" style={{ color: color.text }}>
               Address Details
             </h3>
 
@@ -384,11 +386,11 @@ return (
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+          <div className="bg-white rounded-2xl p-6" style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}>
+            <h3 className="text-base font-bold mb-2" style={{ color: color.text }}>
               Ownership Verification
             </h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm mb-6" style={{ color: color.textSoft }}>
               Upload documents to verify legal ownership. Required for insurance
               coverage
             </p>
@@ -482,7 +484,8 @@ return (
             <button
               type="button"
               onClick={prev}
-              className="px-8 py-3 border-2 border-gray-300 rounded-lg text-gray-700 font-semibold hover:bg-gray-50 hover:border-gray-400 transition-all duration-300 hover:-translate-y-1 active:scale-95"
+              className="px-8 py-3.5 rounded-xl font-semibold transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97]"
+              style={{ border: `2px solid ${color.border}`, color: color.text }}
             >
               Back
             </button>
@@ -490,7 +493,8 @@ return (
             <button
               type="button"
               onClick={handleSubmit}
-              className="bg-[#03a74f] hover:bg-[#028a42] text-white font-semibold px-8 py-3 rounded-lg transition-all duration-300 hover:-translate-y-1 active:scale-95 shadow-md hover:shadow-lg"
+              className="text-white font-semibold px-8 py-3.5 rounded-xl transition-all duration-300 hover:-translate-y-0.5 active:scale-[0.97]"
+              style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}30` }}
             >
               Submit Machine
             </button>

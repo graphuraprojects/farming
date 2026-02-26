@@ -3,6 +3,7 @@ import axios from "axios";
 import { Calendar, Clock, CheckCircle, Download } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { History } from "lucide-react";
+import { color, shadow, gradientBg } from "../theme";
 
 const FarmerDashboard = () => {
   const [bookings, setBookings] = useState([]);
@@ -10,7 +11,6 @@ const FarmerDashboard = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  // ✅ Fetch Bookings API
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -39,144 +39,176 @@ const FarmerDashboard = () => {
   const getStatusColor = (status) => {
     switch (status) {
       case "completed":
-        return "bg-green-100 text-green-700";
+        return { background: color.paleGreen, color: color.emerald };
       case "accepted":
-        return "bg-blue-100 text-blue-700";
+        return { background: "#dbeafe", color: "#2563eb" };
       case "cancelled":
       case "rejected":
-        return "bg-red-100 text-red-700";
+        return { background: "#fef2f2", color: color.danger };
       case "pending":
-        return "bg-yellow-100 text-yellow-700";
+        return { background: "#fef9c3", color: "#ca8a04" };
       default:
-        return "bg-gray-100 text-gray-700";
+        return { background: "#f3f4f6", color: "#6b7280" };
     }
   };
 
-  // ✅ Loading UI
   if (loading) {
-    return <p className="text-center py-10">Loading bookings...</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
+        <div className="text-center">
+          <div className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: color.paleGreen, borderTopColor: color.emerald }} />
+          <p className="font-medium" style={{ color: color.textSoft }}>Loading bookings...</p>
+        </div>
+      </div>
+    );
   }
 
-  // ✅ Error UI
   if (error) {
-    return <p className="text-center text-red-500">{error}</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
+        <p className="font-medium" style={{ color: color.danger }}>{error}</p>
+      </div>
+    );
   }
+
   const formatDays = (totalDays) => {
     return `${totalDays} day${totalDays !== 1 ? 's' : ''}`;
   };
 
+  const kpiCards = [
+    {
+      label: "Total Rentals",
+      value: bookings.length,
+      icon: Calendar,
+      iconBg: color.paleGreen,
+      iconColor: color.emerald,
+      accentBg: color.paleGreen,
+    },
+    {
+      label: "Days Logged",
+      value: formatDays(bookings.reduce((acc, b) => acc + (b.total_days || 0), 0)),
+      icon: Clock,
+      iconBg: "#fff7ed",
+      iconColor: "#ea580c",
+      accentBg: "#fff7ed",
+    },
+    {
+      label: "Active Bookings",
+      value: bookings.filter((b) => b.booking_status === "accepted").length,
+      icon: CheckCircle,
+      iconBg: color.paleGreen,
+      iconColor: color.emerald,
+      accentBg: color.paleGreen,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-background-dark dark:bg-background-dark p-6 lg:p-10 font-display text-[#1f3d2b]">
+    <div className="min-h-screen p-6 lg:p-10" style={{ background: color.bg }}>
       <div className="mx-auto max-w-[1200px] flex flex-col gap-8">
-        {/* KPI Cards */}
+        {/* Header */}
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: color.text }}>
+            Dashboard
+          </h1>
+          <p className="text-sm mt-1" style={{ color: color.textSoft }}>
+            Overview of your rental activity
+          </p>
+        </div>
+
         {/* KPI Cards */}
         <section className="grid grid-cols-1 gap-6 md:grid-cols-4">
-          {/* Total Rentals */}
-          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg">
-            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-50 group-hover:scale-110"></div>
+          {kpiCards.map((kpi, i) => {
+            const Icon = kpi.icon;
+            return (
+              <div
+                key={i}
+                className="group relative overflow-hidden rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-0.5"
+                style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
+              >
+                <div
+                  className="absolute -right-6 -top-6 h-24 w-24 rounded-full transition-transform group-hover:scale-110"
+                  style={{ background: kpi.accentBg }}
+                />
 
-            <div className="relative z-10 flex flex-col gap-1">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-blue-100">
-                <Calendar className="w-6 h-6 text-blue-600" />
+                <div className="relative z-10 flex flex-col gap-1">
+                  <div
+                    className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl"
+                    style={{ background: kpi.iconBg }}
+                  >
+                    <Icon className="w-6 h-6" style={{ color: kpi.iconColor }} />
+                  </div>
+
+                  <p className="text-sm" style={{ color: color.textSoft }}>{kpi.label}</p>
+
+                  <h3 className="text-3xl font-bold" style={{ color: color.text }}>
+                    {kpi.value}
+                  </h3>
+                </div>
               </div>
+            );
+          })}
 
-              <p className="text-sm text-gray-500">Total Rentals</p>
-
-              <h3 className="text-3xl font-bold text-gray-900">
-                {bookings.length}
-              </h3>
-            </div>
-          </div>
-
-          {/* Total Hours */}
-          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg">
-            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-50 group-hover:scale-110"></div>
-
-            <div className="relative z-10 flex flex-col gap-1">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100">
-                <Clock className="w-6 h-6 text-orange-600" />
-              </div>
-
-              <p className="text-sm text-gray-500">Days Logged</p>
-
-              <h3 className="text-3xl font-bold text-gray-900">
-                {formatDays(
-                  bookings.reduce((acc, b) => acc + (b.total_days || 0), 0),
-                )}
-              </h3>
-            </div>
-          </div>
-
-          {/* Active Bookings */}
-          <div className="group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg">
-            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-green-50 group-hover:scale-110"></div>
-
-            <div className="relative z-10 flex flex-col gap-1">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-green-100">
-                <CheckCircle className="w-6 h-6 text-green-600" />
-              </div>
-
-              <p className="text-sm text-gray-500">Active Bookings</p>
-
-              <h3 className="text-3xl font-bold text-gray-900">
-                {bookings.filter((b) => b.booking_status === "accepted").length}
-              </h3>
-            </div>
-          </div>
-
-          {/* Total Earnings */}
           {/* Booking History Card */}
           <div
             onClick={() => navigate("/booking-history")}
-            className="cursor-pointer group relative overflow-hidden rounded-xl bg-white p-6 shadow-[0_4px_20px_rgba(0,0,0,0.08)] transition-all hover:shadow-lg"
+            className="cursor-pointer group relative overflow-hidden rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-0.5"
+            style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
           >
-            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-purple-50 group-hover:scale-110"></div>
+            <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-purple-50 transition-transform group-hover:scale-110" />
 
             <div className="relative z-10 flex flex-col gap-1">
-              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-100">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-purple-50">
                 <History className="w-6 h-6 text-purple-600" />
               </div>
 
-              <p className="text-sm text-gray-500">Booking History</p>
+              <p className="text-sm" style={{ color: color.textSoft }}>Booking History</p>
 
-              <h3 className="text-xl font-semibold text-gray-900">
-                View All Bookings →
+              <h3 className="text-lg font-semibold flex items-center gap-1" style={{ color: color.text }}>
+                View All Bookings
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
               </h3>
             </div>
           </div>
         </section>
 
-        {/* Table Section */}
-        <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+        {/* Table */}
+        <div
+          className="bg-white rounded-2xl overflow-hidden"
+          style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
+        >
           {/* Desktop Table */}
           <div className="hidden lg:block overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase">
+              <thead style={{ background: color.bg }}>
+                <tr style={{ borderBottom: `1px solid ${color.border}` }}>
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                     Machine
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                     Booking ID
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                     Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                     Duration
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                     Amount Paid
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-700 uppercase">
+                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
                     Status
                   </th>
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-gray-200">
-                {bookings.map((booking) => (
-                  <tr key={booking._id} className="hover:bg-gray-50">
+              <tbody>
+                {bookings.map((booking, idx) => (
+                  <tr
+                    key={booking._id}
+                    className="transition-colors hover:bg-gray-50"
+                    style={{ borderBottom: idx < bookings.length - 1 ? `1px solid ${color.border}` : "none" }}
+                  >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
                         src={
@@ -184,32 +216,33 @@ const FarmerDashboard = () => {
                           "https://via.placeholder.com/150"
                         }
                         alt={booking.machine_id?.machine_name || "Machine"}
-                        className="w-12 h-12 object-cover rounded-lg"
+                        className="w-12 h-12 object-cover rounded-xl"
                       />
-                      <span className="font-semibold text-sm">
+                      <span className="font-semibold text-sm" style={{ color: color.text }}>
                         {booking.machine_id?.machine_name || "Unknown Machine"}
                       </span>
                     </td>
 
-                    <td className="px-6 py-4 text-sm">{booking._id}</td>
+                    <td className="px-6 py-4 text-sm font-mono" style={{ color: color.textSoft }}>
+                      {booking._id.slice(-8)}
+                    </td>
 
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm" style={{ color: color.text }}>
                       {new Date(booking.createdAt).toLocaleDateString()}
                     </td>
 
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm" style={{ color: color.text }}>
                       {booking.total_days} Days
                     </td>
 
-                    <td className="px-6 py-4 text-sm font-semibold text-yellow-600">
+                    <td className="px-6 py-4 text-sm font-bold" style={{ color: color.warmGold }}>
                       ₹{booking.total_amount}
                     </td>
 
                     <td className="px-6 py-4">
                       <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                          booking.booking_status,
-                        )}`}
+                        className="px-3 py-1 rounded-full text-xs font-semibold capitalize"
+                        style={getStatusColor(booking.booking_status)}
                       >
                         {booking.booking_status}
                       </span>
@@ -221,9 +254,13 @@ const FarmerDashboard = () => {
           </div>
 
           {/* Mobile View */}
-          <div className="lg:hidden divide-y">
-            {bookings.map((booking) => (
-              <div key={booking._id} className="p-4">
+          <div className="lg:hidden">
+            {bookings.map((booking, idx) => (
+              <div
+                key={booking._id}
+                className="p-4"
+                style={{ borderBottom: idx < bookings.length - 1 ? `1px solid ${color.border}` : "none" }}
+              >
                 <div className="flex items-start gap-3 mb-3">
                   <img
                     src={
@@ -231,20 +268,19 @@ const FarmerDashboard = () => {
                       "https://via.placeholder.com/150"
                     }
                     alt={booking.machine_id?.machine_name || "Machine"}
-                    className="w-12 h-12 object-cover rounded-lg"
+                    className="w-12 h-12 object-cover rounded-xl"
                   />
 
                   <div className="flex-1">
-                    <div className="font-semibold text-sm">
+                    <div className="font-semibold text-sm" style={{ color: color.text }}>
                       {booking.machine_id?.machine_name}
                     </div>
-                    <div className="text-xs text-gray-500">{booking._id}</div>
+                    <div className="text-xs font-mono" style={{ color: color.textSoft }}>{booking._id.slice(-8)}</div>
                   </div>
 
                   <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                      booking.booking_status,
-                    )}`}
+                    className="px-2.5 py-1 rounded-full text-xs font-semibold capitalize"
+                    style={getStatusColor(booking.booking_status)}
                   >
                     {booking.booking_status}
                   </span>
@@ -252,20 +288,20 @@ const FarmerDashboard = () => {
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <div className="text-xs text-gray-500">Date</div>
-                    <div>
+                    <div className="text-xs" style={{ color: color.textSoft }}>Date</div>
+                    <div style={{ color: color.text }}>
                       {new Date(booking.createdAt).toLocaleDateString()}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-gray-500">Duration</div>
-                    <div>{booking.total_days} Days</div>
+                    <div className="text-xs" style={{ color: color.textSoft }}>Duration</div>
+                    <div style={{ color: color.text }}>{booking.total_days} Days</div>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t mt-3">
-                  <div className="text-lg font-semibold text-yellow-600">
+                <div className="pt-3 mt-3" style={{ borderTop: `1px solid ${color.border}` }}>
+                  <div className="text-lg font-bold" style={{ color: color.warmGold }}>
                     ₹{booking.total_amount}
                   </div>
                 </div>
