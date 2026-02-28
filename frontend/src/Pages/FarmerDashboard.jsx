@@ -10,7 +10,8 @@ const FarmerDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 10;
   useEffect(() => {
     const fetchBookings = async () => {
       try {
@@ -35,7 +36,15 @@ const FarmerDashboard = () => {
 
     fetchBookings();
   }, []);
+  const totalPages = Math.ceil(bookings.length / bookingsPerPage);
 
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+
+  const currentBookings = bookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking,
+  );
   const getStatusColor = (status) => {
     switch (status) {
       case "completed":
@@ -54,10 +63,21 @@ const FarmerDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: color.bg }}
+      >
         <div className="text-center">
-          <div className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-4" style={{ borderColor: color.paleGreen, borderTopColor: color.emerald }} />
-          <p className="font-medium" style={{ color: color.textSoft }}>Loading bookings...</p>
+          <div
+            className="w-10 h-10 border-3 rounded-full animate-spin mx-auto mb-4"
+            style={{
+              borderColor: color.paleGreen,
+              borderTopColor: color.emerald,
+            }}
+          />
+          <p className="font-medium" style={{ color: color.textSoft }}>
+            Loading bookings...
+          </p>
         </div>
       </div>
     );
@@ -65,14 +85,19 @@ const FarmerDashboard = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
-        <p className="font-medium" style={{ color: color.danger }}>{error}</p>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: color.bg }}
+      >
+        <p className="font-medium" style={{ color: color.danger }}>
+          {error}
+        </p>
       </div>
     );
   }
 
   const formatDays = (totalDays) => {
-    return `${totalDays} day${totalDays !== 1 ? 's' : ''}`;
+    return `${totalDays} day${totalDays !== 1 ? "s" : ""}`;
   };
 
   const kpiCards = [
@@ -86,7 +111,9 @@ const FarmerDashboard = () => {
     },
     {
       label: "Days Logged",
-      value: formatDays(bookings.reduce((acc, b) => acc + (b.total_days || 0), 0)),
+      value: formatDays(
+        bookings.reduce((acc, b) => acc + (b.total_days || 0), 0),
+      ),
       icon: Clock,
       iconBg: "#fff7ed",
       iconColor: "#ea580c",
@@ -107,7 +134,10 @@ const FarmerDashboard = () => {
       <div className="mx-auto max-w-[1200px] flex flex-col gap-8">
         {/* Header */}
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: color.text }}>
+          <h1
+            className="text-2xl sm:text-3xl font-extrabold tracking-tight"
+            style={{ color: color.text }}
+          >
             Dashboard
           </h1>
           <p className="text-sm mt-1" style={{ color: color.textSoft }}>
@@ -123,7 +153,10 @@ const FarmerDashboard = () => {
               <div
                 key={i}
                 className="group relative overflow-hidden rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-0.5"
-                style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
+                style={{
+                  boxShadow: shadow.sm,
+                  border: `1px solid ${color.border}`,
+                }}
               >
                 <div
                   className="absolute -right-6 -top-6 h-24 w-24 rounded-full transition-transform group-hover:scale-110"
@@ -135,12 +168,20 @@ const FarmerDashboard = () => {
                     className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl"
                     style={{ background: kpi.iconBg }}
                   >
-                    <Icon className="w-6 h-6" style={{ color: kpi.iconColor }} />
+                    <Icon
+                      className="w-6 h-6"
+                      style={{ color: kpi.iconColor }}
+                    />
                   </div>
 
-                  <p className="text-sm" style={{ color: color.textSoft }}>{kpi.label}</p>
+                  <p className="text-sm" style={{ color: color.textSoft }}>
+                    {kpi.label}
+                  </p>
 
-                  <h3 className="text-3xl font-bold" style={{ color: color.text }}>
+                  <h3
+                    className="text-3xl font-bold"
+                    style={{ color: color.text }}
+                  >
                     {kpi.value}
                   </h3>
                 </div>
@@ -152,7 +193,10 @@ const FarmerDashboard = () => {
           <div
             onClick={() => navigate("/booking-history")}
             className="cursor-pointer group relative overflow-hidden rounded-2xl bg-white p-6 transition-all duration-300 hover:-translate-y-0.5"
-            style={{ boxShadow: shadow.sm, border: `1px solid ${color.border}` }}
+            style={{
+              boxShadow: shadow.sm,
+              border: `1px solid ${color.border}`,
+            }}
           >
             <div className="absolute -right-6 -top-6 h-24 w-24 rounded-full bg-purple-50 transition-transform group-hover:scale-110" />
 
@@ -161,11 +205,18 @@ const FarmerDashboard = () => {
                 <History className="w-6 h-6 text-purple-600" />
               </div>
 
-              <p className="text-sm" style={{ color: color.textSoft }}>Booking History</p>
+              <p className="text-sm" style={{ color: color.textSoft }}>
+                Booking History
+              </p>
 
-              <h3 className="text-lg font-semibold flex items-center gap-1" style={{ color: color.text }}>
+              <h3
+                className="text-lg font-semibold flex items-center gap-1"
+                style={{ color: color.text }}
+              >
                 View All Bookings
-                <span className="group-hover:translate-x-1 transition-transform">→</span>
+                <span className="group-hover:translate-x-1 transition-transform">
+                  →
+                </span>
               </h3>
             </div>
           </div>
@@ -181,33 +232,56 @@ const FarmerDashboard = () => {
             <table className="w-full">
               <thead style={{ background: color.bg }}>
                 <tr style={{ borderBottom: `1px solid ${color.border}` }}>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: color.textSoft }}
+                  >
                     Machine
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: color.textSoft }}
+                  >
                     Booking ID
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: color.textSoft }}
+                  >
                     Date
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: color.textSoft }}
+                  >
                     Duration
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: color.textSoft }}
+                  >
                     Amount Paid
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: color.textSoft }}>
+                  <th
+                    className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider"
+                    style={{ color: color.textSoft }}
+                  >
                     Status
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {bookings.map((booking, idx) => (
+                {currentBookings.map((booking, idx) => (
                   <tr
                     key={booking._id}
                     className="transition-colors hover:bg-gray-50"
-                    style={{ borderBottom: idx < bookings.length - 1 ? `1px solid ${color.border}` : "none" }}
+                    style={{
+                      borderBottom:
+                        idx < bookings.length - 1
+                          ? `1px solid ${color.border}`
+                          : "none",
+                    }}
                   >
                     <td className="px-6 py-4 flex items-center gap-3">
                       <img
@@ -218,24 +292,39 @@ const FarmerDashboard = () => {
                         alt={booking.machine_id?.machine_name || "Machine"}
                         className="w-12 h-12 object-cover rounded-xl"
                       />
-                      <span className="font-semibold text-sm" style={{ color: color.text }}>
+                      <span
+                        className="font-semibold text-sm"
+                        style={{ color: color.text }}
+                      >
                         {booking.machine_id?.machine_name || "Unknown Machine"}
                       </span>
                     </td>
 
-                    <td className="px-6 py-4 text-sm font-mono" style={{ color: color.textSoft }}>
+                    <td
+                      className="px-6 py-4 text-sm font-mono"
+                      style={{ color: color.textSoft }}
+                    >
                       {booking._id.slice(-8)}
                     </td>
 
-                    <td className="px-6 py-4 text-sm" style={{ color: color.text }}>
+                    <td
+                      className="px-6 py-4 text-sm"
+                      style={{ color: color.text }}
+                    >
                       {new Date(booking.createdAt).toLocaleDateString()}
                     </td>
 
-                    <td className="px-6 py-4 text-sm" style={{ color: color.text }}>
+                    <td
+                      className="px-6 py-4 text-sm"
+                      style={{ color: color.text }}
+                    >
                       {booking.total_days} Days
                     </td>
 
-                    <td className="px-6 py-4 text-sm font-bold" style={{ color: color.warmGold }}>
+                    <td
+                      className="px-6 py-4 text-sm font-bold"
+                      style={{ color: color.warmGold }}
+                    >
                       ₹{booking.total_amount}
                     </td>
 
@@ -251,15 +340,65 @@ const FarmerDashboard = () => {
                 ))}
               </tbody>
             </table>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-6 pb-6 px-6">
+                {/* Previous */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="cursor-pointer px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40"
+                  style={{ borderColor: color.border }}
+                >
+                  Prev
+                </button>
+
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className="cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition"
+                    style={{
+                      background:
+                        currentPage === i + 1 ? color.emerald : "white",
+                      color: currentPage === i + 1 ? "white" : color.text,
+                      border: `1px solid ${color.border}`,
+                    }}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                {/* Next */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="cursor-pointer px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40"
+                  style={{ borderColor: color.border }}
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile View */}
           <div className="lg:hidden">
-            {bookings.map((booking, idx) => (
+            {currentBookings.map((booking, idx) => (
               <div
                 key={booking._id}
                 className="p-4"
-                style={{ borderBottom: idx < bookings.length - 1 ? `1px solid ${color.border}` : "none" }}
+                style={{
+                  borderBottom:
+                    idx < bookings.length - 1
+                      ? `1px solid ${color.border}`
+                      : "none",
+                }}
               >
                 <div className="flex items-start gap-3 mb-3">
                   <img
@@ -272,10 +411,18 @@ const FarmerDashboard = () => {
                   />
 
                   <div className="flex-1">
-                    <div className="font-semibold text-sm" style={{ color: color.text }}>
+                    <div
+                      className="font-semibold text-sm"
+                      style={{ color: color.text }}
+                    >
                       {booking.machine_id?.machine_name}
                     </div>
-                    <div className="text-xs font-mono" style={{ color: color.textSoft }}>{booking._id.slice(-8)}</div>
+                    <div
+                      className="text-xs font-mono"
+                      style={{ color: color.textSoft }}
+                    >
+                      {booking._id.slice(-8)}
+                    </div>
                   </div>
 
                   <span
@@ -288,20 +435,32 @@ const FarmerDashboard = () => {
 
                 <div className="grid grid-cols-2 gap-3 text-sm">
                   <div>
-                    <div className="text-xs" style={{ color: color.textSoft }}>Date</div>
+                    <div className="text-xs" style={{ color: color.textSoft }}>
+                      Date
+                    </div>
                     <div style={{ color: color.text }}>
                       {new Date(booking.createdAt).toLocaleDateString()}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs" style={{ color: color.textSoft }}>Duration</div>
-                    <div style={{ color: color.text }}>{booking.total_days} Days</div>
+                    <div className="text-xs" style={{ color: color.textSoft }}>
+                      Duration
+                    </div>
+                    <div style={{ color: color.text }}>
+                      {booking.total_days} Days
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-3 mt-3" style={{ borderTop: `1px solid ${color.border}` }}>
-                  <div className="text-lg font-bold" style={{ color: color.warmGold }}>
+                <div
+                  className="pt-3 mt-3"
+                  style={{ borderTop: `1px solid ${color.border}` }}
+                >
+                  <div
+                    className="text-lg font-bold"
+                    style={{ color: color.warmGold }}
+                  >
                     ₹{booking.total_amount}
                   </div>
                 </div>

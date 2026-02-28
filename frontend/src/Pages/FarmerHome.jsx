@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   Banknote,
   ShieldCheck,
@@ -22,38 +23,33 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import CountUp from "react-countup";
-import {
-  motion,
-  useScroll,
-  useTransform,
-  useInView,
-} from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 
 /* ═══════════════════════════════════════════════════
    DESIGN TOKENS
    ═══════════════════════════════════════════════════ */
 const color = {
-  emerald:     "#047857",
-  emeraldMid:  "#059669",
-  forest:      "#064e3b",
-  deepForest:  "#022c22",
-  sage:        "#a7c4a0",
-  mintCream:   "#f0faf4",
-  paleGreen:   "#e6f4ea",
-  lush:        "#10b981",
-  gold:        "#c8a55a",
-  warmGold:    "#d4a853",
-  ivory:       "#fdfcf8",
-  bg:          "#f8faf7",
-  text:        "#1a1a1a",
-  textSoft:    "#6b7280",
+  emerald: "#047857",
+  emeraldMid: "#059669",
+  forest: "#064e3b",
+  deepForest: "#022c22",
+  sage: "#a7c4a0",
+  mintCream: "#f0faf4",
+  paleGreen: "#e6f4ea",
+  lush: "#10b981",
+  gold: "#c8a55a",
+  warmGold: "#d4a853",
+  ivory: "#fdfcf8",
+  bg: "#f8faf7",
+  text: "#1a1a1a",
+  textSoft: "#6b7280",
 };
 
 const shadow = {
-  sm:   "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)",
-  md:   "0 4px 16px rgba(0,0,0,0.06)",
-  lg:   "0 8px 30px rgba(0,0,0,0.08)",
-  xl:   "0 20px 60px rgba(0,0,0,0.1)",
+  sm: "0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06)",
+  md: "0 4px 16px rgba(0,0,0,0.06)",
+  lg: "0 8px 30px rgba(0,0,0,0.08)",
+  xl: "0 20px 60px rgba(0,0,0,0.1)",
   glow: `0 0 40px ${color.emerald}15, 0 8px 30px rgba(0,0,0,0.08)`,
 };
 
@@ -61,32 +57,32 @@ const shadow = {
    ANIMATION VARIANTS
    ═══════════════════════════════════════════════════ */
 const fadeUp = {
-  hidden:  { opacity: 0, y: 50 },
+  hidden: { opacity: 0, y: 50 },
   visible: { opacity: 1, y: 0 },
 };
 
 const fadeIn = {
-  hidden:  { opacity: 0 },
+  hidden: { opacity: 0 },
   visible: { opacity: 1 },
 };
 
 const slideLeft = {
-  hidden:  { opacity: 0, x: -60 },
+  hidden: { opacity: 0, x: -60 },
   visible: { opacity: 1, x: 0 },
 };
 
 const slideRight = {
-  hidden:  { opacity: 0, x: 60 },
+  hidden: { opacity: 0, x: 60 },
   visible: { opacity: 1, x: 0 },
 };
 
 const scaleIn = {
-  hidden:  { opacity: 0, scale: 0.9 },
+  hidden: { opacity: 0, scale: 0.9 },
   visible: { opacity: 1, scale: 1 },
 };
 
 const stagger = {
-  hidden:  {},
+  hidden: {},
   visible: { transition: { staggerChildren: 0.12 } },
 };
 
@@ -103,7 +99,14 @@ const float = {
 const FarmerHome = () => {
   const navigate = useNavigate();
   const heroRef = useRef(null);
+  const [currentUser, setCurrentUser] = useState(null);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+    }
+  }, []);
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ["start start", "end start"],
@@ -142,7 +145,6 @@ const FarmerHome = () => {
 
   return (
     <div style={{ background: color.bg, fontFamily: "'Inter', sans-serif" }}>
-
       {/* ═══════════════════════════════════════════
           HERO SECTION
           ═══════════════════════════════════════════ */}
@@ -178,7 +180,6 @@ const FarmerHome = () => {
           className="absolute inset-0 flex justify-center"
         >
           <div className="max-w-[1280px] w-full px-6 md:px-10 flex flex-col justify-center relative">
-
             {/* text block */}
             <motion.div
               initial="hidden"
@@ -200,8 +201,7 @@ const FarmerHome = () => {
                 transition={{ duration: 0.7, delay: 0.1 }}
                 className="text-white text-[clamp(2rem,5vw,3.75rem)] font-extrabold leading-[1.08] tracking-tight"
               >
-                Unlock the Power of{" "}
-                <br className="hidden sm:block" />
+                Unlock the Power of <br className="hidden sm:block" />
                 <span
                   style={{
                     backgroundImage: `linear-gradient(135deg, ${color.lush}, ${color.sage}, ${color.gold})`,
@@ -218,39 +218,37 @@ const FarmerHome = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="text-gray-300 mt-5 text-sm md:text-[15px] leading-[1.7] max-w-[460px]"
               >
-                Rent premium machinery from verified owners near you.
-                Affordable daily rates, doorstep delivery, and zero hassle — so you can focus on what matters most.
+                Rent premium machinery from verified owners near you. Affordable
+                daily rates, doorstep delivery, and zero hassle — so you can
+                focus on what matters most.
               </motion.p>
 
-              <motion.div
-                variants={fadeUp}
-                transition={{ duration: 0.6, delay: 0.3 }}
-                className="mt-8 flex flex-wrap gap-4"
-              >
-                <Link
-                  to="/machine-listing"
-                  className="group relative overflow-hidden py-3.5 px-7 rounded-xl font-semibold text-white text-sm shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
-                  style={{
-                    background: `linear-gradient(135deg, ${color.emerald}, ${color.forest})`,
-                  }}
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    Explore Machines
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-                  </span>
-                  <div
-                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+              <motion.div className="mt-8 flex flex-wrap gap-4">
+                {/* Show Explore Machines ONLY if user is NOT owner */}
+                {(!currentUser || currentUser.role !== "owner") && (
+                  <Link
+                    to="/machine-listing"
+                    className="group relative overflow-hidden py-3.5 px-7 rounded-xl font-semibold text-white text-sm shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
                     style={{
-                      background: `linear-gradient(135deg, ${color.emeraldMid}, ${color.emerald})`,
+                      background: `linear-gradient(135deg, ${color.emerald}, ${color.forest})`,
                     }}
-                  />
-                </Link>
-                <Link
-                  to="/add-machine"
-                  className="py-3.5 px-7 rounded-xl font-semibold text-white text-sm border border-white/25 backdrop-blur-md bg-white/[0.08] hover:bg-white hover:text-[#064e3b] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.97]"
-                >
-                  List Your Equipment
-                </Link>
+                  >
+                    <span className="relative z-10 flex items-center gap-2">
+                      Explore Machines
+                      <ArrowRight size={16} />
+                    </span>
+                  </Link>
+                )}
+
+                {/* Show List Equipment ONLY if user is NOT farmer */}
+                {(!currentUser || currentUser.role !== "farmer") && (
+                  <Link
+                    to="/add-machine"
+                    className="py-3.5 px-7 rounded-xl font-semibold text-white text-sm border border-white/25 backdrop-blur-md bg-white/[0.08] hover:bg-white hover:text-[#064e3b] transition-all duration-300 active:scale-[0.97]"
+                  >
+                    List Your Equipment
+                  </Link>
+                )}
               </motion.div>
             </motion.div>
 
@@ -264,9 +262,20 @@ const FarmerHome = () => {
                 className="flex flex-col items-center rounded-2xl py-5 px-8 w-50 backdrop-blur-xl border border-white/15 shadow-2xl"
                 style={{ background: "rgba(255,255,255,0.07)" }}
               >
-                <FontAwesomeIcon icon={faBolt} className="text-3xl" style={{ color: color.warmGold }} />
-                <span className="text-white/80 font-medium mt-2 text-sm tracking-wide">Fast Delivery</span>
-                <span className="font-bold text-lg" style={{ color: color.lush }}>24h</span>
+                <FontAwesomeIcon
+                  icon={faBolt}
+                  className="text-3xl"
+                  style={{ color: color.warmGold }}
+                />
+                <span className="text-white/80 font-medium mt-2 text-sm tracking-wide">
+                  Fast Delivery
+                </span>
+                <span
+                  className="font-bold text-lg"
+                  style={{ color: color.lush }}
+                >
+                  24h
+                </span>
               </motion.div>
 
               {/* row 2: two cards side by side */}
@@ -278,9 +287,20 @@ const FarmerHome = () => {
                   className="flex flex-col items-center rounded-2xl py-5 px-8 w-50 backdrop-blur-xl border border-white/15 shadow-2xl rotate-2"
                   style={{ background: "rgba(255,255,255,0.07)" }}
                 >
-                  <FontAwesomeIcon icon={faCheck} className="text-3xl" style={{ color: color.lush }} />
-                  <span className="text-white/80 font-medium mt-2 text-sm tracking-wide">Verified Owners</span>
-                  <span className="font-bold text-lg" style={{ color: color.lush }}>100%</span>
+                  <FontAwesomeIcon
+                    icon={faCheck}
+                    className="text-3xl"
+                    style={{ color: color.lush }}
+                  />
+                  <span className="text-white/80 font-medium mt-2 text-sm tracking-wide">
+                    Verified Owners
+                  </span>
+                  <span
+                    className="font-bold text-lg"
+                    style={{ color: color.lush }}
+                  >
+                    100%
+                  </span>
                 </motion.div>
 
                 <motion.div
@@ -290,9 +310,19 @@ const FarmerHome = () => {
                   className="flex flex-col items-center rounded-2xl py-5 w-50 backdrop-blur-xl border border-white/15 shadow-2xl -rotate-2"
                   style={{ background: "rgba(255,255,255,0.07)" }}
                 >
-                  <BadgeIndianRupee size={28} style={{ color: color.warmGold }} />
-                  <span className="text-white/80 font-medium mt-2 text-sm tracking-wide">Save Up To</span>
-                  <span className="font-bold text-lg" style={{ color: color.lush }}>40%</span>
+                  <BadgeIndianRupee
+                    size={28}
+                    style={{ color: color.warmGold }}
+                  />
+                  <span className="text-white/80 font-medium mt-2 text-sm tracking-wide">
+                    Save Up To
+                  </span>
+                  <span
+                    className="font-bold text-lg"
+                    style={{ color: color.lush }}
+                  >
+                    40%
+                  </span>
                 </motion.div>
               </div>
 
@@ -328,7 +358,11 @@ const FarmerHome = () => {
 
         {/* wave divider */}
         <div className="absolute -bottom-1 left-0 w-full overflow-hidden leading-none pointer-events-none">
-          <svg viewBox="0 0 1440 120" preserveAspectRatio="none" className="w-full h-[80px] sm:h-[100px]">
+          <svg
+            viewBox="0 0 1440 120"
+            preserveAspectRatio="none"
+            className="w-full h-[80px] sm:h-[100px]"
+          >
             <path
               d="M0,60 C200,100 400,20 600,60 C800,100 1000,20 1200,60 C1300,80 1380,50 1440,65 L1440,120 L0,120 Z"
               fill={color.bg}
@@ -358,7 +392,10 @@ const FarmerHome = () => {
               <Leaf size={14} />
               Who We Are
             </span>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight" style={{ color: color.text }}>
+            <h1
+              className="text-2xl md:text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight"
+              style={{ color: color.text }}
+            >
               Empowering Farmers Through{" "}
               <span
                 style={{
@@ -370,8 +407,12 @@ const FarmerHome = () => {
                 Shared Resources
               </span>
             </h1>
-            <p className="text-sm mt-3 max-w-xl mx-auto leading-relaxed" style={{ color: color.textSoft }}>
-              We connect farmers with the equipment they need, when they need it.
+            <p
+              className="text-sm mt-3 max-w-xl mx-auto leading-relaxed"
+              style={{ color: color.textSoft }}
+            >
+              We connect farmers with the equipment they need, when they need
+              it.
             </p>
           </motion.div>
 
@@ -385,10 +426,16 @@ const FarmerHome = () => {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="max-w-[520px]"
             >
-              <h2 className="text-xl lg:text-[26px] font-bold leading-snug" style={{ color: color.text }}>
+              <h2
+                className="text-xl lg:text-[26px] font-bold leading-snug"
+                style={{ color: color.text }}
+              >
                 Your Trusted Partner in Farm Equipment Rental
               </h2>
-              <p className="text-sm mt-3 leading-[1.8]" style={{ color: color.textSoft }}>
+              <p
+                className="text-sm mt-3 leading-[1.8]"
+                style={{ color: color.textSoft }}
+              >
                 We understand the challenges farmers face in accessing expensive
                 machinery. That's why we created a peer-to-peer marketplace that
                 connects equipment owners with those who need it, making modern
@@ -403,10 +450,26 @@ const FarmerHome = () => {
                 className="mt-8 space-y-1"
               >
                 {[
-                  { icon: CircleCheckBig, title: "Verified Equipment", desc: "Every machine is inspected and verified by our expert team before listing." },
-                  { icon: Users, title: "Community Driven", desc: "Built by farmers, for farmers. Join a growing community of agricultural innovators." },
-                  { icon: Shield, title: "Secure Transactions", desc: "Safe and secure payment processing with full insurance coverage on all rentals." },
-                  { icon: Zap, title: "Quick & Easy", desc: "Book equipment in minutes and get it delivered to your farm within 24 hours." },
+                  {
+                    icon: CircleCheckBig,
+                    title: "Verified Equipment",
+                    desc: "Every machine is inspected and verified by our expert team before listing.",
+                  },
+                  {
+                    icon: Users,
+                    title: "Community Driven",
+                    desc: "Built by farmers, for farmers. Join a growing community of agricultural innovators.",
+                  },
+                  {
+                    icon: Shield,
+                    title: "Secure Transactions",
+                    desc: "Safe and secure payment processing with full insurance coverage on all rentals.",
+                  },
+                  {
+                    icon: Zap,
+                    title: "Quick & Easy",
+                    desc: "Book equipment in minutes and get it delivered to your farm within 24 hours.",
+                  },
                 ].map(({ icon: Icon, title, desc }) => (
                   <motion.div
                     key={title}
@@ -421,8 +484,18 @@ const FarmerHome = () => {
                       <Icon size={22} style={{ color: color.emerald }} />
                     </span>
                     <div>
-                      <h3 className="font-semibold text-[15px]" style={{ color: color.text }}>{title}</h3>
-                      <p className="text-sm leading-relaxed" style={{ color: color.textSoft }}>{desc}</p>
+                      <h3
+                        className="font-semibold text-[15px]"
+                        style={{ color: color.text }}
+                      >
+                        {title}
+                      </h3>
+                      <p
+                        className="text-sm leading-relaxed"
+                        style={{ color: color.textSoft }}
+                      >
+                        {desc}
+                      </p>
                     </div>
                   </motion.div>
                 ))}
@@ -441,7 +514,9 @@ const FarmerHome = () => {
               {/* decorative ring */}
               <div
                 className="absolute -inset-3 rounded-[2rem] opacity-20 blur-sm"
-                style={{ background: `linear-gradient(135deg, ${color.emerald}, ${color.sage})` }}
+                style={{
+                  background: `linear-gradient(135deg, ${color.emerald}, ${color.sage})`,
+                }}
               />
               <div className="relative rounded-3xl overflow-hidden shadow-2xl ring-1 ring-black/5">
                 <img
@@ -462,15 +537,22 @@ const FarmerHome = () => {
               >
                 <div
                   className="w-12 h-12 rounded-xl flex items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${color.paleGreen}, ${color.mintCream})` }}
+                  style={{
+                    background: `linear-gradient(135deg, ${color.paleGreen}, ${color.mintCream})`,
+                  }}
                 >
                   <Trophy size={24} style={{ color: color.emerald }} />
                 </div>
                 <div>
-                  <span className="block text-lg font-bold" style={{ color: color.text }}>
+                  <span
+                    className="block text-lg font-bold"
+                    style={{ color: color.text }}
+                  >
                     2+ Years
                   </span>
-                  <span className="text-sm" style={{ color: color.textSoft }}>Serving Farmers</span>
+                  <span className="text-sm" style={{ color: color.textSoft }}>
+                    Serving Farmers
+                  </span>
                 </div>
               </motion.div>
             </motion.div>
@@ -498,7 +580,10 @@ const FarmerHome = () => {
               <Leaf size={14} />
               Browse Equipment
             </span>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight" style={{ color: color.text }}>
+            <h1
+              className="text-2xl md:text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight"
+              style={{ color: color.text }}
+            >
               Popular Categories
             </h1>
             <p className="text-sm mt-3" style={{ color: color.textSoft }}>
@@ -571,10 +656,16 @@ const FarmerHome = () => {
               <Leaf size={14} />
               Why Choose Us
             </span>
-            <h1 className="text-2xl md:text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight" style={{ color: color.text }}>
+            <h1
+              className="text-2xl md:text-3xl lg:text-4xl xl:text-[42px] font-extrabold tracking-tight"
+              style={{ color: color.text }}
+            >
               Why It Benefits You
             </h1>
-            <p className="text-sm mt-3 max-w-lg mx-auto" style={{ color: color.textSoft }}>
+            <p
+              className="text-sm mt-3 max-w-lg mx-auto"
+              style={{ color: color.textSoft }}
+            >
               Everything you need for affordable, reliable, and stress-free farm
               equipment rental.
             </p>
@@ -617,13 +708,17 @@ const FarmerHome = () => {
                 {/* hover gradient reveal */}
                 <div
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"
-                  style={{ background: `linear-gradient(160deg, ${color.paleGreen}80, transparent 60%)` }}
+                  style={{
+                    background: `linear-gradient(160deg, ${color.paleGreen}80, transparent 60%)`,
+                  }}
                 />
 
                 {/* top accent line */}
                 <div
                   className="absolute top-0 left-8 right-8 h-[3px] rounded-b-full scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"
-                  style={{ background: `linear-gradient(90deg, ${accent}, transparent)` }}
+                  style={{
+                    background: `linear-gradient(90deg, ${accent}, transparent)`,
+                  }}
                 />
 
                 <div className="relative z-10">
@@ -636,8 +731,18 @@ const FarmerHome = () => {
                   >
                     <Icon size={26} style={{ color: accent }} />
                   </div>
-                  <h2 className="font-bold text-lg mb-2" style={{ color: color.text }}>{title}</h2>
-                  <p className="text-sm leading-[1.7]" style={{ color: color.textSoft }}>{desc}</p>
+                  <h2
+                    className="font-bold text-lg mb-2"
+                    style={{ color: color.text }}
+                  >
+                    {title}
+                  </h2>
+                  <p
+                    className="text-sm leading-[1.7]"
+                    style={{ color: color.textSoft }}
+                  >
+                    {desc}
+                  </p>
                 </div>
               </motion.div>
             ))}
@@ -648,7 +753,10 @@ const FarmerHome = () => {
       {/* ═══════════════════════════════════════════
           AVAILABLE NEAR YOU
           ═══════════════════════════════════════════ */}
-      <section style={{ background: color.mintCream }} className="overflow-hidden">
+      <section
+        style={{ background: color.mintCream }}
+        className="overflow-hidden"
+      >
         <div className="max-w-[1280px] mx-auto px-5 md:px-10 py-20 flex flex-col lg:flex-row justify-between items-center gap-14">
           <motion.div
             initial="hidden"
@@ -664,7 +772,10 @@ const FarmerHome = () => {
             >
               AROUND YOU
             </span>
-            <h1 className="font-extrabold text-2xl md:text-3xl lg:text-[38px] tracking-tight leading-tight" style={{ color: color.text }}>
+            <h1
+              className="font-extrabold text-2xl md:text-3xl lg:text-[38px] tracking-tight leading-tight"
+              style={{ color: color.text }}
+            >
               Available Near You
             </h1>
             <p className="mt-4 leading-[1.7]" style={{ color: color.textSoft }}>
@@ -692,7 +803,12 @@ const FarmerHome = () => {
                 <Search size={22} style={{ color: color.emerald }} />
               </div>
               <div className="flex-1">
-                <h5 className="font-semibold text-[15px]" style={{ color: color.text }}>Quick Search</h5>
+                <h5
+                  className="font-semibold text-[15px]"
+                  style={{ color: color.text }}
+                >
+                  Quick Search
+                </h5>
                 <p className="text-sm" style={{ color: color.textSoft }}>
                   Find the right tools for your harvest in seconds.
                 </p>
@@ -713,7 +829,10 @@ const FarmerHome = () => {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="flex gap-3 py-5"
           >
-            <div className="w-40 sm:w-52 lg:w-60 rounded-3xl overflow-hidden h-[260px] sm:h-[360px] ring-1 ring-black/5" style={{ boxShadow: shadow.xl }}>
+            <div
+              className="w-40 sm:w-52 lg:w-60 rounded-3xl overflow-hidden h-[260px] sm:h-[360px] ring-1 ring-black/5"
+              style={{ boxShadow: shadow.xl }}
+            >
               <img
                 className="h-full w-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 src="https://res.cloudinary.com/drq2a0262/image/upload/v1769355456/tractor_gvdqwu.jpg"
@@ -721,14 +840,20 @@ const FarmerHome = () => {
               />
             </div>
             <div className="w-40 sm:w-60 lg:w-72 h-[260px] sm:h-[360px] flex flex-col gap-3">
-              <div className="flex-1 rounded-3xl overflow-hidden ring-1 ring-black/5" style={{ boxShadow: shadow.lg }}>
+              <div
+                className="flex-1 rounded-3xl overflow-hidden ring-1 ring-black/5"
+                style={{ boxShadow: shadow.lg }}
+              >
                 <img
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
                   src="https://res.cloudinary.com/drq2a0262/image/upload/v1769355455/harvester_svzic4.jpg"
                   alt="harvester"
                 />
               </div>
-              <div className="flex-1 rounded-3xl overflow-hidden ring-1 ring-black/5" style={{ boxShadow: shadow.lg }}>
+              <div
+                className="flex-1 rounded-3xl overflow-hidden ring-1 ring-black/5"
+                style={{ boxShadow: shadow.lg }}
+              >
                 <img
                   className="w-full h-full object-cover hover:scale-105 transition-transform duration-700 ease-out"
                   src="https://res.cloudinary.com/drq2a0262/image/upload/v1769355455/Rotavator_yf7y9d.jpg"
@@ -753,7 +878,8 @@ const FarmerHome = () => {
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
-            backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+            backgroundImage:
+              "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
             backgroundSize: "28px 28px",
           }}
         />
@@ -799,7 +925,10 @@ const FarmerHome = () => {
           >
             <span className="relative z-10 flex items-center gap-2">
               Start Listing Today
-              <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
+              <ArrowRight
+                size={16}
+                className="group-hover:translate-x-1 transition-transform duration-300"
+              />
             </span>
           </motion.button>
 

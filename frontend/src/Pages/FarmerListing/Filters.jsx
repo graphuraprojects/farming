@@ -33,7 +33,7 @@ const Filters = ({ filters, setFilters, resetFilters, typeCounts }) => {
           </span>
           <input
             className="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm outline-none transition-all duration-200 placeholder:text-gray-400"
-            placeholder="Model, brand, or ID"
+            placeholder="Search here . . . ."
             type="text"
             value={filters.search}
             style={{ background: color.bg, border: `1px solid ${color.border}` }}

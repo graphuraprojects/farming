@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { color, gradientBg } from "../../theme";
@@ -6,6 +6,7 @@ import { color, gradientBg } from "../../theme";
 const VerifyOtp = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [resendTimer, setResendTimer] = useState(0);
 
   const email = location.state?.email;
   const name = location.state?.name;
@@ -13,7 +14,20 @@ const VerifyOtp = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  useEffect(() => {
+    console.log("📧 VerifyOtp Mounted with email:", email);
+  }, []);
+  useEffect(() => {
+    let interval;
 
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+
+    return () => clearInterval(interval);
+  }, [resendTimer]);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -47,13 +61,28 @@ const VerifyOtp = () => {
   };
 
   const handleResendOtp = async () => {
+    console.log("🔥 Resend OTP clicked");
+    console.log("📧 Email:", email);
+    console.log("🌍 Current URL:", window.location.origin);
+    console.log("📡 Calling: /api/auth/resend-otp");
+
+    if (resendTimer > 0) return;
+
     try {
       setLoading(true);
       setMessage("");
 
+      console.log("🚀 Sending request...");
+
       const res = await axios.post("/api/auth/resend-otp", { email });
+
+      console.log("✅ Response:", res.data);
+
       setMessage(res.data.message);
+      setResendTimer(30);
     } catch (err) {
+      console.error("❌ Error:", err);
+      console.error("❌ Error Response:", err.response);
       setMessage(err.response?.data?.message || "Failed to resend OTP");
     } finally {
       setLoading(false);
@@ -62,7 +91,10 @@ const VerifyOtp = () => {
 
   if (!email) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: color.bg }}>
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: color.bg }}
+      >
         <div className="text-center">
           <p className="mb-4 font-medium" style={{ color: color.danger }}>
             Invalid access. Please register again.
@@ -80,7 +112,10 @@ const VerifyOtp = () => {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-row overflow-hidden" style={{ background: color.bg }}>
+    <div
+      className="flex min-h-screen w-full flex-row overflow-hidden"
+      style={{ background: color.bg }}
+    >
       {/* LEFT IMAGE SECTION */}
       <div className="hidden lg:flex lg:w-1/2 relative">
         <div className="absolute inset-0">
@@ -126,7 +161,10 @@ const VerifyOtp = () => {
                 <span style={{ color: color.lush }}> start your journey."</span>
               </h2>
 
-              <div className="w-12 h-[3px] mx-auto my-4 rounded-full" style={{ background: gradientBg(color.lush, color.emerald) }} />
+              <div
+                className="w-12 h-[3px] mx-auto my-4 rounded-full"
+                style={{ background: gradientBg(color.lush, color.emerald) }}
+              />
 
               <p className="text-sm text-gray-300">
                 We've sent a verification code to <strong>{email}</strong>
@@ -143,11 +181,15 @@ const VerifyOtp = () => {
       >
         <div className="w-full max-w-[480px] flex flex-col gap-5">
           <div>
-            <h1 className="text-[32px] font-extrabold tracking-tight" style={{ color: color.text }}>
+            <h1
+              className="text-[32px] font-extrabold tracking-tight"
+              style={{ color: color.text }}
+            >
               Verify Your Email
             </h1>
             <p style={{ color: color.textSoft }}>
-              Enter the 6-digit OTP sent to <strong style={{ color: color.text }}>{email}</strong>
+              Enter the 6-digit OTP sent to{" "}
+              <strong style={{ color: color.text }}>{email}</strong>
             </p>
           </div>
 
@@ -159,24 +201,46 @@ const VerifyOtp = () => {
               placeholder="Enter OTP"
               maxLength={6}
               className="w-full text-center tracking-widest text-xl font-mono rounded-xl py-3.5 outline-none transition-all duration-200 placeholder:text-gray-300"
-              style={{ border: `1.5px solid ${color.inputBorder}`, background: "white" }}
-              onFocus={(e) => e.target.style.borderColor = color.emerald}
-              onBlur={(e) => e.target.style.borderColor = color.inputBorder}
+              style={{
+                border: `1.5px solid ${color.inputBorder}`,
+                background: "white",
+              }}
+              onFocus={(e) => (e.target.style.borderColor = color.emerald)}
+              onBlur={(e) => (e.target.style.borderColor = color.inputBorder)}
             />
 
             <button
               type="submit"
               disabled={loading}
               className="w-full py-3.5 rounded-xl text-white font-semibold cursor-pointer transition-all duration-300 active:scale-[0.97] hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ background: gradientBg(color.emerald, color.forest), boxShadow: `0 4px 16px ${color.emerald}30` }}
+              style={{
+                background: gradientBg(color.emerald, color.forest),
+                boxShadow: `0 4px 16px ${color.emerald}30`,
+              }}
             >
               {loading ? "Verifying..." : "Verify OTP"}
             </button>
-
+            <div className="text-center">
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                disabled={loading || resendTimer > 0}
+                className="text-sm font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{ color: color.emerald }}
+              >
+                {resendTimer > 0
+                  ? `Resend OTP in ${resendTimer}s`
+                  : "Didn't receive code? Resend OTP"}
+              </button>
+            </div>
             {message && (
               <p
                 className="text-center text-sm font-medium"
-                style={{ color: message.includes("success") ? color.emerald : color.danger }}
+                style={{
+                  color: message.includes("success")
+                    ? color.emerald
+                    : color.danger,
+                }}
               >
                 {message}
               </p>

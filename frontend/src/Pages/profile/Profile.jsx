@@ -18,6 +18,8 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [addressToDelete, setAddressToDelete] = useState(null);
 
   const defaultImage =
     "https://res.cloudinary.com/drq2a0262/image/upload/v1768924942/admission-files/1768924941678-account.png";
@@ -38,7 +40,7 @@ const Profile = () => {
     latitude: null,
     longitude: null,
   });
-
+  const [detectingLocation, setDetectingLocation] = useState(false);
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -122,25 +124,20 @@ const Profile = () => {
   };
 
   const handleDetectLocation = async () => {
-    console.log("📍 Detect location clicked");
-    console.log("Selected Address Index:", selectedAddressIndex);
-    console.log("Current Addresses State:", formData.addresses);
+    if (detectingLocation) return; // Prevent double click
 
     if (!navigator.geolocation) {
-      console.log("❌ Geolocation not supported");
       alert("Geolocation is not supported by your browser");
       return;
     }
+
+    setDetectingLocation(true);
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          console.log("📌 Latitude:", latitude);
-          console.log("📌 Longitude:", longitude);
-
           const token = localStorage.getItem("token");
-          console.log("🔐 Token exists:", !!token);
 
           const res = await axios.get(
             "https://nominatim.openstreetmap.org/reverse",
@@ -153,15 +150,12 @@ const Profile = () => {
             },
           );
 
-          console.log("🌍 Reverse geocode response:", res.data);
-
           const address = res.data.address;
 
           const updatedAddressData = {
             label:
               formData.addresses[selectedAddressIndex]?.label ||
               `Address ${selectedAddressIndex + 1}`,
-
             street:
               address.road ||
               address.residential ||
@@ -171,79 +165,51 @@ const Profile = () => {
               address.pedestrian ||
               res.data.display_name ||
               "",
-
             city:
               address.city ||
               address.town ||
               address.village ||
               address.county ||
               "",
-
             state: address.state || "",
             zip: address.postcode || "",
             country: address.country || "",
-
-            latitude: latitude,
-            longitude: longitude,
+            latitude,
+            longitude,
           };
-
-          console.log("📝 Updated Address Data:", updatedAddressData);
 
           const currentAddress =
             formData.addresses?.[selectedAddressIndex] || null;
 
-          console.log("🔎 Current Address Object:", currentAddress);
-
           if (currentAddress?._id) {
-            console.log("🔄 Updating existing address:", currentAddress._id);
-            console.log("Selected Index:", selectedAddressIndex);
-            console.log("Addresses Array:", formData.addresses);
-            console.log("Current Address:", currentAddress);
-
-            const response = await axios.patch(
+            await axios.patch(
               `/api/users/addresses/${currentAddress._id}`,
               updatedAddressData,
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              },
+              { headers: { Authorization: `Bearer ${token}` } },
             );
-
-            console.log("✅ PATCH Response:", response.data);
           } else {
-            console.log("➕ Creating NEW address");
-
-            const response = await axios.post(
+            await axios.post(
               `/api/users/addresses`,
               {
                 ...updatedAddressData,
                 isDefault: formData.addresses.length === 0,
               },
-              {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                },
-              },
+              { headers: { Authorization: `Bearer ${token}` } },
             );
-
-            console.log("✅ POST Response:", response.data);
           }
 
-          console.log("🔄 Refetching profile...");
           await fetchProfile();
-
-          console.log("✅ Location + Address Saved Successfully");
           alert("Location detected and address saved successfully!");
         } catch (error) {
-          console.error("❌ Detect Location Error:", error);
-          console.error("❌ Error Response:", error.response?.data);
+          console.error("Detect Location Error:", error);
           alert("Failed to detect and save address");
+        } finally {
+          setDetectingLocation(false);
         }
       },
       (error) => {
-        console.error("❌ Geolocation error:", error);
         alert("Location permission denied or unavailable");
+        setDetectingLocation(false);
       },
     );
   };
@@ -289,6 +255,27 @@ const Profile = () => {
       );
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDeleteAddress = async () => {
+    try {
+      const token = localStorage.getItem("token");
+
+      await axios.delete(`/api/users/addresses/${addressToDelete}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      alert("Address deleted successfully");
+      setShowDeleteModal(false);
+      setAddressToDelete(null);
+
+      await fetchProfile();
+    } catch (error) {
+      console.error("Delete address error:", error);
+      alert("Failed to delete address");
     }
   };
 
@@ -376,7 +363,7 @@ const Profile = () => {
           </div>
 
           <div className="pt-20 sm:pt-24 px-6 sm:px-8 pb-8">
-            <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
               <div>
                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">
                   {formData.name}
@@ -392,14 +379,22 @@ const Profile = () => {
                   Edit Profile
                 </button>
               ) : (
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                   {isEditing && (
                     <button
                       type="button"
                       onClick={handleDetectLocation}
-                      className="mb-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                      disabled={detectingLocation}
+                      className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      📍 Use My Current Location
+                      {detectingLocation ? (
+                        <>
+                          <Loader size={16} className="animate-spin" />
+                          Detecting...
+                        </>
+                      ) : (
+                        "📍 Use My Current Location"
+                      )}
                     </button>
                   )}
                   <button
@@ -495,12 +490,13 @@ const Profile = () => {
                   Address Details
                 </h2>
                 {formData.addresses.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap items-center gap-2 mb-4">
+                    {/* Address selector buttons */}
                     {formData.addresses.map((addr, index) => (
                       <button
-                        key={index}
+                        key={addr._id || index}
                         onClick={() => setSelectedAddressIndex(index)}
-                        className={`px-4 py-1 rounded-full text-sm font-medium border ${
+                        className={`px-4 py-1 rounded-full text-sm font-medium border transition ${
                           index === selectedAddressIndex
                             ? "bg-[#03a74f] text-white border-[#03a74f]"
                             : "bg-white text-gray-700 border-gray-300"
@@ -510,6 +506,22 @@ const Profile = () => {
                         {addr.isDefault && " ⭐"}
                       </button>
                     ))}
+
+                    {/* DELETE BUTTON (OUTSIDE MAP) */}
+                    {isEditing &&
+                      formData.addresses[selectedAddressIndex]?._id && (
+                        <button
+                          onClick={() => {
+                            setAddressToDelete(
+                              formData.addresses[selectedAddressIndex]._id,
+                            );
+                            setShowDeleteModal(true);
+                          }}
+                          className="ml-2 px-4 py-1 rounded-full text-sm font-medium bg-red-100 text-red-600 border border-red-300 hover:bg-red-600 hover:text-white transition"
+                        >
+                          🗑 Delete
+                        </button>
+                      )}
                   </div>
                 )}
 
@@ -660,6 +672,38 @@ const Profile = () => {
               </div>
             </div>
           </div>
+          {showDeleteModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-xl">
+                <h2 className="text-lg font-bold text-gray-800 mb-3">
+                  Delete Address?
+                </h2>
+                <p className="text-gray-600 mb-6">
+                  Are you sure you want to delete this address? This action
+                  cannot be undone.
+                </p>
+
+                <div className="flex justify-end gap-3">
+                  <button
+                    onClick={() => {
+                      setShowDeleteModal(false);
+                      setAddressToDelete(null);
+                    }}
+                    className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={handleDeleteAddress}
+                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition"
+                  >
+                    Yes, Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

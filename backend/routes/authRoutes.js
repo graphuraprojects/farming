@@ -2,13 +2,13 @@ import express from "express";
 import {
   register,
   verifyOtp,
+  resendOtp,
   login,
   logout,
   forgotPassword,
   verifyResetOTP,
-  resetPassword
+  resetPassword,
 } from "../controllers/authController.js";
-
 
 const router = express.Router();
 /**
@@ -24,6 +24,14 @@ router.post("/register", register);
  * @access  Public
  */
 router.post("/verify-otp", verifyOtp);
+
+/**
+ * @route   POST /api/auth/resend-otp
+ * @desc    Resend verification OTP to email
+ * @access  Public
+ */
+router.post("/resend-otp", resendOtp);
+
 /**
  * @route   POST /api/auth/login
  * @desc    Login user and return JWT / session
@@ -36,7 +44,6 @@ router.post("/login", login);
  * @access  Private
  */
 router.post("/logout", logout);
-
 
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-reset-otp", verifyResetOTP);

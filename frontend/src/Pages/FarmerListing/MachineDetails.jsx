@@ -189,7 +189,10 @@ const MachineDetails = () => {
               />
             );
           } else {
-            console.log("[MachineDetails] Hero image skipped — invalid value:", heroUrl);
+            console.log(
+              "[MachineDetails] Hero image skipped — invalid value:",
+              heroUrl,
+            );
             return (
               <div className="col-span-1 md:col-span-2 row-span-2 bg-gray-200 rounded-lg flex items-center justify-center text-gray-400 text-4xl">
                 🚜
@@ -198,7 +201,10 @@ const MachineDetails = () => {
           }
         })()}
         {machine.images?.slice(1).map((img, i) => {
-          console.log(`[MachineDetails] Gallery image ${i + 1} value:`, img?.url);
+          console.log(
+            `[MachineDetails] Gallery image ${i + 1} value:`,
+            img?.url,
+          );
           if (img?.url && typeof img.url === "string" && img.url.length > 30) {
             return (
               <img
@@ -208,7 +214,9 @@ const MachineDetails = () => {
               />
             );
           } else {
-            console.log(`[MachineDetails] Gallery image ${i + 1} skipped — invalid value`);
+            console.log(
+              `[MachineDetails] Gallery image ${i + 1} skipped — invalid value`,
+            );
             return (
               <div
                 key={i}
@@ -444,8 +452,6 @@ const MachineDetails = () => {
                 </div>
               </div>
 
-             
-
               <div className="grid grid-cols-1 divide-x divide-[#dee3e0]">
                 <div className="p-3 hover:bg-[#f9faf7] cursor-pointer transition-colors">
                   <label className="block text-[10px] uppercase font-bold text-[#6d7e74] tracking-wider">
@@ -454,7 +460,7 @@ const MachineDetails = () => {
                   <div className="text-sm font-medium text-[#131614] mt-1">
                     <input
                       type="text"
-                      value={`${duration.totalDays} day${duration.totalDays !== 1 ? 's' : ''}`}
+                      value={`${duration.totalDays} day${duration.totalDays !== 1 ? "s" : ""}`}
                       readOnly
                       className="w-full mt-2 text-sm bg-transparent outline-none border border-[#dee3e0] rounded-lg px-3 py-2"
                     />
@@ -597,7 +603,11 @@ const MachineDetails = () => {
                     name: machine.machine_name,
                     image: machine.images?.[0]?.url,
                     startDate,
-                    days: duration.totalDays,
+                    totalDays: duration.totalDays,
+
+                    rent: breakdown.rent,
+                    transport: breakdown.transport,
+                    distanceKm: breakdown.distance_km,
                     total: breakdown.total,
                   };
 
@@ -687,7 +697,8 @@ const MachineDetails = () => {
             <div className="flex flex-col gap-2 pt-2 text-sm text-[#131614]">
               <div className="flex justify-between">
                 <span className="underline decoration-dotted decoration-sage cursor-help">
-                  ₹{machine.price_per_day} x {duration.totalDays} day{duration.totalDays !== 1 ? 's' : ''}
+                  ₹{machine.price_per_day} x {duration.totalDays} day
+                  {duration.totalDays !== 1 ? "s" : ""}
                 </span>
                 <span>₹{rentTotal}</span>
               </div>
@@ -696,7 +707,8 @@ const MachineDetails = () => {
                 <div className="flex justify-between">
                   <span className="underline decoration-dotted decoration-sage cursor-help">
                     Operator Fee (₹{machine.operatorFeePerHour} ×{" "}
-                    {duration.totalDays} day{duration.totalDays !== 1 ? 's' : ''})
+                    {duration.totalDays} day
+                    {duration.totalDays !== 1 ? "s" : ""})
                   </span>
                   <span>₹{operatorTotal}</span>
                 </div>

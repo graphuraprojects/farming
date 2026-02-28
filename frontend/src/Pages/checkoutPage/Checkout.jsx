@@ -27,7 +27,8 @@ export default function Checkout() {
   const [liveLocation, setLiveLocation] = useState(null);
   const [deliveryMode, setDeliveryMode] = useState("delivery");
   const [paying, setPaying] = useState(false);
-
+  const [userAddresses, setUserAddresses] = useState([]);
+  const [selectedAddressIndex, setSelectedAddressIndex] = useState(0);
   /* ================= BOOKING DATA ================= */
 
   const bookings = JSON.parse(localStorage.getItem("bookings")) || [];
@@ -36,9 +37,12 @@ export default function Checkout() {
   const currentBooking = bookings[bookings.length - 1];
   const bookingId = currentBooking?.bookingId;
 
-  const durationText =
-    currentBooking?.durationDisplay ||
-    `${currentBooking?.totalDays || 0} day(s)`;
+  const totalDays = currentBooking?.totalDays || 0;
+  const durationText = `${totalDays} day${totalDays !== 1 ? "s" : ""}`;
+
+  const rentAmount = Number(currentBooking?.rent || 0);
+  const transportAmount = Number(currentBooking?.transport || 0);
+  const distanceKm = currentBooking?.distanceKm || 0;
 
   const subtotal = Number(currentBooking?.total || 0);
   const totalAmount = Math.round(subtotal * 100) / 100;
@@ -59,43 +63,38 @@ export default function Checkout() {
 
         const headers = { Authorization: `Bearer ${token}` };
 
-        // 1. Profile
-        const profileRes = await axios.get(
-          `${API_BASE}/api/users/my-profile`,
-          { headers }
-        );
+        const profileRes = await axios.get(`${API_BASE}/api/users/my-profile`, {
+          headers,
+        });
+
         const user = profileRes.data.data;
         const nameParts = user.name?.split(" ") || [];
 
-        setFormData((prev) => ({
-          ...prev,
+        const addresses = user.addresses || [];
+
+        setUserAddresses(addresses);
+
+        let selectedAddress = null;
+        let defaultIndex = 0;
+
+        if (addresses.length > 0) {
+          const foundIndex = addresses.findIndex((a) => a.isDefault);
+          defaultIndex = foundIndex !== -1 ? foundIndex : 0;
+
+          setSelectedAddressIndex(defaultIndex);
+          selectedAddress = addresses[defaultIndex];
+          setHasSavedAddress(true);
+        }
+
+        setFormData({
           firstName: nameParts[0] || "",
           lastName: nameParts.slice(1).join(" ") || "",
           email: user.email || "",
           phone: user.phone || "",
-        }));
-
-        // 2. Default address
-        try {
-          const addressRes = await axios.get(
-            `${API_BASE}/api/users/addresses/default`,
-            { headers }
-          );
-          const defaultAddress = addressRes.data.data;
-
-          if (defaultAddress) {
-            setHasSavedAddress(true);
-            setFormData((prev) => ({
-              ...prev,
-              address: defaultAddress.street || "",
-              city: defaultAddress.city || "",
-              zipCode: defaultAddress.zip || "",
-            }));
-          }
-        } catch {
-          // No default address — that's fine
-          setHasSavedAddress(false);
-        }
+          address: selectedAddress?.street || "",
+          city: selectedAddress?.city || "",
+          zipCode: selectedAddress?.zip || "",
+        });
       } catch (err) {
         console.error("User data fetch error:", err);
       }
@@ -135,7 +134,7 @@ export default function Checkout() {
         });
         alert("Location captured successfully!");
       },
-      () => alert("Location permission denied. Please allow access.")
+      () => alert("Location permission denied. Please allow access."),
     );
   };
 
@@ -158,7 +157,7 @@ export default function Checkout() {
         latitude: liveLocation?.latitude || null,
         longitude: liveLocation?.longitude || null,
       },
-      { headers: { Authorization: `Bearer ${token}` } }
+      { headers: { Authorization: `Bearer ${token}` } },
     );
   };
 
@@ -209,7 +208,7 @@ export default function Checkout() {
             booking_id: bookingId,
             total_amount: totalAmount,
           }),
-        }
+        },
       );
 
       const data = await createRes.json();
@@ -246,7 +245,7 @@ export default function Checkout() {
                   razorpay_payment_id: response.razorpay_payment_id,
                   razorpay_signature: response.razorpay_signature,
                 }),
-              }
+              },
             );
 
             const verifyData = await verifyRes.json();
@@ -268,13 +267,11 @@ export default function Checkout() {
                 totalPrice: totalAmount,
                 orderId: response.razorpay_order_id,
                 paymentStatus: "paid",
-              })
+              }),
             );
 
             // 6. Navigate to confirmation
-            navigate(
-              `/booking-confirmation/${response.razorpay_order_id}`
-            );
+            navigate(`/booking-confirmation/${response.razorpay_order_id}`);
           } catch (verifyErr) {
             console.error("Verification error:", verifyErr);
             alert("Payment verification failed. Please contact support.");
@@ -347,6 +344,41 @@ export default function Checkout() {
               />
             </Section>
 
+            {/* ✅ ADD ADDRESS SELECTOR HERE */}
+            {userAddresses.length > 0 && (
+              <div className="bg-white rounded-xl shadow p-5">
+                <h3 className="font-semibold mb-3 text-[#131614]">
+                  Select Delivery Address
+                </h3>
+
+                <div className="flex flex-wrap gap-2">
+                  {userAddresses.map((addr, index) => (
+                    <button
+                      key={addr._id || index}
+                      onClick={() => {
+                        setSelectedAddressIndex(index);
+
+                        setFormData((prev) => ({
+                          ...prev,
+                          address: addr.street || "",
+                          city: addr.city || "",
+                          zipCode: addr.zip || "",
+                        }));
+                      }}
+                      className={`px-4 py-2 rounded-full text-sm font-medium border transition cursor-pointer ${
+                        index === selectedAddressIndex
+                          ? "bg-[#03a74f] text-white border-[#03a74f]"
+                          : "bg-white text-gray-700 border-gray-300"
+                      }`}
+                    >
+                      {addr.label || `Address ${index + 1}`}
+                      {addr.isDefault && " ⭐"}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <Section title="Delivery Method" value="2">
               <DeliveryForm
                 deliveryMode={deliveryMode}
@@ -398,7 +430,15 @@ export default function Checkout() {
             </div>
 
             <div className="border-t mt-4 pt-4 space-y-2 text-sm">
-              <Row label="Subtotal" value={`₹${subtotal.toFixed(2)}`} />
+              <Row
+                label={`Rent (${totalDays} day${totalDays !== 1 ? "s" : ""})`}
+                value={`₹${rentAmount.toFixed(2)}`}
+              />
+
+              <Row
+                label={`Transport (${distanceKm} km)`}
+                value={`₹${transportAmount.toFixed(2)}`}
+              />
             </div>
 
             <div className="border-t mt-4 pt-4 flex justify-between font-bold text-lg">

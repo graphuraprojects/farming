@@ -197,6 +197,8 @@ export const verifyOtp = async (req, res) => {
  * RESEND OTP
  */
 export const resendOtp = async (req, res) => {
+  console.log("📩 RESEND OTP ROUTE HIT");
+  console.log("📧 Email:", req.body.email);
   try {
     const { email } = req.body;
 

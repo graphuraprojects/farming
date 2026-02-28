@@ -21,7 +21,8 @@ export default function BookingHistory() {
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const bookingsPerPage = 10;
   // ✅ Fetch Bookings API
   useEffect(() => {
     const fetchBookings = async () => {
@@ -47,7 +48,15 @@ export default function BookingHistory() {
 
     fetchBookings();
   }, []);
+  const totalPages = Math.ceil(bookings.length / bookingsPerPage);
 
+  const indexOfLastBooking = currentPage * bookingsPerPage;
+  const indexOfFirstBooking = indexOfLastBooking - bookingsPerPage;
+
+  const currentBookings = bookings.slice(
+    indexOfFirstBooking,
+    indexOfLastBooking,
+  );
   const getStatusColor = (status) => {
     switch (status) {
       case "completed":
@@ -116,7 +125,7 @@ export default function BookingHistory() {
               </thead>
 
               <tbody className="divide-y divide-gray-200">
-                {bookings.map((booking) => (
+                {currentBookings.map((booking) => (
                   <tr key={booking._id} className="hover:bg-gray-50">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
@@ -166,11 +175,52 @@ export default function BookingHistory() {
                 ))}
               </tbody>
             </table>
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-2 mt-6 pb-6 px-6">
+                {/* Prev */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.max(prev - 1, 1))
+                  }
+                  disabled={currentPage === 1}
+                  className="cursor-pointer px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40"
+                >
+                  Prev
+                </button>
+
+                {/* Page Numbers */}
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`cursor-pointer px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      currentPage === i + 1
+                        ? "bg-green-600 text-white"
+                        : "bg-white text-gray-700 border"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                {/* Next */}
+                <button
+                  onClick={() =>
+                    setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="cursor-pointer px-4 py-2 rounded-lg border text-sm font-medium disabled:opacity-40"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Mobile View */}
           <div className="lg:hidden divide-y divide-gray-200">
-            {bookings.map((booking) => (
+            {currentBookings.map((booking) => (
               <div key={booking._id} className="p-4">
                 <div className="flex items-start gap-3 mb-3">
                   <img
